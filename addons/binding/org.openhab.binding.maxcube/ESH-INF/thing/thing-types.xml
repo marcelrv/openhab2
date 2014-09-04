@@ -1,24 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="maxcube"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <!-- Sample Thing Type -->
-    <thing-type id="sample">
-        <label>MaxCube Binding Thing</label>
-        <description>Sample thing for MaxCube Binding</description>
+	<bridge-type id="bridge">
+		<label>MAX!Cube LAN gateway</label>
+		<description>This bridge represents the MAX!Cube LAN gateway.</description>
 
-        <channels>
-            <channel id="channel1" typeId="sample-channel"/>
-        </channels>
-    </thing-type>
+		<config-description>
+			<parameter name="ipAddress" type="text">
+				<context>network_address</context>
+				<label>MAX!Cube LAN gateway IP</label>
+				<description>The IP address of the MAX!Cube LAN gateway. If none provided, binding will try to discover it.</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="port" type="integer">
+				<context>port</context>
+				<label>MAX!Cube LAN gateway port</label>
+				<description>
+                    Port of the LAN gateway. If empty, default port 62910 will be used.
+                </description>
+				<required>false</required>
+			</parameter>
+			<parameter name="refreshInterval" type="integer">
+				<label>Refresh Interval</label>
+				<description>The refresh interval in ms which is used to poll given MAX!Cube.</description>
+				<required>false</required>
+			</parameter>
+		</config-description>
+	</bridge-type>
 
-    <!-- Sample Channel Type -->
-    <channel-type id="sample-channel">
-        <item-type>maxcubeItem</item-type>
-        <label>MaxCube Binding Channel</label>
-        <description>Sample channel for MaxCube Binding</description>
-    </channel-type>
+
+	<!-- Sample Thing Type -->
+	<thing-type id="thermostat">
+		<label>MaxCube HeathingThermostat</label>
+		<description>MaxCube HeathingThermostat</description>
+
+		<channels>
+			<channel id="valve" typeId="valve-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="mode" typeId="mode-channel" />
+			<channel id="actual_temp" typeId="actual_temp-channel" />
+			<channel id="set_temp" typeId="set_temp-channel" />
+		</channels>
+
+        <config-description>
+            <parameter name="serial" type="text">
+                <label>Serial Number</label>
+                <description>The Serial Number identifier identifies one specific device.</description>
+                <required>true</required>
+            </parameter>
+        </config-description>
+	</thing-type>
+
+	<!-- Sample Channel Type -->
+	<channel-type id="sample-channel">
+		<item-type>maxcubeItem</item-type>
+		<label>MaxCube Binding Channel</label>
+		<description>Sample channel for MaxCube Binding</description>
+	</channel-type>
+
 
 </thing:thing-descriptions>
