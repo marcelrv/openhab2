@@ -7,7 +7,7 @@
  */
 package org.openhab.binding.maxcube.handler;
 
-import static org.openhab.binding.maxcube.MaxCubeBindingConstants.*;
+import static org.openhab.binding.maxcube.MaxCubeBinding.*;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -32,7 +32,7 @@ public class MaxCubeHandler extends BaseThingHandler {
 
 	@Override
 	public void handleCommand(ChannelUID channelUID, Command command) {
-        if(channelUID.getId().equals(CHANNEL_1)) {
+        if(channelUID.getId().equals(CHANNEL_SETTEMP)) {
             // TODO: handle command
         }
 	}
