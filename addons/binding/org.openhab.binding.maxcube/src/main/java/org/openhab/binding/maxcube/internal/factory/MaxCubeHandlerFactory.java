@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.maxcube.factory;
+package org.openhab.binding.maxcube.internal.factory;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -17,8 +17,10 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.maxcube.MaxCubeBinding;
 import org.openhab.binding.maxcube.config.MaxCubeBridgeConfiguration;
 import org.openhab.binding.maxcube.config.MaxCubeConfiguration;
-import org.openhab.binding.maxcube.handler.MaxCubeBridgeHandler;
-import org.openhab.binding.maxcube.handler.MaxCubeHandler;
+import org.openhab.binding.maxcube.internal.handler.MaxCubeBridgeHandler;
+import org.openhab.binding.maxcube.internal.handler.MaxCubeHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MaxCubeHandlerFactory} is responsible for creating things and thing 
@@ -29,11 +31,14 @@ import org.openhab.binding.maxcube.handler.MaxCubeHandler;
 
 public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
     
+	 private Logger logger = LoggerFactory.getLogger(MaxCubeHandlerFactory.class);
   //  private final static Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(HeathingThermostat_THING_TYPE);
     
     @Override
     public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
             ThingUID thingUID, ThingUID bridgeUID) {
+    	
+    	logger.debug("Thing createThing run");
         if (MaxCubeBinding.CubeBridge_THING_TYPE.equals(thingTypeUID)) {
             ThingUID CubeBridgeUID = getBridgeThingUID(thingTypeUID, thingUID, configuration);
             return super.createThing(thingTypeUID, configuration, CubeBridgeUID, null);
@@ -48,6 +53,7 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
     
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
+    	logger.debug("Thing supportsThingType run");
         return MaxCubeBinding.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
@@ -72,6 +78,7 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
     
     @Override
     protected ThingHandler createHandler(Thing thing) {
+    	logger.debug("ThingHandler createHandler run");
         if (thing.getThingTypeUID().equals(MaxCubeBinding.CubeBridge_THING_TYPE)) {
            return new MaxCubeBridgeHandler((Bridge) thing);
         } else if (thing.getThingTypeUID().equals(MaxCubeBinding.HeathingThermostat_THING_TYPE)) {
