@@ -32,7 +32,7 @@
 	</bridge-type>
 
 
-	<!-- Sample Thing Type -->
+	<!-- All Thermostats (Heating, Heating+, Wall) -->
 	<thing-type id="thermostat">
 		<label>MaxCube HeathingThermostat</label>
 		<description>MaxCube HeathingThermostat</description>
@@ -54,11 +54,34 @@
         </config-description>
 	</thing-type>
 
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
+	<channel-type id="valve-channel">
 		<item-type>maxcubeItem</item-type>
-		<label>MaxCube Binding Channel</label>
-		<description>Sample channel for MaxCube Binding</description>
+		<label>Valve Position Channel</label>
+		<description>Thermostat Valve Position</description>
+	</channel-type>
+
+	<channel-type id="battery-channel">
+		<item-type>maxcubeItem</item-type>
+		<label>Battery Level Channel</label>
+		<description>Battery charge Level</description>
+	</channel-type>
+	
+		<channel-type id="mode-channel">
+		<item-type>maxcubeItem</item-type>
+		<label>Mode Channel</label>
+		<description>Thermostat Mode Setting</description>
+	</channel-type>
+	
+		<channel-type id="actual_temp-channel">
+		<item-type>maxcubeItem</item-type>
+		<label>Actual Temperature Channel</label>
+		<description>Actual measured room temperature</description>
+	</channel-type>
+	
+		<channel-type id="set_temp-channel">
+		<item-type>maxcubeItem</item-type>
+		<label>Set Temperature Channel</label>
+		<description>Thermostat temperature setpoint</description>
 	</channel-type>
 
 

@@ -18,4 +18,4 @@ Import-Package: com.google.common.collect,
  org.slf4j
 Service-Component: OSGI-INF/*
 Export-Package: org.openhab.binding.maxcube,
- org.openhab.binding.maxcube.handler
+ org.openhab.binding.maxcube.internal.handler
