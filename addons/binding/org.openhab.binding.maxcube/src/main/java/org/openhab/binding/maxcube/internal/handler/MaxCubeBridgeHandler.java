@@ -7,15 +7,37 @@
  */
 package org.openhab.binding.maxcube.internal.handler;
 
+import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_BATTERY;
+
+import org.osgi.service.cm.ConfigurationException;
+
+import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_SETTEMP;
+import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_VALVE;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Socket;
 import java.util.List;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
-
+import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.maxcube.config.MaxCubeBridgeConfiguration;
+import org.openhab.binding.maxcube.internal.MaxCubeDiscover;
+import org.openhab.binding.maxcube.internal.Utils;
+import org.openhab.binding.maxcube.internal.message.C_Message;
+import org.openhab.binding.maxcube.internal.message.H_Message;
+import org.openhab.binding.maxcube.internal.message.L_Message;
+import org.openhab.binding.maxcube.internal.message.M_Message;
+import org.openhab.binding.maxcube.internal.message.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,24 +51,41 @@ import org.slf4j.LoggerFactory;
  */
 public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 
-    public MaxCubeBridgeHandler(Bridge maxcubeBridge) {
-        super(maxcubeBridge);
+	public MaxCubeBridgeHandler(Bridge maxcubeBridge) {
+		super(maxcubeBridge);
 
 	}
 
 	private Logger logger = LoggerFactory.getLogger(MaxCubeBridgeHandler.class);
 
-    //private BridgeHeartbeatService bridgeHeartbeatService = new BridgeHeartbeatService();
 
- //   private MaxCubeBridge bridge = null;
- 
+	/** The IP address of the MAX!Cube LAN gateway */
+	private static String ip;
 
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        // not needed
-    }
+	/**
+	 * The port of the MAX!Cube LAN gateway as provided at
+	 * http://www.elv.de/controller.aspx?cid=824&detail=10&detail2=3484
+	 */
+	private static int port = 62910;
 
- /*   public void updateLightState(Light light, StateUpdate stateUpdate) {
+	/** The refresh interval which is used to poll given MAX!Cube */
+	private static long refreshInterval = 10000;
+
+
+	//private BridgeHeartbeatService bridgeHeartbeatService = new BridgeHeartbeatService();
+
+	//   private MaxCubeBridge bridge = null;
+
+	private int refresh = 60; // refresh every minute as default 
+	ScheduledFuture<?> refreshJob;
+
+
+	@Override
+	public void handleCommand(ChannelUID channelUID, Command command) {
+		// not needed
+	}
+
+	/*   public void updateLightState(Light light, StateUpdate stateUpdate) {
 
         if (bridge != null) {
             try {
@@ -58,25 +97,69 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
             logger.warn("No bridge connected or selected. Cannot set light state.");
         }
     }
-*/
-    @Override
-    public void dispose() {
-        logger.debug("Handler disposes. Unregistering listener.");
-        /*        if (bridge != null) {
+	 */
+	@Override
+	public void dispose() {
+		logger.debug("Handler disposes. Unregistering listener.");
+		/*        if (bridge != null) {
             bridgeHeartbeatService.unregisterBridgeStatusListener(this);
             bridgeHeartbeatService.dispose();
-        
+
             bridge = null;
         }
-   
-   */
-    }
 
+		 */
+	}
+
+	@Override
+	public void initialize() {
+		logger.debug("Initializing MaxCube bridge handler.");
+
+		Configuration config = getThing().getConfiguration();
+		MaxCubeBridgeConfiguration configuration = getConfigAs(MaxCubeBridgeConfiguration.class);
+
+		//        serialnr = (String) config.get("serial");
+		//       logger.debug("Item Serial, %s.", serialnr);
+
+		try {
+			refresh = Integer.parseInt((String)config.get("refresh"));
+		} catch(Exception e) {
+			// let's ignore it and go for the default
+		}
+
+		try {
+			ip = discoveryGatewayIp();
+		} catch (ConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if ( ip != null) {
+			logger.info("MaxCube found IP {}.",ip );
+
+		}
+
+		/*if (configuration.ipAddress != null && configuration.port != null) {
+        	if (bridge == null) {
+        		bridge = new MaxCubeBridge(configuration.ipAddress);
+        		bridge.setTimeout(5000);
+        	}
+        	bridgeHeartbeatService.initialize(bridge);
+            bridgeHeartbeatService.registerBridgeStatusListener(this);
+        } else {
+            logger.warn("Cannot connect to hue bridge. IP address or user name not set.");
+        }
+
+		 */
+
+		startAutomaticRefresh();
+	}
+
+	/*
     @Override
     public void initialize() {
         logger.debug("Initializing MaxCube bridge handler.");
 
-        /*
+
         HueBridgeConfiguration configuration = getConfigAs(HueBridgeConfiguration.class);
 
         if (configuration.ipAddress != null && configuration.userName != null) {
@@ -89,10 +172,66 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
         } else {
             logger.warn("Cannot connect to hue bridge. IP address or user name not set.");
         }
-        */
-    }
 
-    /*
+    }
+	 */
+
+	private void startAutomaticRefresh() {
+
+		Runnable runnable = new Runnable() {
+			public void run() {
+				try {
+
+					Socket socket = null;
+					BufferedReader reader = null;
+
+					if (ip == null) {
+						logger.debug("Update prior to completion of interface IP configuration");
+						return;
+					}
+					try {
+						String raw = null;
+
+						socket = new Socket(ip, port);
+						reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+						boolean cont = true;
+						while (cont) {
+							raw = reader.readLine();
+							if (raw == null) {
+								cont = false;
+								continue;
+							}
+
+							Message message;
+							try {
+								message = processRawMessage(raw);
+
+								message.debug(logger);
+
+
+							} catch (Exception e) {
+								logger.info("Failed to process message received by MAX! protocol.");
+								logger.debug(Utils.getStackTrace(e));
+							}
+							socket.close();
+						}
+
+					} catch(Exception e) {
+						logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
+					}
+				
+				} catch(Exception e) {
+					logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
+				}}
+			
+		};
+
+			refreshJob = scheduler.scheduleAtFixedRate(runnable, 0, refresh, TimeUnit.SECONDS);
+		}
+
+
+		/*
     @Override
     public void onConnectionLost(HueBridge bridge) {
         logger.info("Bridge connection lost. Updating thing status to OFFLINE.");
@@ -139,8 +278,51 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
             throw new RuntimeException(e);
         }
         return null;
-        
-    }
-*/
 
-}
+    }
+		 */
+
+		/**
+		 * Discovers the MAX!CUbe LAN Gateway IP address.
+		 * 
+		 * @return the cube IP if available, a blank string otherwise.
+		 * @throws ConfigurationException
+		 */
+		private String discoveryGatewayIp() throws ConfigurationException {
+			String ip = MaxCubeDiscover.discoverIp();
+			if (ip == null) {
+				throw new ConfigurationException("maxcube:ip", "IP address for MAX!Cube must be set manually");
+			} else {
+				logger.info("Discovered MAX!Cube lan gateway at '{}'", ip);
+			}
+			return ip;
+		}
+
+		/**
+		 * Processes the raw TCP data read from the MAX protocol, returning the
+		 * corresponding Message.
+		 * 
+		 * @param raw
+		 *            the raw data provided read from the MAX protocol
+		 * @return the correct message for the given raw data
+		 */
+		private Message processRawMessage(String raw) {
+
+			if (raw.startsWith("H:")) {
+				return new H_Message(raw);
+			} else if (raw.startsWith("M:")) {
+				return new M_Message(raw);
+			} else if (raw.startsWith("C:")) {
+				return new C_Message(raw);
+			} else if (raw.startsWith("L:")) {
+				return new L_Message(raw);
+			} else {
+				logger.debug("Unknown message block: '{}'",raw);
+			}
+			return null;
+		}
+
+
+	}
+
+

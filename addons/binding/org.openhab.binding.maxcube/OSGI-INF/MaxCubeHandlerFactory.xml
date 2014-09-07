@@ -8,9 +8,9 @@
     http://www.eclipse.org/legal/epl-v10.html
 
 -->
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.maxcube.internal.MaxCubeHandlerFactory">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.maxcube.internal.factory.MaxCubeHandlerFactory">
 
-   <implementation class="org.openhab.binding.maxcube.internal.MaxCubeHandlerFactory"/>
+   <implementation class="org.openhab.binding.maxcube.internal.factory.MaxCubeHandlerFactory"/>
 
    <service>
       <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
