@@ -59,6 +59,7 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 
     private ThingUID getBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID,
             Configuration configuration) {
+    	logger.debug("mybridgethingie Thing supportsThingType run");
         if (thingUID == null) {
             String ipAddress = (String) configuration.get(MaxCubeBridgeConfiguration.IP_ADDRESS);
             thingUID = new ThingUID(thingTypeUID, ipAddress);
@@ -80,10 +81,12 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
     	logger.debug("ThingHandler createHandler run");
         if (thing.getThingTypeUID().equals(MaxCubeBinding.CubeBridge_THING_TYPE)) {
-           return new MaxCubeBridgeHandler((Bridge) thing);
+      //     return new MaxCubeBridgeHandler((Bridge) thing);
+            return new MaxCubeBridgeHandler((Bridge) thing);
         } else if (thing.getThingTypeUID().equals(MaxCubeBinding.HeathingThermostat_THING_TYPE)) {
             return new MaxCubeHandler(thing);
         } else {
+        	logger.debug("ThingHandler createHandler rerurn null");
             return null;
         }
     }
