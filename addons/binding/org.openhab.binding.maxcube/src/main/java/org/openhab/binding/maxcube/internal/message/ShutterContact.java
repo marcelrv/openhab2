@@ -27,7 +27,7 @@ public class ShutterContact extends Device {
 	private boolean error;
 	private boolean valid;
 
-	public ShutterContact(Configuration c) {
+	public ShutterContact(DeviceConfiguration c) {
 		super(c);
 	}
 

@@ -31,9 +31,9 @@ public class MaxCubeBridgeConfiguration {
 	 * The port of the MAX!Cube LAN gateway as provided at
 	 * http://www.elv.de/controller.aspx?cid=824&detail=10&detail2=3484
 	 */
-	public int port ;
+	public int port = (int) 62910;
 	
 	/** The refresh interval in ms which is used to poll given MAX!Cube */
-	public Long refreshInterval =(long) 10000;
+	public Long refreshInterval =(long) 60000;
 
 }

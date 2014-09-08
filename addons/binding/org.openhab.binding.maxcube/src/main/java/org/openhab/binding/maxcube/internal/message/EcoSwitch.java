@@ -22,7 +22,7 @@ public class EcoSwitch extends ShutterContact {
 	 * Class constructor. 
 	 * @param c
 	 */
-	public EcoSwitch(Configuration c) {
+	public EcoSwitch(DeviceConfiguration c) {
 		super(c);
 	}
 	@Override

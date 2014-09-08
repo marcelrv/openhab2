@@ -39,7 +39,7 @@ public class HeatingThermostat extends Device {
 	/** Device type for this thermostat **/
 	private DeviceType deviceType = DeviceType.HeatingThermostat;
 
-	public HeatingThermostat(Configuration c) {
+	public HeatingThermostat(DeviceConfiguration c) {
 		super(c);
 	}
 
