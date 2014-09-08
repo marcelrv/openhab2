@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
     
 	 private Logger logger = LoggerFactory.getLogger(MaxCubeHandlerFactory.class);
-  //  private final static Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(HeathingThermostat_THING_TYPE);
     
     @Override
     public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
@@ -81,7 +80,6 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
     	logger.debug("ThingHandler createHandler run");
         if (thing.getThingTypeUID().equals(MaxCubeBinding.CubeBridge_THING_TYPE)) {
-      //     return new MaxCubeBridgeHandler((Bridge) thing);
             return new MaxCubeBridgeHandler((Bridge) thing);
         } else if (thing.getThingTypeUID().equals(MaxCubeBinding.HeathingThermostat_THING_TYPE)) {
             return new MaxCubeHandler(thing);

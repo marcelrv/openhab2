@@ -28,7 +28,7 @@ public final class L_Message extends Message {
 		super(raw);
 	}
 
-	public Collection<? extends Device> getDevices(List<Configuration> configurations) {
+	public Collection<? extends Device> getDevices(List<DeviceConfiguration> configurations) {
 
 		List<Device> devices = new ArrayList<Device>();
 

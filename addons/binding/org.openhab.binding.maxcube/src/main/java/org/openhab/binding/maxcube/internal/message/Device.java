@@ -43,7 +43,7 @@ public abstract class Device {
 	private boolean panelLocked;
 	private boolean linkStatusError;
 
-	public Device(Configuration c) {
+	public Device(DeviceConfiguration c) {
 		this.serialNumber = c.getSerialNumber();
 		this.rfAddress = c.getRFAddress();
 		this.roomId = c.getRoomId();
@@ -55,9 +55,9 @@ public abstract class Device {
 
 	public abstract Calendar getLastUpdate();
 
-	private static Device create(String rfAddress, List<Configuration> configurations) {
+	private static Device create(String rfAddress, List<DeviceConfiguration> configurations) {
 		Device returnValue = null;
-		for (Configuration c : configurations) {
+		for (DeviceConfiguration c : configurations) {
 			if (c.getRFAddress().toUpperCase().equals(rfAddress.toUpperCase())) {
 				switch (c.getDeviceType()) {
 				case HeatingThermostatPlus:
@@ -79,7 +79,7 @@ public abstract class Device {
 		return returnValue;
 	}
 
-	public static Device create(byte[] raw, List<Configuration> configurations) {
+	public static Device create(byte[] raw, List<DeviceConfiguration> configurations) {
 
 		if (raw.length == 0) {
 			return null;

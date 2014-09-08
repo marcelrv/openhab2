@@ -15,7 +15,7 @@ package org.openhab.binding.maxcube.internal.message;
 * @author Andreas Heil (info@aheil.de)
 * @since 1.4.0
 */
-public final class Configuration {
+public final class DeviceConfiguration {
 	
 	private DeviceType deviceType = null;
 	private String rfAddress = null;
@@ -23,18 +23,18 @@ public final class Configuration {
 	private String name = null;
 	private int roomId = -1;
 	
-	private Configuration() {
+	private DeviceConfiguration() {
 	}
 	
-	public static Configuration create(Message message) {	
-		Configuration configuration = new Configuration();
+	public static DeviceConfiguration create(Message message) {	
+		DeviceConfiguration configuration = new DeviceConfiguration();
 		configuration.setValues((C_Message) message);
 		
 		return configuration;
 	}
 	
-	public static Configuration create(DeviceInformation di) {
-		Configuration configuration = new Configuration();
+	public static DeviceConfiguration create(DeviceInformation di) {
+		DeviceConfiguration configuration = new DeviceConfiguration();
 		configuration.setValues(di.getRFAddress(), di.getDeviceType(), di.getSerialNumber(), di.getName());
 		return configuration;
 	}

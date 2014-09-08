@@ -21,7 +21,7 @@ public class WallMountedThermostat extends HeatingThermostat {
 	 * Class constructor. 
 	 * @param c
 	 */
-	public WallMountedThermostat(Configuration c) {
+	public WallMountedThermostat(DeviceConfiguration c) {
 		super(c);
 	}
 	

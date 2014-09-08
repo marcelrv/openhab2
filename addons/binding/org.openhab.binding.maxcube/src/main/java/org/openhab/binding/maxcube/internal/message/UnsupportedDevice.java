@@ -4,7 +4,7 @@ import java.util.Calendar;
 
 public class UnsupportedDevice extends Device {
 
-	public UnsupportedDevice(Configuration c) {
+	public UnsupportedDevice(DeviceConfiguration c) {
 		super(c);
 	}
 
