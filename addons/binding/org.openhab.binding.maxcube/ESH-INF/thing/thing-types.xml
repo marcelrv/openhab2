@@ -18,7 +18,7 @@
 		</channels>
 
         <config-description>
-            <parameter name="serial" type="text">
+            <parameter name="serialNumber" type="text">
                 <label>Serial Number</label>
                 <description>The Serial Number identifier identifies one specific device.</description>
                 <required>true</required>
