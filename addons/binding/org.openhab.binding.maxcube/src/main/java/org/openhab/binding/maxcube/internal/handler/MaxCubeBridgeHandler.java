@@ -95,22 +95,10 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	
 	@Override
 	public void handleCommand(ChannelUID channelUID, Command command) {
-		// not needed
+		logger.warn("No bridge commands defined.");
 	}
 
-	/*   public void updateLightState(Light light, StateUpdate stateUpdate) {
 
-        if (bridge != null) {
-            try {
-                bridge.setLightState(light, stateUpdate);
-            } catch (IOException | ApiException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            logger.warn("No bridge connected or selected. Cannot set light state.");
-        }
-    }
-	 */
 	@Override
 	public void dispose() {
 		logger.debug("Handler disposes. Unregistering listener.");
@@ -187,28 +175,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 		startAutomaticRefresh();
 	}
 
-	/*
-    @Override
-    public void initialize() {
-        logger.debug("Initializing MaxCube bridge handler.");
-
-
-        HueBridgeConfiguration configuration = getConfigAs(HueBridgeConfiguration.class);
-
-        if (configuration.ipAddress != null && configuration.userName != null) {
-        	if (bridge == null) {
-        		bridge = new HueBridge(configuration.ipAddress);
-        		bridge.setTimeout(5000);
-        	}
-        	bridgeHeartbeatService.initialize(bridge);
-            bridgeHeartbeatService.registerBridgeStatusListener(this);
-        } else {
-            logger.warn("Cannot connect to hue bridge. IP address or user name not set.");
-        }
-
-    }
-	 */
-
 	private void startAutomaticRefresh() {
 
 		Runnable runnable = new Runnable() {
@@ -254,6 +220,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 								cont = false;}
 						}
 
+						
 					} catch(Exception e) {
 						logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
 					}
@@ -268,56 +235,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	}
 
 
-	/*
-    @Override
-    public void onConnectionLost(HueBridge bridge) {
-        logger.info("Bridge connection lost. Updating thing status to OFFLINE.");
-        this.bridge = null;
-        updateStatus(ThingStatus.OFFLINE);
-    }
-
-    @Override
-    public void onConnectionResumed(HueBridge bridge) {
-        logger.info("Bridge connection resumed. Updating thing status to ONLINE.");
-        this.bridge = bridge;
-        updateStatus(ThingStatus.ONLINE);
-    }
-
-    @Override
-	public void onNotAuthenticated(HueBridge bridge) {
-        HueBridgeConfiguration configuration = getConfigAs(HueBridgeConfiguration.class);
-    	try {
-			bridge.authenticate(configuration.userName);
-		} catch (Exception e) {
-			logger.debug("Hue bridge is not authenticated - please add user '{}'.", configuration.userName);
-		}
-	}
-
-	public BridgeHeartbeatService getBridgeHeartbeatService() {
-        if (bridgeHeartbeatService == null) {
-            throw new RuntimeException("The heartbeat service for bridge " + bridge.getIPAddress()
-                    + " has not been initialized.");
-        } else {
-            return bridgeHeartbeatService;
-        }
-    }
-
-    public Light getLightById(String lightId) {
-        List<Light> lights;
-        try {
-            lights = bridge.getLights();
-            for (Light light : lights) {
-                if (light.getId().equals(lightId)) {
-                    return light;
-                }
-            }
-        } catch (IOException | ApiException e) {
-            throw new RuntimeException(e);
-        }
-        return null;
-
-    }
-	 */
 
 	/**
 	 * Discovers the MAX!CUbe LAN Gateway IP address.
@@ -359,7 +276,11 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 		return null;
 	}
 
-
+	/**
+	 * Processes the message
+	 * @param Message
+	 *            the decoded message data
+	 */
 	private void processMessage (Message message){
 	
 		message.debug(logger);
@@ -426,7 +347,103 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 		}
 		return null;
 	}
+
+/*
+	private Device findThing(String serialNumber) {
+		for (Thing thing : Things) {
+			if (device.getSerialNumber().toUpperCase().equals(serialNumber)) {
+				return device;
+			}
+		}
+		return null;
+	}
+*/
+	
 }
 
+	
+/*
+public MaxCubeDevice getDeviceById(String lightId) {
+    List<Light> lights;
+    try {
+        lights = bridge.getLights();
+        for (Light light : lights) {
+            if (light.getId().equals(lightId)) {
+                return light;
+            }
+        }
+    } catch (IOException | ApiException e) {
+        throw new RuntimeException(e);
+    } catch (IllegalStateException e) {
+        logger.trace("Error while accessing light: {}", e.getMessage());
+    }
+    return null;
+    
+}
 
+*/
 
+/*   public void updateLightState(Light light, StateUpdate stateUpdate) {
+
+if (bridge != null) {
+    try {
+        bridge.setLightState(light, stateUpdate);
+    } catch (IOException | ApiException e) {
+        throw new RuntimeException(e);
+    }
+} else {
+    logger.warn("No bridge connected or selected. Cannot set light state.");
+}
+}
+*/
+
+/*
+@Override
+public void onConnectionLost(HueBridge bridge) {
+    logger.info("Bridge connection lost. Updating thing status to OFFLINE.");
+    this.bridge = null;
+    updateStatus(ThingStatus.OFFLINE);
+}
+
+@Override
+public void onConnectionResumed(HueBridge bridge) {
+    logger.info("Bridge connection resumed. Updating thing status to ONLINE.");
+    this.bridge = bridge;
+    updateStatus(ThingStatus.ONLINE);
+}
+
+@Override
+public void onNotAuthenticated(HueBridge bridge) {
+    HueBridgeConfiguration configuration = getConfigAs(HueBridgeConfiguration.class);
+	try {
+		bridge.authenticate(configuration.userName);
+	} catch (Exception e) {
+		logger.debug("Hue bridge is not authenticated - please add user '{}'.", configuration.userName);
+	}
+}
+
+public BridgeHeartbeatService getBridgeHeartbeatService() {
+    if (bridgeHeartbeatService == null) {
+        throw new RuntimeException("The heartbeat service for bridge " + bridge.getIPAddress()
+                + " has not been initialized.");
+    } else {
+        return bridgeHeartbeatService;
+    }
+}
+
+public Light getLightById(String lightId) {
+    List<Light> lights;
+    try {
+        lights = bridge.getLights();
+        for (Light light : lights) {
+            if (light.getId().equals(lightId)) {
+                return light;
+            }
+        }
+    } catch (IOException | ApiException e) {
+        throw new RuntimeException(e);
+    }
+    return null;
+
+}
+ */

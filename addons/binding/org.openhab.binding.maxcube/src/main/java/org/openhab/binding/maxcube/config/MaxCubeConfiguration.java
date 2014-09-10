@@ -18,10 +18,10 @@ package org.openhab.binding.maxcube.config;
 
 public class MaxCubeConfiguration {
 
-	public static final String SERIAL_NUMBER = "id";
+	public static final String SERIAL_NUMBER = "serialNumber";
 
 	/** The unique serial number for a device */
-	public String SerialNumber;
+	public String serialNumber;
     
   
 }
