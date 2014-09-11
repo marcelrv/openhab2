@@ -6,6 +6,10 @@
 
 	<!-- All Thermostats (Heating, Heating+, Wall) -->
 	<thing-type id="thermostat">
+	    <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge" />
+        </supported-bridge-type-refs>
+	
 		<label>MaxCube HeathingThermostat</label>
 		<description>MaxCube HeathingThermostat</description>
 
