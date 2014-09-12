@@ -19,6 +19,7 @@ package org.openhab.binding.maxcube.config;
 public class MaxCubeConfiguration {
 
 	public static final String SERIAL_NUMBER = "serialNumber";
+	public static final String RFADDRESS = "rfAddress";
 
 	/** The unique serial number for a device */
 	public String serialNumber;

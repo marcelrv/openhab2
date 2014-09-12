@@ -28,6 +28,11 @@
 				<description>The refresh interval in ms which is used to poll given MAX!Cube.</description>
 				<required>false</required>
 			</parameter>
+			<parameter name="serialNumber" type="text">
+                <label>Serial Number</label>
+                <description>The Serial Number identifier identifies one specific device.</description>
+                <required>false</required>
+            </parameter>
 		</config-description>
 	</bridge-type>
 	

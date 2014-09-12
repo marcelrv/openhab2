@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.maxcube.internal;
+package org.openhab.binding.maxcube.internal.discovery;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -15,7 +15,10 @@ import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.util.Enumeration;
+import java.util.concurrent.ConcurrentHashMap;
 
+import org.openhab.binding.maxcube.config.MaxCubeBridgeConfiguration;
+import org.openhab.binding.maxcube.config.MaxCubeConfiguration;
 import org.openhab.binding.maxcube.internal.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +36,22 @@ public final class MaxCubeDiscover {
 	* @return if the cube is found, returns the IP address as a string. Otherwise returns null
 	*/
 	public final static String discoverIp () {
+		ConcurrentHashMap<String, String > discoverResults = new ConcurrentHashMap<String, String>(DiscoverCube());
+		if (discoverResults.containsKey(MaxCubeBridgeConfiguration.IP_ADDRESS)){
+			return discoverResults.get(MaxCubeBridgeConfiguration.IP_ADDRESS);
+		} else {
+		return null;
+		}
+	}
 	
+	/**
+	* Automatic UDP discovery of a MAX!Cube
+	* @return if the cube is found, returns the ConcurrentHashMap containing the details.
+	*/
+	public final static ConcurrentHashMap<String, String > DiscoverCube() {
+		
+		ConcurrentHashMap<String, String > discoverResults = new ConcurrentHashMap<String, String>();
+		
 		String maxCubeIP = null;
 		String maxCubeName = null;
 		String rfAddress = null;
@@ -86,12 +104,16 @@ public final class MaxCubeDiscover {
 		DatagramPacket receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
 		bcReceipt.receive(receivePacket);
 
+
 		//We have a response
 		logger.trace( "Broadcast response from server: {}", receivePacket.getAddress());
 
 		//Check if the message is correct
 		String message = new String(receivePacket.getData()).trim();
 
+		//Close the port!
+		bcReceipt.close();
+		
 		if (message.startsWith("eQ3Max")) {
 			
 			maxCubeIP=receivePacket.getAddress().getHostAddress();
@@ -100,17 +122,19 @@ public final class MaxCubeDiscover {
 			logger.debug("Found at: {}", maxCubeIP);
 			logger.debug("Name    : {}", maxCubeName);
 			logger.debug("Serial  : {}", rfAddress);
-			logger.trace("Message : {}", message);	
+			logger.trace("Message : {}", message);
+			
 		} else {
 			logger.info("No Max!Cube gateway found on network");
 		}
 
-		//Close the port!
-		bcReceipt.close();
-
 		} catch (IOException ex) {
 			logger.debug(ex.toString());
 		}
-		return maxCubeIP;
+		
+		discoverResults.put(MaxCubeBridgeConfiguration.IP_ADDRESS, maxCubeIP);
+		discoverResults.put(MaxCubeConfiguration.SERIAL_NUMBER, maxCubeName);
+		discoverResults.put(MaxCubeConfiguration.RFADDRESS, rfAddress);
+		return discoverResults;
 	}
 }
