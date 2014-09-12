@@ -154,10 +154,10 @@ public abstract class Device {
 						heatingThermostat.getMode() != ThermostatModeType.BOOST){
 					actualTemp = (raw[8] & 0xFF ) * 256  + ( raw[9] & 0xFF );
 				} else{
-					logger.debug ("No temperature reading in {} mode", heatingThermostat.getMode()) ;
+					logger.debug ("Device {}: No temperature reading in {} mode",rfAddress, heatingThermostat.getMode()) ;
 				}
 			}
-			logger.debug ("Actual Temperature : {}",  (double)actualTemp / 10);
+			logger.debug ("Device {}: Actual Temperature : {}",rfAddress,  (double)actualTemp / 10);
 			heatingThermostat.setTemperatureActual((double)actualTemp / 10);
 			break;
 		case EcoSwitch:

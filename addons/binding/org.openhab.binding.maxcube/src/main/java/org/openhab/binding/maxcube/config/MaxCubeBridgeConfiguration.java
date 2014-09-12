@@ -35,5 +35,8 @@ public class MaxCubeBridgeConfiguration {
 	
 	/** The refresh interval in ms which is used to poll given MAX!Cube */
 	public Long refreshInterval =(long) 60000;
+	
+	/** The unique serial number for a device */
+	public String serialNumber;
 
 }

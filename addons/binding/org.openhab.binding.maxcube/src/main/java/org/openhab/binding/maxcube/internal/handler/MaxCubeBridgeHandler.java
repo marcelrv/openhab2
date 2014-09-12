@@ -50,7 +50,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	private ArrayList<Device> devices = new ArrayList<Device>();
 
 	private boolean previousOnline = true;
-	
+
 	@Override
 	public void handleCommand(ChannelUID channelUID, Command command) {
 		logger.warn("No bridge commands defined.");
@@ -59,15 +59,25 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	@Override
 	public void dispose() {
 		logger.debug("Handler disposes. Unregistering listener.");
-		      if (bridge != null) {
-            bridge = null;
-        }
+		if (bridge != null) {
+			bridge = null;
+		}
 	}
 
 	@Override
 	public void initialize() {
 		logger.debug("Initializing MaxCube bridge handler.");
 
+		MaxCubeBridgeConfiguration configuration = getConfigAs(MaxCubeBridgeConfiguration.class);
+		initializeBridge();
+
+		if (configuration.refreshInterval != 0) {
+			logger.debug("MaxCube refreshInterval {}.", configuration.refreshInterval);
+			refreshInterval =  configuration.refreshInterval;}
+		startAutomaticRefresh();
+	}
+
+	private void initializeBridge() {
 		MaxCubeBridgeConfiguration configuration = getConfigAs(MaxCubeBridgeConfiguration.class);
 
 		if (bridge == null) {
@@ -77,10 +87,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 				bridge.setPort ( configuration.port);
 			}
 		}		
-		if (configuration.refreshInterval != 0) {
-			logger.debug("MaxCube refreshInterval {}.", configuration.refreshInterval);
-			refreshInterval =  configuration.refreshInterval;}
-		startAutomaticRefresh();
 	}
 
 	private void startAutomaticRefresh() {
@@ -90,15 +96,19 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 				try {
 
 					if (bridge !=null){
-					bridge.refreshData();
-					if (bridge.isConnectionEstablished()){
-						if ( previousOnline == false) {
-							updateStatus(ThingStatus.ONLINE);
-							previousOnline = bridge.isConnectionEstablished();
+						bridge.refreshData();
+						if (bridge.isConnectionEstablished()){
+							if ( previousOnline == false) {
+								updateStatus(ThingStatus.ONLINE);
+								previousOnline = bridge.isConnectionEstablished();
+							}
+							//process stuff
+							devices = bridge.getDevices();
+							logger.debug("Devices {}", devices);
+						} else {
+							if (previousOnline) onConnectionLost (bridge);
+							initializeBridge() ;
 						}
-						//process stuff
-						
-					} else if (previousOnline) onConnectionLost (bridge);	
 					}
 
 				} catch(Exception e) {
@@ -110,25 +120,25 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	}
 
 	public Device getDeviceById(String maxCubeDeviceSerial) {
-		bridge.findDevice (maxCubeDeviceSerial,devices);
+		bridge.getDevice (maxCubeDeviceSerial);
 		return null;
 	}
 
 	public void onConnectionLost(MaxCubeBridge bridge) {
 		logger.info("Bridge connection lost. Updating thing status to OFFLINE.");
 		previousOnline = false;
-	    this.bridge = null;
-	    updateStatus(ThingStatus.OFFLINE);
+		this.bridge = null;
+		updateStatus(ThingStatus.OFFLINE);
 	}
 
 	public void onConnection(MaxCubeBridge bridge) {
-	    logger.info("Bridge connected. Updating thing status to ONLINE.");
-	    this.bridge = bridge;
-	    updateStatus(ThingStatus.ONLINE);
+		logger.info("Bridge connected. Updating thing status to ONLINE.");
+		this.bridge = bridge;
+		updateStatus(ThingStatus.ONLINE);
 	}
-	}
+}
 
-	/*
+/*
 	private Device findThing(String serialNumber) {
 		for (Thing thing : Things) {
 			if (device.getSerialNumber().toUpperCase().equals(serialNumber)) {
@@ -137,7 +147,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 		}
 		return null;
 	}
-	 */
+ */
 
 /*
 public MaxCubeDevice getDeviceById(String lightId) {

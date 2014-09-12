@@ -13,7 +13,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.net.util.Base64;
-import org.openhab.binding.maxcube.internal.MaxTokenizer;
 import org.slf4j.Logger;
 
 /**

@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.Spring;
-
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -30,7 +28,6 @@ import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.maxcube.config.MaxCubeConfiguration;
 import org.openhab.binding.maxcube.internal.MaxCubeBridge;
 import org.openhab.binding.maxcube.internal.message.Device;
-import org.openhab.core.library.types.StringType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,8 +52,8 @@ public class MaxCubeHandler extends BaseThingHandler {
 		super(thing);
 	}
 
-	
-	
+
+
 	@Override
 	public void initialize() {
 		final String configDeviceId = getConfigAs(MaxCubeConfiguration.class).serialNumber;
@@ -73,40 +70,40 @@ public class MaxCubeHandler extends BaseThingHandler {
 		startAutomaticRefresh();
 	}
 
-	
-    private Device getDevice() {
-        if (maxCubeDevice == null) {
-            MaxCubeBridgeHandler bridgeHandler = getMaxCubeBridgeHandler();
-        	if(bridgeHandler!=null) {
-        	//	maxCubeDevice = bridgeHandler.getDeviceById(maxCubeDeviceSerial);
-        	} else {
-        		logger.debug("Bridge for maxcube device {} not found.", maxCubeDeviceSerial);	
-        	}
-        		
-        }
-        return null;
-    }
-    
+
+	private Device getDevice() {
+		if (maxCubeDevice == null) {
+			MaxCubeBridgeHandler bridgeHandler = getMaxCubeBridgeHandler();
+			if(bridgeHandler!=null) {
+				//	maxCubeDevice = bridgeHandler.getDeviceById(maxCubeDeviceSerial);
+			} else {
+				logger.debug("Bridge for maxcube device {} not found.", maxCubeDeviceSerial);	
+			}
+
+		}
+		return null;
+	}
+
 	private void startAutomaticRefresh() {
 
 		Runnable runnable = new Runnable() {
 			public void run() {
 				try {
 					Device di = getDevice();
-					 if (di != null) {
-					  
-					//updateWeatherData();
-					updateState(new ChannelUID(getThing().getUID(), CHANNEL_VALVE), (State) new DecimalType("15"));
-					updateState(new ChannelUID(getThing().getUID(), CHANNEL_BATTERY), (State) new DecimalType("10") );
-					updateState(new ChannelUID(getThing().getUID(), CHANNEL_SETTEMP), (State) new DecimalType("125"));
-					 } else{
-						 logger.debug("maxcube device not found.. No Update");
-					 }
-					 
-					 } catch(Exception e) {
+					if (di != null) {
+
+						//updateWeatherData();
+						updateState(new ChannelUID(getThing().getUID(), CHANNEL_VALVE), (State) new DecimalType("15"));
+						updateState(new ChannelUID(getThing().getUID(), CHANNEL_BATTERY), (State) new DecimalType("10") );
+						updateState(new ChannelUID(getThing().getUID(), CHANNEL_SETTEMP), (State) new DecimalType("125"));
+					} else{
+						logger.debug("maxcube device not found.. No Update");
+					}
+
+				} catch(Exception e) {
 					logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
 				}
-			 
+
 			}
 		};
 

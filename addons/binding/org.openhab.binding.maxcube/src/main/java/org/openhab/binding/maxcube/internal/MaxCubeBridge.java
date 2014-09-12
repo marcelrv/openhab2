@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2014 openHAB UG (haftungsbeschraenkt) and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.maxcube.internal;
 
 import java.io.BufferedReader;
@@ -7,33 +14,10 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.openhab.binding.maxcube.internal.handler.MaxCubeBridgeHandler;
+import org.openhab.binding.maxcube.internal.discovery.MaxCubeDiscover;
 import org.openhab.binding.maxcube.internal.message.C_Message;
 import org.openhab.binding.maxcube.internal.message.Device;
 import org.openhab.binding.maxcube.internal.message.DeviceConfiguration;
-import org.openhab.binding.maxcube.internal.message.DeviceInformation;
-import org.openhab.binding.maxcube.internal.message.H_Message;
-import org.openhab.binding.maxcube.internal.message.L_Message;
-import org.openhab.binding.maxcube.internal.message.M_Message;
-import org.openhab.binding.maxcube.internal.message.Message;
-import org.openhab.binding.maxcube.internal.message.MessageType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
-import org.openhab.binding.maxcube.internal.Utils;
-import org.openhab.binding.maxcube.internal.message.Device;
-import org.openhab.binding.maxcube.internal.message.DeviceConfiguration;
-import org.openhab.binding.maxcube.internal.message.C_Message;
 import org.openhab.binding.maxcube.internal.message.DeviceInformation;
 import org.openhab.binding.maxcube.internal.message.H_Message;
 import org.openhab.binding.maxcube.internal.message.L_Message;
@@ -41,6 +25,14 @@ import org.openhab.binding.maxcube.internal.message.M_Message;
 import org.openhab.binding.maxcube.internal.message.Message;
 import org.openhab.binding.maxcube.internal.message.MessageType;
 import org.osgi.service.cm.ConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * The {@link MaxCubeBridge} is responsible for connecting to the Max!Cube Lan gateway and read the data for  
+ * each connected device.
+ * @author Marcel Verpaalen - Initial contribution. Based on OH1 version by Andreas Heil (info@aheil.de)
+ */
 
 public class MaxCubeBridge {
 
@@ -52,12 +44,8 @@ public class MaxCubeBridge {
 
 	/** The IP address of the MAX!Cube LAN gateway */
 	private String ipAddress;
-	
-	private boolean connectionEstablished = false;
 
-	public boolean isConnectionEstablished() {
-		return connectionEstablished;
-	}
+	private boolean connectionEstablished = false;
 
 	/**
 	 * The port of the MAX!Cube LAN gateway as provided at
@@ -76,13 +64,51 @@ public class MaxCubeBridge {
 		}
 	}
 
+	/**
+	 * Connects to the Max!Cube Lan gateway, reads and decodes the message 
+	 * this updates device information for each connected Max!Cube device
+	 */
 	public void refreshData() {
+		Message message;
+
+		for (String raw : getRawMessage()){
+
+			try {
+				logger.debug("message block: '{}'",raw);
+				message = processRawMessage(raw);
+				message.debug(logger);
+				processMessage (message);
+
+			} catch (Exception e) {
+				logger.info("Failed to process message received by MAX! protocol.");
+				logger.debug(Utils.getStackTrace(e));
+			}
+		}
+
+
+	}
+
+	/**
+	 * Connects to the Max!Cube Lan gateway and returns the read data 
+	 * corresponding Message.
+	 * 
+	 * @return the raw message text as ArrayList of String 
+	 */
+
+	private ArrayList<String> getRawMessage() {
+		//Fake a message for testing purposes
+		if (ipAddress.equals( "fakeMessage")){
+			connectionEstablished = true;
+			logger.warn("Content based on faked data!!");
+			return getRawFAKEMessage();
+		}
+		
 		Socket socket = null;
 		BufferedReader reader = null;
+		ArrayList<String> rawMessage = new ArrayList<String> () ;
 
 		try {
 			String raw = null;
-
 			socket = new Socket(ipAddress, port);
 			reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
@@ -93,43 +119,31 @@ public class MaxCubeBridge {
 					cont = false;
 					continue;
 				}
-
-				Message message;
-				try {
-					logger.debug("message block: '{}'",raw);
-					message = processRawMessage(raw);
-
-					message.debug(logger);
-					processMessage (message);
-
-				} catch (Exception e) {
-					logger.info("Failed to process message received by MAX! protocol.");
-					logger.debug(Utils.getStackTrace(e));
-				}
-
+				rawMessage.add(raw);
 				if (raw.startsWith("L:")) {
 					socket.close();
 					cont = false;
 					connectionEstablished = true;
-					
 				}
 			}
-		 } catch (ConnectException  e) {
-			 logger.debug("Connection timed out on {} port {}",ipAddress, port );
-			 connectionEstablished = false;
+		} catch (ConnectException  e) {
+			logger.debug("Connection timed out on {} port {}",ipAddress, port );
+			connectionEstablished = false;
 		} catch(Exception e) {
 			logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
 			connectionEstablished = false;
 		}
 
+		return rawMessage;
 	}
 	/**
 	 * Processes the raw TCP data read from the MAX protocol, returning the
 	 * corresponding Message.
 	 * 
 	 * @param raw
-	 *            the raw data provided read from the MAX protocol
-	 * @return the correct message for the given raw data
+	 *            the raw data line read from the MAX protocol
+	 * @return message
+	 * 				the @Message for the given raw data
 	 */
 	private Message processRawMessage(String raw) {
 
@@ -211,7 +225,7 @@ public class MaxCubeBridge {
 		}
 	}
 
-	public Device findDevice(String serialNumber, ArrayList<Device> devices) {
+	private Device findDevice(String serialNumber, ArrayList<Device> devices) {
 		for (Device device : devices) {
 			if (device.getSerialNumber().toUpperCase().equals(serialNumber)) {
 				return device;
@@ -219,7 +233,7 @@ public class MaxCubeBridge {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Discovers the MAX!CUbe LAN Gateway IP address.
 	 * 
@@ -235,7 +249,7 @@ public class MaxCubeBridge {
 		}
 		return ip;
 	}
-	
+
 	public String getIp() {
 		return ipAddress;
 	}
@@ -252,8 +266,47 @@ public class MaxCubeBridge {
 		this.port = port;
 	}
 
+	/**
+	 * Returns the MaxCube Device decoded during the last refreshData
+	 * 
+	 * @param serialNumber
+	 *            the raw data line read from the MAX protocol
+	 * @return device
+	 * 				the {@link Device} information decoded in last refreshData
+	 */
+
+	public Device getDevice(String serialNumber) {
+		return findDevice (serialNumber,devices);
+	}
+
+	/**
+	 * Returns the MaxCube Devices Array decoded during the last refresh
+	 * 
+	 * @return devices
+	 * 				the array of {@link Device} information decoded in the last refreshData
+	 */
 	public ArrayList<Device> getDevices() {
 		return devices;
 	}
 
+	/**
+	 * Returns true if the last connection to the Cube was successfull
+	 *  
+	 * @return device
+	 * 				the {@link Device} information decoded in last refreshData
+	 */
+	public boolean isConnectionEstablished() {
+		return connectionEstablished;
+	}
+
+	private ArrayList<String> getRawFAKEMessage(){ 
+		ArrayList<String> rawMessage = new ArrayList<String> () ;
+		rawMessage.add ("H:KEQ0565026,0b5951,0113,00000000,72aeba8b,03,32,0e090b,1127,03,0000");
+		rawMessage.add ("M:00,01,VgICAQhiYWRrYW1lcgsNowIMU3R1ZGVlcmthbWVyB7bnAgILDaNLRVEwNTQ0MjQyEUJhZGthbWVyIFJhZGlhdG9yAQEHtudLRVEwMTQ1MTcyFVJhZGlhdG9yIFN0dWRlZXJrYW1lcgIB");
+		rawMessage.add ("C:0b5951,7QtZUQATAf9LRVEwNTY1MDI2AQsABEAAAAAAAAAAAP///////////////////////////wsABEAAAAAAAAAAQf///////////////////////////2h0dHA6Ly9tYXguZXEtMy5kZTo4MC9jdWJlADAvbG9va3VwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAENFVAAACgADAAAOEENFU1QAAwACAAAcIA==");
+		rawMessage.add ("C:0b0da3,0gsNowIBEABLRVEwNTQ0MjQyLCQ9CQcYAzAM/wBIYViRSP1ZFE0gTSBNIEUgRSBFIEUgRSBFIEhhWJFQ/VkVUSBRIFEgRSBFIEUgRSBFIEUgSFBYWkj+WRRNIE0gTSBFIEUgRSBFIEUgRSBIUFhaSP5ZFE0gTSBNIEUgRSBFIEUgRSBFIEhQWFpI/lkUTSBNIE0gRSBFIEUgRSBFIEUgSFBYWkj+WRRNIE0gTSBFIEUgRSBFIEUgRSBIUFhaSP5ZFE0gTSBNIEUgRSBFIEUgRSBFIA==");
+		rawMessage.add ("C:07b6e7,0ge25wECGP9LRVEwMTQ1MTcyKyE9CQcYAzAM/wBEflUaRSBFIEUgRSBFIEUgRSBFIEUgRSBFIER+VRpFIEUgRSBFIEUgRSBFIEUgRSBFIEUgRFRUcEjSVRJJIEkgSSBFIEUgRSBFIEUgRSBEVFRwSNJVEkkgSSBJIEUgRSBFIEUgRSBFIERUVG9U01URSSBJIEkgRSBFIEUgRSBFIEUgRFRUcEjSVRJJIEkgSSBFIEUgRSBFIEUgRSBEVFRwSNJVEkkgSSBJIEUgRSBFIEUgRSBFIA==");
+		rawMessage.add ("L:CwsNowkSGQAJAAAACwe25wkSGWAvAAAA");
+		return rawMessage;
+	}
 }
