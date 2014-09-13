@@ -22,10 +22,15 @@ import com.google.common.collect.Lists;
 public class MaxCubeBinding {
 
 	 public static final String BINDING_ID = "maxcube";
-	    
+	   
+	 // List of main device types 
+	   public static final String DEVICE_THERMOSTAT = "thermostat";
+	   public static final String DEVICE_SWITCH = "switch";
+	 
 	    // List of all Thing Type UIDs
-	    public final static ThingTypeUID HeathingThermostat_THING_TYPE = new ThingTypeUID(BINDING_ID, "thermostat");
-
+	    public final static ThingTypeUID HEATHINGTHERMOSTAT_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_THERMOSTAT);
+	    public final static ThingTypeUID SWITCH_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_SWITCH);
+	    
 	 // List of all Thing Type UIDs
 	    public final static ThingTypeUID CubeBridge_THING_TYPE = new ThingTypeUID(BINDING_ID, "bridge");
 
@@ -37,6 +42,6 @@ public class MaxCubeBinding {
 	    public final static String CHANNEL_SETTEMP = "set_temp";
 	    
 	    public final static Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(
-	    		HeathingThermostat_THING_TYPE, CubeBridge_THING_TYPE);
+	    		HEATHINGTHERMOSTAT_THING_TYPE, CubeBridge_THING_TYPE);
 
 }

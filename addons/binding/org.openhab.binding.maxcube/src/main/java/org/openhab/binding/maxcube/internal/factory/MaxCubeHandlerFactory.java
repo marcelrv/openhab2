@@ -7,7 +7,10 @@
  */
 package org.openhab.binding.maxcube.internal.factory;
 
+import java.util.Hashtable;
+
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -17,8 +20,10 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.maxcube.MaxCubeBinding;
 import org.openhab.binding.maxcube.config.MaxCubeBridgeConfiguration;
 import org.openhab.binding.maxcube.config.MaxCubeConfiguration;
+import org.openhab.binding.maxcube.internal.discovery.MaxCubeDevicesDiscover;
 import org.openhab.binding.maxcube.internal.handler.MaxCubeBridgeHandler;
 import org.openhab.binding.maxcube.internal.handler.MaxCubeHandler;
+import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +37,8 @@ import org.slf4j.LoggerFactory;
 public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
     
 	 private Logger logger = LoggerFactory.getLogger(MaxCubeHandlerFactory.class);
+    private ServiceRegistration<?> discoveryServiceReg;
+
     
     @Override
     public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
@@ -42,7 +49,7 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
             ThingUID cubeBridgeUID = getBridgeThingUID(thingTypeUID, thingUID, configuration);
             return super.createThing(thingTypeUID, configuration, cubeBridgeUID, null);
         }
-        if (MaxCubeBinding.HeathingThermostat_THING_TYPE.equals(thingTypeUID)) {
+        if (MaxCubeBinding.HEATHINGTHERMOSTAT_THING_TYPE.equals(thingTypeUID)) {
             ThingUID thermostatUID = getThermostatUID(thingTypeUID, thingUID, configuration, bridgeUID);
              return super.createThing(thingTypeUID, configuration, thermostatUID , bridgeUID);
         }
@@ -56,6 +63,7 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
         return MaxCubeBinding.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
+  
     private ThingUID getBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID,
             Configuration configuration) {
     	logger.debug("mybridgethingie Thing supportsThingType run");
@@ -76,12 +84,34 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
         return thingUID;
     }
     
+
+    
+    private void registerDeviceDiscoveryService(MaxCubeBridgeHandler maxCubeBridgeHandler) {
+    	MaxCubeDevicesDiscover discoveryService = new MaxCubeDevicesDiscover(maxCubeBridgeHandler);
+    	discoveryService.activate();
+    	this.discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>());
+    }
+    
+    @Override
+    protected void removeHandler(ThingHandler thingHandler) {
+    	if(this.discoveryServiceReg!=null) {
+    		MaxCubeDevicesDiscover service = (MaxCubeDevicesDiscover) bundleContext.getService(discoveryServiceReg.getReference());
+    		service.deactivate();
+    		discoveryServiceReg.unregister();
+    		discoveryServiceReg = null;
+    	}
+    }
+    
     @Override
     protected ThingHandler createHandler(Thing thing) {
     	logger.debug("ThingHandler createHandler run");
         if (thing.getThingTypeUID().equals(MaxCubeBinding.CubeBridge_THING_TYPE)) {
-            return new MaxCubeBridgeHandler((Bridge) thing);
-        } else if (thing.getThingTypeUID().equals(MaxCubeBinding.HeathingThermostat_THING_TYPE)) {
+            MaxCubeBridgeHandler handler = new MaxCubeBridgeHandler((Bridge) thing);
+  //TODO: FIX
+            //          registerDeviceDiscoveryService(handler);
+            return handler;
+
+        } else if (thing.getThingTypeUID().equals(MaxCubeBinding.HEATHINGTHERMOSTAT_THING_TYPE)) {
             return new MaxCubeHandler(thing);
         } else {
         	logger.debug("ThingHandler createHandler return null");

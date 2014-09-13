@@ -57,6 +57,7 @@ public class MaxCubeBridge {
 		this.ipAddress = ipAddress;
 		if (ipAddress == null) {
 			try {
+				logger.info("Discover Max!Cube Lan interface.");
 				this.ipAddress = discoveryGatewayIp();
 			} catch (ConfigurationException e) {
 				logger.warn("Cannot discover to Max!Cube Lan interface. Configure manually.");

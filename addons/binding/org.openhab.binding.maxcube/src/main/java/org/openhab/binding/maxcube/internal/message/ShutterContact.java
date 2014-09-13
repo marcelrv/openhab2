@@ -10,7 +10,7 @@ package org.openhab.binding.maxcube.internal.message;
 
 import java.util.Calendar;
 
-import org.openhab.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 
 /**
  * MAX!Cube Shutter contact device.

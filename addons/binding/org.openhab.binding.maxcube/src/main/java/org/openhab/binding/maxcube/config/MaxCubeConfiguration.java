@@ -20,6 +20,8 @@ public class MaxCubeConfiguration {
 
 	public static final String SERIAL_NUMBER = "serialNumber";
 	public static final String RFADDRESS = "rfAddress";
+	public static final String FRIENDLY_NAME = "friendlyName";
+
 
 	/** The unique serial number for a device */
 	public String serialNumber;
