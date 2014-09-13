@@ -15,7 +15,7 @@ import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.util.Enumeration;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
 
 import org.openhab.binding.maxcube.config.MaxCubeBridgeConfiguration;
 import org.openhab.binding.maxcube.config.MaxCubeConfiguration;
@@ -36,7 +36,7 @@ public final class MaxCubeDiscover {
 	* @return if the cube is found, returns the IP address as a string. Otherwise returns null
 	*/
 	public final static String discoverIp () {
-		ConcurrentHashMap<String, String > discoverResults = new ConcurrentHashMap<String, String>(DiscoverCube());
+		HashMap<String, String > discoverResults = new HashMap<String, String>(DiscoverCube());
 		if (discoverResults.containsKey(MaxCubeBridgeConfiguration.IP_ADDRESS)){
 			return discoverResults.get(MaxCubeBridgeConfiguration.IP_ADDRESS);
 		} else {
@@ -46,15 +46,15 @@ public final class MaxCubeDiscover {
 	
 	/**
 	* Automatic UDP discovery of a MAX!Cube
-	* @return if the cube is found, returns the ConcurrentHashMap containing the details.
+	* @return if the cube is found, returns the HashMap containing the details.
 	*/
-	public final static ConcurrentHashMap<String, String > DiscoverCube() {
+	public final static HashMap<String, String > DiscoverCube() {
 		
-		ConcurrentHashMap<String, String > discoverResults = new ConcurrentHashMap<String, String>();
+		HashMap<String, String > discoverResults = new HashMap<String, String>();
 		
 		String maxCubeIP = null;
 		String maxCubeName = null;
-		String rfAddress = null;
+		String serialNumber = null;
 		
 		Logger logger = LoggerFactory.getLogger(MaxCubeDiscover.class);
 		
@@ -98,7 +98,7 @@ public final class MaxCubeDiscover {
 
 		DatagramSocket bcReceipt = new DatagramSocket(23272);
 		bcReceipt.setReuseAddress(true);
-
+		bcReceipt.setSoTimeout(10000);
 		//Wait for a response
 		byte[] recvBuf = new byte[15000];
 		DatagramPacket receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
@@ -118,10 +118,10 @@ public final class MaxCubeDiscover {
 			
 			maxCubeIP=receivePacket.getAddress().getHostAddress();
 			maxCubeName=message.substring(0, 8);
-			rfAddress=message.substring(8, 18);
+			serialNumber=message.substring(8, 18);
 			logger.debug("Found at: {}", maxCubeIP);
 			logger.debug("Name    : {}", maxCubeName);
-			logger.debug("Serial  : {}", rfAddress);
+			logger.debug("Serial  : {}", serialNumber);
 			logger.trace("Message : {}", message);
 			
 		} else {
@@ -133,8 +133,8 @@ public final class MaxCubeDiscover {
 		}
 		
 		discoverResults.put(MaxCubeBridgeConfiguration.IP_ADDRESS, maxCubeIP);
-		discoverResults.put(MaxCubeConfiguration.SERIAL_NUMBER, maxCubeName);
-		discoverResults.put(MaxCubeConfiguration.RFADDRESS, rfAddress);
+		discoverResults.put(MaxCubeConfiguration.FRIENDLY_NAME, maxCubeName);
+		discoverResults.put(MaxCubeConfiguration.SERIAL_NUMBER, serialNumber);
 		return discoverResults;
 	}
 }

@@ -13,8 +13,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.openhab.binding.maxcube.internal.Utils;
-import org.openhab.core.library.types.OpenClosedType;
-import org.openhab.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

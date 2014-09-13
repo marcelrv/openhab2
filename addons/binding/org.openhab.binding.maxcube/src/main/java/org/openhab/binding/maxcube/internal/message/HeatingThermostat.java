@@ -11,9 +11,9 @@ package org.openhab.binding.maxcube.internal.message;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.StringType;
-import org.openhab.core.types.State;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.types.State;
 
 /**
  * MAX!Cube heating thermostat.

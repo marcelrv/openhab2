@@ -7,19 +7,17 @@
  */
 package org.openhab.binding.maxcube.internal.handler;
 
-import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_BATTERY;
-import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_SETTEMP;
-import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_VALVE;
+import static org.openhab.binding.maxcube.MaxCubeBinding.*;
 
-import java.util.ArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -28,6 +26,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.maxcube.config.MaxCubeConfiguration;
 import org.openhab.binding.maxcube.internal.MaxCubeBridge;
 import org.openhab.binding.maxcube.internal.message.Device;
+import org.openhab.binding.maxcube.internal.message.HeatingThermostat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,9 +36,8 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Marcel Verpaalen - Initial contribution
  */
-public class MaxCubeHandler extends BaseThingHandler {
+public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusListener {
 
-	private String serialnr;
 	private Logger logger = LoggerFactory.getLogger(MaxCubeHandler.class);
 	private int refresh = 60; // refresh every minute as default 
 	ScheduledFuture<?> refreshJob;
@@ -115,12 +113,16 @@ public class MaxCubeHandler extends BaseThingHandler {
 		if(this.bridgeHandler==null) {
 			Bridge bridge = getBridge();
 			if (bridge == null) {
-				return null;
+				//TODO: FIX THIS!!
+				//			Collection<Thing> thingRegistry = ThingRegistry.getAll();
+				logger.debug("maxCube LAN gateway bridge not assigned. registering automatically.");
+				bridge = (Bridge) thingRegistry.getByUID(new ThingUID ("maxcube:bridge:br2")) ;
+				getThing().setBridgeUID (new ThingUID ("maxcube:bridge:br2")) ;
 			}
 			ThingHandler handler = bridge.getHandler();
 			if (handler instanceof MaxCubeBridgeHandler) {
 				this.bridgeHandler = (MaxCubeBridgeHandler) handler;
-				//        	this.bridgeHandler.registerDeviceStatusListener(this);
+				this.bridgeHandler.registerDeviceStatusListener(this);
 			} else {
 				return null;
 			}
@@ -142,5 +144,44 @@ public class MaxCubeHandler extends BaseThingHandler {
 		else {
 			logger.warn("Setting of channel {} not possible. Read-only", channelUID);
 		}
+	}
+
+	@Override
+	public void onDeviceStateChanged(MaxCubeBridge bridge, Device device) {
+
+		if (device.getSerialNumber().equals (maxCubeDeviceSerial) ){
+			
+			logger.debug("Updating states of {} ({}) id: {}", device.getType(), device.getSerialNumber(), getThing().getUID()  );
+			switch (device.getType()) {
+			case WallMountedThermostat:
+			case HeatingThermostat:
+			case HeatingThermostatPlus:
+				updateState(new ChannelUID(getThing().getUID(), CHANNEL_SETTEMP), (State) ( (HeatingThermostat) device).getTemperatureSetpoint());
+				updateState(new ChannelUID(getThing().getUID(), CHANNEL_ACTUALTEMP), (State) ( (HeatingThermostat) device).getTemperatureActual());
+				updateState(new ChannelUID(getThing().getUID(), CHANNEL_MODE), (State) ( (HeatingThermostat) device).getModeString());
+				updateState(new ChannelUID(getThing().getUID(), CHANNEL_BATTERY), (State) ( (HeatingThermostat) device).getBatteryLow());
+				updateState(new ChannelUID(getThing().getUID(), CHANNEL_VALVE), (State) ( (HeatingThermostat) device).getValvePosition());
+				break;
+			case ShutterContact:
+			case EcoSwitch:
+				updateState(new ChannelUID(getThing().getUID(), CHANNEL_BATTERY), (State) ( (HeatingThermostat) device).getBatteryLow());
+			default:
+				logger.debug("Unhandled Device {}.",device.getType());
+				break;
+
+			}}
+
+	}
+
+	@Override
+	public void onDeviceRemoved(MaxCubeBridge bridge, Device device) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onDeviceAdded(MaxCubeBridge bridge, Device device) {
+		// TODO Auto-generated method stub
+
 	}
 }

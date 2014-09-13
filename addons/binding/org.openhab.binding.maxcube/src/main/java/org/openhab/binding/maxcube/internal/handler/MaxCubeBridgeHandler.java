@@ -9,20 +9,32 @@ package org.openhab.binding.maxcube.internal.handler;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.smarthome.config.discovery.DiscoveryResult;
+import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.maxcube.MaxCubeBinding;
 import org.openhab.binding.maxcube.config.MaxCubeBridgeConfiguration;
 import org.openhab.binding.maxcube.internal.MaxCubeBridge;
+import org.openhab.binding.maxcube.internal.discovery.MaxCubeBridgeDiscovery;
 import org.openhab.binding.maxcube.internal.message.Device;
 import org.openhab.binding.maxcube.internal.message.DeviceConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
  * {@link MaxCubeBridgeHandler} is the handler for a MaxCube Cube and connects it to
@@ -34,6 +46,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 
+	private static boolean ini = true; 
 	private MaxCubeBridge bridge = null;
 
 	public MaxCubeBridgeHandler(Bridge br) {
@@ -50,6 +63,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	private ArrayList<Device> devices = new ArrayList<Device>();
 
 	private boolean previousOnline = true;
+
+    private List<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArrayList<>();
 
 	@Override
 	public void handleCommand(ChannelUID channelUID, Command command) {
@@ -69,6 +84,10 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 		logger.debug("Initializing MaxCube bridge handler.");
 
 		MaxCubeBridgeConfiguration configuration = getConfigAs(MaxCubeBridgeConfiguration.class);
+
+	//	MaxCubeBridgeDiscovery test = new MaxCubeBridgeDiscovery (ImmutableSet.copyOf(new ThingTypeUID[] { MaxCubeBinding.CubeBridge_THING_TYPE }),10);
+	//	test.startScan();
+		
 		initializeBridge();
 
 		if (configuration.refreshInterval != 0) {
@@ -104,6 +123,27 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 							}
 							//process stuff
 							devices = bridge.getDevices();
+							for (Device di : devices){
+								
+								//if (ini) {
+									
+								  for (DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
+	                                    try {
+	                                    	  logger.debug ("Adding DeviceStatusListener");
+	                                        deviceStatusListener.onDeviceStateChanged(bridge, di);
+	                                        deviceStatusListener.onDeviceAdded(bridge, di);
+	                                        ini = false;
+	                                    } catch (Exception e) {
+	                                        logger.error(
+	                                                "An exception occurred while calling the DeviceStatusListener", e);
+	                                    }
+	                          //      }
+							
+							}
+							}
+							
+							
+							
 							logger.debug("Devices {}", devices);
 						} else {
 							if (previousOnline) onConnectionLost (bridge);
@@ -136,7 +176,48 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 		this.bridge = bridge;
 		updateStatus(ThingStatus.ONLINE);
 	}
+
+	public boolean registerDeviceStatusListener(DeviceStatusListener deviceStatusListener) {
+        if (deviceStatusListener == null) {
+            throw new NullPointerException("It's not allowed to pass a null LightStatusListener.");
+        }
+        boolean result = deviceStatusListeners.add(deviceStatusListener);
+        if (result) {
+           // onUpdate();
+        }
+        return result;
+    }
+
+    public boolean unregisterDeviceStatusListener(DeviceStatusListener deviceStatusListener) {
+        boolean result = deviceStatusListeners.remove(deviceStatusListener);
+        if (result) {
+         //   onUpdate();
+        }
+        return result;
+    }
 }
+	/*
+public void onLightAdded(MaxCubeBridge bridge, String  rfID) {
+		
+		ThingUID thingUID = rfID ; //getThingUID(rfID);
+		if(thingUID!=null) {
+			ThingUID bridgeUID = "br";  //MaxCubeBridgeHandler.getThing().getUID();
+	        Map<String, Object> properties = new HashMap<>(1);
+	        properties.put( "thermostat" , rfID);
+	        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
+	        		.withProperties(properties)
+	        		.withBridge(bridgeUID)
+	        		.withLabel(rfID)
+	        		.build();
+	        
+	        thingDiscovered(discoveryResult);
+		} else {
+			logger.debug("EERRROOORRRf type '{}' with id {}", rfID.getModelID(), rfID.getId());
+		}
+	}
+*/
+
+	
 
 /*
 	private Device findThing(String serialNumber) {

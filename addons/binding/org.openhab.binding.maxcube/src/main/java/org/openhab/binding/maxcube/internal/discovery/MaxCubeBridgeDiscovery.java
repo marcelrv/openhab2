@@ -10,11 +10,13 @@ package org.openhab.binding.maxcube.internal.discovery;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
+import org.eclipse.smarthome.config.discovery.DiscoveryListener;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.config.discovery.ScanListener;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.maxcube.MaxCubeBinding;
@@ -31,13 +33,8 @@ import com.google.common.collect.ImmutableSet;
  * @author Marcel Verpaalen - Initial contribution
  * 
  */
-public class MaxCubeBridgeDiscovery  extends AbstractDiscoveryService {
+public class MaxCubeBridgeDiscovery   implements DiscoveryService {
 
-	public MaxCubeBridgeDiscovery(Set<ThingTypeUID> supportedThingTypes,
-			int timeout) throws IllegalArgumentException {
-		super(supportedThingTypes, timeout);
-		// TODO Auto-generated constructor stub
-	}
 
 	@Override
 	public Set<ThingTypeUID> getSupportedThingTypes() {
@@ -47,11 +44,13 @@ public class MaxCubeBridgeDiscovery  extends AbstractDiscoveryService {
 
 	public DiscoveryResult createCubeResult() {
 		String cubeSerialNumber = null;
-		ConcurrentHashMap<String, String > discoverResults = new ConcurrentHashMap<String, String>(MaxCubeDiscover.DiscoverCube());
+		
+		HashMap<String, String > discoverResults = new HashMap<String, String>(MaxCubeDiscover.DiscoverCube());
 		if (discoverResults.containsKey(MaxCubeConfiguration.SERIAL_NUMBER)){
 			cubeSerialNumber = discoverResults.get(MaxCubeConfiguration.SERIAL_NUMBER);
 		}
 
+		
 		if(cubeSerialNumber!=null) {
 
 			ThingUID uid = new ThingUID( MaxCubeBinding.CubeBridge_THING_TYPE, "MaxCube_" + cubeSerialNumber);
@@ -69,10 +68,62 @@ public class MaxCubeBridgeDiscovery  extends AbstractDiscoveryService {
 	}
 
 
-	@Override
-	protected void startScan() {
+	
+	public void startScan() {
 		DiscoveryResult newCube = createCubeResult();
-		thingDiscovered (newCube);
+		//thingDiscovered (newCube);
 	}
 
-}
+
+	@Override
+	public int getScanTimeout() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
+	@Override
+	public void setBackgroundDiscoveryEnabled(boolean enabled) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public boolean isBackgroundDiscoveryEnabled() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Override
+	public void startScan(ScanListener listener) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void abortScan() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void addDiscoveryListener(DiscoveryListener listener) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void removeDiscoveryListener(DiscoveryListener listener) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
+		
+	}
+

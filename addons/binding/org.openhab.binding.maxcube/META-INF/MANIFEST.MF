@@ -16,6 +16,7 @@ Import-Package: com.google.common.collect,
  org.eclipse.smarthome.core.types,
  org.openhab.core.library.types,
  org.openhab.core.types,
+ org.osgi.framework;version="1.8.0",
  org.slf4j
 Service-Component: OSGI-INF/*
 Export-Package: org.openhab.binding.maxcube,
