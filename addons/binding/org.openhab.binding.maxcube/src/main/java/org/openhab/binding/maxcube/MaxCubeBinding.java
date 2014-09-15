@@ -8,9 +8,11 @@
 package org.openhab.binding.maxcube;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
 /**
@@ -44,4 +46,10 @@ public class MaxCubeBinding {
 	    public final static Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(
 	    		HEATHINGTHERMOSTAT_THING_TYPE, CubeBridge_THING_TYPE);
 
+	    public final static Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS =ImmutableSet.of(
+	    		HEATHINGTHERMOSTAT_THING_TYPE,SWITCH_THING_TYPE);
+	    
+
+	    public final static Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS =ImmutableSet.of(
+	    		CubeBridge_THING_TYPE);
 }

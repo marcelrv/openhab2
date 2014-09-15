@@ -108,7 +108,7 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
         if (thing.getThingTypeUID().equals(MaxCubeBinding.CubeBridge_THING_TYPE)) {
             MaxCubeBridgeHandler handler = new MaxCubeBridgeHandler((Bridge) thing);
   //TODO: FIX
-            //          registerDeviceDiscoveryService(handler);
+            registerDeviceDiscoveryService(handler);
             return handler;
 
         } else if (thing.getThingTypeUID().equals(MaxCubeBinding.HEATHINGTHERMOSTAT_THING_TYPE)) {
