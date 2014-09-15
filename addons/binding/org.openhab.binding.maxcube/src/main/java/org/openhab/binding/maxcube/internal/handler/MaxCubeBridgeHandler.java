@@ -85,8 +85,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 
 		MaxCubeBridgeConfiguration configuration = getConfigAs(MaxCubeBridgeConfiguration.class);
 
-	//	MaxCubeBridgeDiscovery test = new MaxCubeBridgeDiscovery (ImmutableSet.copyOf(new ThingTypeUID[] { MaxCubeBinding.CubeBridge_THING_TYPE }),10);
-	//	test.startScan();
+		MaxCubeBridgeDiscovery test = new MaxCubeBridgeDiscovery ();
+	 	test.startScan();
 		
 		initializeBridge();
 
@@ -122,6 +122,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 								previousOnline = bridge.isConnectionEstablished();
 							}
 							//process stuff
+							//TODO: FIX THIS
 							devices = bridge.getDevices();
 							for (Device di : devices){
 								
@@ -141,10 +142,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 							
 							}
 							}
-							
-							
-							
-							logger.debug("Devices {}", devices);
+						
 						} else {
 							if (previousOnline) onConnectionLost (bridge);
 							initializeBridge() ;

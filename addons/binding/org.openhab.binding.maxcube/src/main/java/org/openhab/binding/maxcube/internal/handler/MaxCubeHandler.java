@@ -9,11 +9,14 @@ package org.openhab.binding.maxcube.internal.handler;
 
 import static org.openhab.binding.maxcube.MaxCubeBinding.*;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
-
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -64,8 +67,8 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 			logger.debug("Initialized maxcube device missing serialNumber configuration... troubles ahead");
 		}
 
-		//testing only: fake updates
-		startAutomaticRefresh();
+		//TODO:  ?? Check if an item is receiving updates. If not, put status to OFFLINE
+		//deviceOnlineWatchdog();
 	}
 
 
@@ -82,21 +85,11 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 		return null;
 	}
 
-	private void startAutomaticRefresh() {
-
+	private void deviceOnlineWatchdog() {
 		Runnable runnable = new Runnable() {
 			public void run() {
 				try {
-					Device di = getDevice();
-					if (di != null) {
-
-						//updateWeatherData();
-						updateState(new ChannelUID(getThing().getUID(), CHANNEL_VALVE), (State) new DecimalType("15"));
-						updateState(new ChannelUID(getThing().getUID(), CHANNEL_BATTERY), (State) new DecimalType("10") );
-						updateState(new ChannelUID(getThing().getUID(), CHANNEL_SETTEMP), (State) new DecimalType("125"));
-					} else{
-						logger.debug("maxcube device not found.. No Update");
-					}
+					//TODO:  ?? Check if an item is receiving updates. If not, put status to OFFLINE
 
 				} catch(Exception e) {
 					logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
@@ -110,14 +103,24 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 
 
 	private synchronized MaxCubeBridgeHandler getMaxCubeBridgeHandler() {
+
 		if(this.bridgeHandler==null) {
 			Bridge bridge = getBridge();
 			if (bridge == null) {
-				//TODO: FIX THIS!!
-				//			Collection<Thing> thingRegistry = ThingRegistry.getAll();
-				logger.debug("maxCube LAN gateway bridge not assigned. registering automatically.");
-				bridge = (Bridge) thingRegistry.getByUID(new ThingUID ("maxcube:bridge:br2")) ;
-				getThing().setBridgeUID (new ThingUID ("maxcube:bridge:br2")) ;
+				//no bridge is assigned to the device, will register it to all maxcube bridges
+				ArrayList<Bridge> maxCubeBridges = new ArrayList<Bridge>();
+				Collection<Thing> allThings = thingRegistry.getAll();
+					for ( Thing br : allThings ){
+						if (br instanceof  Bridge){
+							if (br.getHandler() instanceof MaxCubeBridgeHandler) maxCubeBridges.add ((Bridge) br);
+						}
+					}
+				 	
+					if (!(maxCubeBridges.isEmpty())) bridge = maxCubeBridges.get(0);
+			
+				logger.debug("maxCube LAN gateway bridge not assigned. registering automatically to {}." , bridge.getUID() );
+			//	bridge = (Bridge) thingRegistry.getByUID(new ThingUID ("maxcube:bridge:br2")) ;
+			//	getThing().setBridgeUID (new ThingUID ("maxcube:bridge:br2")) ;
 			}
 			ThingHandler handler = bridge.getHandler();
 			if (handler instanceof MaxCubeBridgeHandler) {
@@ -150,7 +153,6 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 	public void onDeviceStateChanged(MaxCubeBridge bridge, Device device) {
 
 		if (device.getSerialNumber().equals (maxCubeDeviceSerial) ){
-			
 			logger.debug("Updating states of {} ({}) id: {}", device.getType(), device.getSerialNumber(), getThing().getUID()  );
 			switch (device.getType()) {
 			case WallMountedThermostat:

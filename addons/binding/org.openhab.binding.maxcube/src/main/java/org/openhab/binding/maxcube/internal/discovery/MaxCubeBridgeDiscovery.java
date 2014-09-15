@@ -33,16 +33,26 @@ import com.google.common.collect.ImmutableSet;
  * @author Marcel Verpaalen - Initial contribution
  * 
  */
-public class MaxCubeBridgeDiscovery   implements DiscoveryService {
+public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService  {
 
 
 	@Override
-	public Set<ThingTypeUID> getSupportedThingTypes() {
-		return ImmutableSet.copyOf(new ThingTypeUID[] { MaxCubeBinding.CubeBridge_THING_TYPE });
+	protected void activate() {
+		super.activate();
+		discoverCube();
 	}
 
+	public MaxCubeBridgeDiscovery() {
+		super(MaxCubeBinding.SUPPORTED_BRIDGE_THING_TYPES_UIDS,10,false);
+	
+	}
 
-	public DiscoveryResult createCubeResult() {
+	@Override
+	public Set<ThingTypeUID> getSupportedThingTypes() {
+		return MaxCubeBinding.SUPPORTED_BRIDGE_THING_TYPES_UIDS;
+	}
+
+	private void discoverCube() {
 		String cubeSerialNumber = null;
 		
 		HashMap<String, String > discoverResults = new HashMap<String, String>(MaxCubeDiscover.DiscoverCube());
@@ -61,69 +71,22 @@ public class MaxCubeBridgeDiscovery   implements DiscoveryService {
 						.withProperties(properties)
 						.withLabel("MaxCube LAN Gateway")
 						.build();
-				return result;
+				thingDiscovered (result);
 			} 
 		}	
-		return null;
 	}
-
 
 	
 	public void startScan() {
-		DiscoveryResult newCube = createCubeResult();
-		//thingDiscovered (newCube);
-	}
-
-
-	@Override
-	public int getScanTimeout() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-
-	@Override
-	public void setBackgroundDiscoveryEnabled(boolean enabled) {
-		// TODO Auto-generated method stub
-		
+		discoverCube();
 	}
 
 
 	@Override
 	public boolean isBackgroundDiscoveryEnabled() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 
-	@Override
-	public void startScan(ScanListener listener) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	@Override
-	public void abortScan() {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	@Override
-	public void addDiscoveryListener(DiscoveryListener listener) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	@Override
-	public void removeDiscoveryListener(DiscoveryListener listener) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	
-		
 	}
 
