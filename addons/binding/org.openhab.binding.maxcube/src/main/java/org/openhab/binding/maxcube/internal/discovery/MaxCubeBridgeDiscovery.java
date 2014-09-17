@@ -47,7 +47,6 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService  {
 	}
 
 	public MaxCubeBridgeDiscovery() {
-		//super(MaxCubeBinding.SUPPORTED_BRIDGE_THING_TYPES_UIDS,10,false);
 		super(10);
 	
 	}

@@ -9,24 +9,18 @@ package org.openhab.binding.maxcube.internal.handler;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.smarthome.config.discovery.DiscoveryResult;
-import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.maxcube.MaxCubeBinding;
 import org.openhab.binding.maxcube.config.MaxCubeBridgeConfiguration;
 import org.openhab.binding.maxcube.internal.MaxCubeBridge;
 import org.openhab.binding.maxcube.internal.discovery.MaxCubeBridgeDiscovery;
@@ -34,8 +28,6 @@ import org.openhab.binding.maxcube.internal.message.Device;
 import org.openhab.binding.maxcube.internal.message.DeviceConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * {@link MaxCubeBridgeHandler} is the handler for a MaxCube Cube and connects it to
@@ -47,7 +39,6 @@ import com.google.common.collect.ImmutableSet;
  */
 public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 
-	private static boolean ini = true; 
 	private MaxCubeBridge bridge = null;
 
 	public MaxCubeBridgeHandler(Bridge br) {
@@ -60,7 +51,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	private long refreshInterval = 10000;
 	ScheduledFuture<?> refreshJob;
 
-	private ArrayList<DeviceConfiguration> configurations = new ArrayList<DeviceConfiguration>();
 	private ArrayList<Device> devices = new ArrayList<Device>();
 	private HashSet<String>  lastActiveDevices = new HashSet<String>();
 
@@ -189,7 +179,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 
 	public boolean registerDeviceStatusListener(DeviceStatusListener deviceStatusListener) {
 		if (deviceStatusListener == null) {
-			throw new NullPointerException("It's not allowed to pass a null LightStatusListener.");
+			throw new NullPointerException("It's not allowed to pass a null deviceStatusListener.");
 		}
 		boolean result = deviceStatusListeners.add(deviceStatusListener);
 		if (result) {
@@ -205,6 +195,30 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 		}
 		return result;
 	}
+
+
+	/**
+	 * Processes device command and sends it to the MAX!Cube Lan Gateway.
+	 * 
+	 * @param serialNumber
+	 *            the serial number of the device as String
+	 * @param channelUID
+	 *            the ChannelUID used to send the command
+	 * @param command
+	 *            the command data
+	 */
+	public void processCommand(String serialNumber, ChannelUID channelUID,
+			Command command) {
+		logger.warn("Setting of temp not implemented.");
+		if (bridge !=null){
+			bridge.processCommand (serialNumber,channelUID,command);
+		} else{
+			logger.warn("Bridge not connected. Cannot set send command.");
+		}
+
+
+	}
+
 
 }
 

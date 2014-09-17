@@ -7,13 +7,24 @@
  */
 package org.openhab.binding.maxcube.internal;
 
+import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_SETTEMP;
+import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_MODE;
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ConnectException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.maxcube.internal.discovery.MaxCubeDiscover;
 import org.openhab.binding.maxcube.internal.message.C_Message;
 import org.openhab.binding.maxcube.internal.message.Device;
@@ -24,6 +35,8 @@ import org.openhab.binding.maxcube.internal.message.L_Message;
 import org.openhab.binding.maxcube.internal.message.M_Message;
 import org.openhab.binding.maxcube.internal.message.Message;
 import org.openhab.binding.maxcube.internal.message.MessageType;
+import org.openhab.binding.maxcube.internal.message.S_Command;
+import org.openhab.binding.maxcube.internal.message.ThermostatModeType;
 import org.osgi.service.cm.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +48,12 @@ import org.slf4j.LoggerFactory;
  */
 
 public class MaxCubeBridge {
+
+	/** MaxCube's default off temperature */
+	private static final DecimalType DEFAULT_OFF_TEMPERATURE = new DecimalType(4.5);
+
+	/** MaxCubes default on temperature */
+	private static final DecimalType DEFAULT_ON_TEMPERATURE = new DecimalType(30.5);
 
 	private ArrayList<DeviceConfiguration> configurations = new ArrayList<DeviceConfiguration>();
 	private ArrayList<Device> devices = new ArrayList<Device>();
@@ -103,7 +122,7 @@ public class MaxCubeBridge {
 			logger.warn("Content based on faked data!!");
 			return getRawFAKEMessage();
 		}
-		
+
 		Socket socket = null;
 		BufferedReader reader = null;
 		ArrayList<String> rawMessage = new ArrayList<String> () ;
@@ -271,7 +290,7 @@ public class MaxCubeBridge {
 	 * Returns the MaxCube Device decoded during the last refreshData
 	 * 
 	 * @param serialNumber
-	 *            the raw data line read from the MAX protocol
+	 *            the serial number of the device as String
 	 * @return device
 	 * 				the {@link Device} information decoded in last refreshData
 	 */
@@ -299,6 +318,88 @@ public class MaxCubeBridge {
 	public boolean isConnectionEstablished() {
 		return connectionEstablished;
 	}
+
+	/**
+	 * Processes device command and sends it to the MAX!Cube Lan Gateway.
+	 * 
+	 * @param serialNumber
+	 *            the serial number of the device as String
+	 * @param channelUID
+	 *            the ChannelUID used to send the command
+	 * @param command
+	 *            the command data
+	 */
+	public void processCommand(String serialNumber, ChannelUID channelUID,
+			Command command) {
+
+		// send command to MAX!Cube LAN Gateway
+		Device device = findDevice(serialNumber, devices);
+
+		if (device == null) {
+			logger.debug("Cannot send command to device with serial number {}, device not listed.", serialNumber);
+			return;
+		}
+
+		String rfAddress = device.getRFAddress();
+		String commandString = null;
+
+		//Temperature setting
+		if(channelUID.getId().equals(CHANNEL_SETTEMP)) {
+
+			if (command instanceof DecimalType || command instanceof OnOffType) {
+				DecimalType decimalType = DEFAULT_OFF_TEMPERATURE;
+				if (command instanceof DecimalType) {
+					decimalType = (DecimalType) command;
+				} else if (command instanceof OnOffType) {
+					decimalType = OnOffType.ON.equals(command) ? DEFAULT_ON_TEMPERATURE : DEFAULT_OFF_TEMPERATURE;
+				}
+
+				S_Command cmd = new S_Command(rfAddress, device.getRoomId(), decimalType.doubleValue());
+				commandString = cmd.getCommandString();
+			} 
+		//Mode setting
+		} else if(channelUID.getId().equals(CHANNEL_MODE)) {
+			if (command instanceof StringType) {
+				String commandContent = command.toString().trim().toUpperCase();
+				ThermostatModeType commandThermoType = null;
+				if (commandContent.contentEquals(ThermostatModeType.AUTOMATIC.toString())) {
+					commandThermoType = ThermostatModeType.AUTOMATIC;
+				} else if (commandContent.contentEquals(ThermostatModeType.BOOST.toString())) {
+					commandThermoType = ThermostatModeType.BOOST;
+				} else {
+					logger.debug("Only updates to AUTOMATIC & BOOST supported, received value ;'{}'", commandContent);
+					return;
+				}
+				S_Command cmd = new S_Command(rfAddress, device.getRoomId(), commandThermoType);
+				commandString = cmd.getCommandString();
+			}	
+		}
+
+		if (commandString != null) {
+			Socket socket = null;
+			try {
+				socket = new Socket(ipAddress, port);
+				DataOutputStream stream = new DataOutputStream(socket.getOutputStream());
+
+				byte[] b = commandString.getBytes();
+				stream.write(b);
+				socket.close();
+
+			} catch (UnknownHostException e) {
+				logger.warn("Cannot establish connection with MAX!cube lan gateway while sending command to '{}'", ipAddress);
+				logger.debug(Utils.getStackTrace(e));
+			} catch (IOException e) {
+				logger.warn("Cannot write data from MAX!Cube lan gateway while connecting to '{}'", ipAddress);
+				logger.debug(Utils.getStackTrace(e));
+			}
+			logger.debug("Command Sent to {}", ipAddress);
+		} else {
+			logger.debug("Null Command not sent to {}", ipAddress);
+		}
+	}
+
+
+
 
 	private ArrayList<String> getRawFAKEMessage(){ 
 		ArrayList<String> rawMessage = new ArrayList<String> () ;
