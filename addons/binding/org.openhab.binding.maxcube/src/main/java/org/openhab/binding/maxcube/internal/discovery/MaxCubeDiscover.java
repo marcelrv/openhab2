@@ -31,6 +31,8 @@ import org.slf4j.LoggerFactory;
 */
 public final class MaxCubeDiscover {
 
+	static Logger logger = LoggerFactory.getLogger(MaxCubeDiscover.class);
+	
 	/**
 	* Automatic UDP discovery of a MAX!Cube
 	* @return if the cube is found, returns the IP address as a string. Otherwise returns null
@@ -48,19 +50,17 @@ public final class MaxCubeDiscover {
 	* Automatic UDP discovery of a MAX!Cube
 	* @return if the cube is found, returns the HashMap containing the details.
 	*/
-	public synchronized  final static HashMap<String, String > DiscoverCube() {
+	public synchronized final static HashMap<String, String > DiscoverCube() {
 		
 		HashMap<String, String > discoverResults = new HashMap<String, String>();
-		
 		String maxCubeIP = null;
 		String maxCubeName = null;
 		String serialNumber = null;
 		
-		Logger logger = LoggerFactory.getLogger(MaxCubeDiscover.class);
-		
+		DatagramSocket bcSend = null;
 		//Find the MaxCube using UDP broadcast
 		try {
-			DatagramSocket bcSend = new DatagramSocket();
+			bcSend = new DatagramSocket();
 			bcSend.setBroadcast(true);
 
 			byte[] sendData = "eQ3Max*\0**********I".getBytes();
@@ -95,10 +95,19 @@ public final class MaxCubeDiscover {
 			}
 		}
 
-		logger.debug( "Done looping over all network interfaces. Now waiting for a reply!");
-		bcSend.close();
+		} catch (IOException ex) {
+			logger.debug(ex.toString());
+		}
+		try {
+			bcSend.close();
+		} catch (Exception e) {
+			logger.debug(e.toString());
+		}
 
-		DatagramSocket bcReceipt = new DatagramSocket(23272);
+		logger.debug( "Done looping over all network interfaces. Now waiting for a reply!");
+		DatagramSocket bcReceipt = null;
+		try{
+		bcReceipt = new DatagramSocket(23272);
 		bcReceipt.setReuseAddress(true);
 		bcReceipt.setSoTimeout(10000);
 		//Wait for a response
@@ -106,18 +115,12 @@ public final class MaxCubeDiscover {
 		DatagramPacket receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
 		bcReceipt.receive(receivePacket);
 
-
 		//We have a response
 		logger.trace( "Broadcast response from server: {}", receivePacket.getAddress());
 
 		//Check if the message is correct
 		String message = new String(receivePacket.getData()).trim();
-
-		//Close the port!
-		bcReceipt.close();
-		
 		if (message.startsWith("eQ3Max")) {
-			
 			maxCubeIP=receivePacket.getAddress().getHostAddress();
 			maxCubeName=message.substring(0, 8);
 			serialNumber=message.substring(8, 18);
@@ -134,6 +137,12 @@ public final class MaxCubeDiscover {
 			logger.debug(ex.toString());
 		}
 		
+		try {
+			//Close the port!
+			bcReceipt.close();
+		} catch (Exception e) {
+			// ignore error
+		}
 		discoverResults.put(MaxCubeBridgeConfiguration.IP_ADDRESS, maxCubeIP);
 		discoverResults.put(MaxCubeConfiguration.FRIENDLY_NAME, maxCubeName);
 		discoverResults.put(MaxCubeConfiguration.SERIAL_NUMBER, serialNumber);

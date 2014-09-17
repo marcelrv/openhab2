@@ -53,7 +53,10 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 	public MaxCubeHandler(Thing thing) {
 		super(thing);
 	}
-
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void initialize() {
 		final String configDeviceId = getConfigAs(MaxCubeConfiguration.class).serialNumber;
@@ -122,7 +125,9 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 		}
 		return this.bridgeHandler;
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void handleCommand(ChannelUID channelUID, Command command) {
 		MaxCubeBridgeHandler maxCubeBridge = getMaxCubeBridgeHandler();
@@ -130,9 +135,13 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 			logger.warn("maxCube LAN gateway bridge handler not found. Cannot handle command without bridge.");
 			return;
 		}
+		if (maxCubeDeviceSerial == null){
+			logger.warn("Serial number missing. Can't send command to device '{}'", getThing());
+			return;
+		}
 
 		if(channelUID.getId().equals(CHANNEL_SETTEMP)) {
-			logger.warn("Setting of temp not implemented.");
+			maxCubeBridge.processCommand (maxCubeDeviceSerial, channelUID,command);
 		}
 		else {
 			logger.warn("Setting of channel {} not possible. Read-only", channelUID);
