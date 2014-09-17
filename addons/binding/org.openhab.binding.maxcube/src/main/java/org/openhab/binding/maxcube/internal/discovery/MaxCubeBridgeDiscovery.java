@@ -20,7 +20,10 @@ import org.eclipse.smarthome.config.discovery.ScanListener;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.maxcube.MaxCubeBinding;
+import org.openhab.binding.maxcube.config.MaxCubeBridgeConfiguration;
 import org.openhab.binding.maxcube.config.MaxCubeConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -34,6 +37,7 @@ import com.google.common.collect.ImmutableSet;
  * 
  */
 public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService  {
+	private final static Logger logger = LoggerFactory.getLogger(MaxCubeBridgeDiscovery.class);
 
 
 	@Override
@@ -43,7 +47,8 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService  {
 	}
 
 	public MaxCubeBridgeDiscovery() {
-		super(MaxCubeBinding.SUPPORTED_BRIDGE_THING_TYPES_UIDS,10,false);
+		//super(MaxCubeBinding.SUPPORTED_BRIDGE_THING_TYPES_UIDS,10,false);
+		super(10);
 	
 	}
 
@@ -59,17 +64,19 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService  {
 		if (discoverResults.containsKey(MaxCubeConfiguration.SERIAL_NUMBER)){
 			cubeSerialNumber = discoverResults.get(MaxCubeConfiguration.SERIAL_NUMBER);
 		}
+		String ipAddress = null;
+		if (discoverResults.containsKey(MaxCubeBridgeConfiguration.IP_ADDRESS)){
+			ipAddress = discoverResults.get(MaxCubeBridgeConfiguration.IP_ADDRESS);
+		}
 
-		
 		if(cubeSerialNumber!=null) {
+			logger.debug("Adding new Max!Cube Lan Gateway on {} with id '{}' to Smarthome inbox", ipAddress, cubeSerialNumber);
 
 			ThingUID uid = new ThingUID( MaxCubeBinding.CubeBridge_THING_TYPE, "MaxCube_" + cubeSerialNumber);
 			if(uid!=null) {
-				Map<String, Object> properties = new HashMap<>(1);
-				properties.put(MaxCubeConfiguration.SERIAL_NUMBER,cubeSerialNumber);
 				DiscoveryResult result = DiscoveryResultBuilder.create(uid)
-						.withProperties(properties)
-						.withLabel("MaxCube LAN Gateway")
+						.withProperty(MaxCubeConfiguration.SERIAL_NUMBER,cubeSerialNumber)
+						.withLabel("MaxCube LAN Gateway on " + ipAddress )
 						.build();
 				thingDiscovered (result);
 			} 

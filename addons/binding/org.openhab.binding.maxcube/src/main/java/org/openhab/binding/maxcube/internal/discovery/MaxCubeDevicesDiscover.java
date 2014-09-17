@@ -58,7 +58,7 @@ public class MaxCubeDevicesDiscover  extends AbstractDiscoveryService implements
 
 	@Override
 	public void onDeviceAdded(MaxCubeBridge bridge, Device device) {
-		logger.debug("Discoved new Max!Cube {} with id '{}'", device.getType(), device.getSerialNumber());
+		logger.debug("Adding new Max!Cube {} with id '{}' to smarthome inbox", device.getType(), device.getSerialNumber());
 		ThingUID thingUID = null;
 		switch (device.getType()) {
 		case WallMountedThermostat:
@@ -75,12 +75,10 @@ public class MaxCubeDevicesDiscover  extends AbstractDiscoveryService implements
 		}
 		if(thingUID!=null) {
 			ThingUID bridgeUID = maxCubeBridgeHandler.getThing().getUID();
-			Map<String, Object> properties = new HashMap<>(1);
-			properties.put(MaxCubeConfiguration.SERIAL_NUMBER, device.getSerialNumber());
 			DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-					.withProperties(properties)
+					.withProperty(MaxCubeConfiguration.SERIAL_NUMBER, device.getSerialNumber())
 					.withBridge(bridgeUID)
-					.withLabel(device.getType()+ " " +device.getSerialNumber())
+					.withLabel(device.getType() + " " + device.getSerialNumber())
 					.build();
 			thingDiscovered(discoveryResult);
 		} else {
@@ -90,12 +88,11 @@ public class MaxCubeDevicesDiscover  extends AbstractDiscoveryService implements
 
 	@Override
 	protected void startScan() {
-		// TODO Auto-generated method stub
-
+		//this can be ignored here as we discover via the bridge
 	}
 
 	@Override
-	public void onDeviceStateChanged(MaxCubeBridge bridge, Device device) {
+	public void onDeviceStateChanged(ThingUID bridge, Device device) {
 		//this can be ignored here
 	}
 

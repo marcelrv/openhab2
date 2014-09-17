@@ -10,6 +10,7 @@ package org.openhab.binding.maxcube.internal.handler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -61,10 +62,11 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 
 	private ArrayList<DeviceConfiguration> configurations = new ArrayList<DeviceConfiguration>();
 	private ArrayList<Device> devices = new ArrayList<Device>();
+	private HashSet<String>  lastActiveDevices = new HashSet<String>();
 
 	private boolean previousOnline = true;
 
-    private List<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArrayList<>();
+	private List<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArrayList<>();
 
 	@Override
 	public void handleCommand(ChannelUID channelUID, Command command) {
@@ -86,8 +88,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 		MaxCubeBridgeConfiguration configuration = getConfigAs(MaxCubeBridgeConfiguration.class);
 
 		MaxCubeBridgeDiscovery test = new MaxCubeBridgeDiscovery ();
-	 	test.startScan();
-		
+		test.startScan();
+
 		initializeBridge();
 
 		if (configuration.refreshInterval != 0) {
@@ -105,6 +107,10 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 				logger.debug("MaxCube Port {}.", configuration.port);
 				bridge.setPort ( configuration.port);
 			}
+			if (bridge.getIp()==null) {
+				bridge = null;
+				updateStatus(ThingStatus.OFFLINE);
+			}
 		}		
 	}
 
@@ -121,33 +127,37 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 								updateStatus(ThingStatus.ONLINE);
 								previousOnline = bridge.isConnectionEstablished();
 							}
-							//process stuff
-							//TODO: FIX THIS
+
 							devices = bridge.getDevices();
 							for (Device di : devices){
-								
-								//if (ini) {
-									
-								  for (DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
-	                                    try {
-	                                    	  logger.debug ("Adding DeviceStatusListener");
-	                                        deviceStatusListener.onDeviceStateChanged(bridge, di);
-	                                        deviceStatusListener.onDeviceAdded(bridge, di);
-	                                        ini = false;
-	                                    } catch (Exception e) {
-	                                        logger.error(
-	                                                "An exception occurred while calling the DeviceStatusListener", e);
-	                                    }
-	                          //      }
-							
+								if (lastActiveDevices.contains(di.getSerialNumber())) {
+									for (DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
+										try {
+											deviceStatusListener.onDeviceStateChanged(getThing().getUID(), di);
+										} catch (Exception e) {
+											logger.error(
+													"An exception occurred while calling the DeviceStatusListener", e);
+										}
+									} }
+								//New device, not seen before, pass to Discovery
+								else {
+									for (DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
+										try {
+											deviceStatusListener.onDeviceAdded(bridge, di);
+										} catch (Exception e) {
+											logger.error(
+													"An exception occurred while calling the DeviceStatusListener", e);
+										}
+										lastActiveDevices.add (di.getSerialNumber());
+									}
+								}
 							}
-							}
-						
-						} else {
-							if (previousOnline) onConnectionLost (bridge);
-							initializeBridge() ;
 						}
+					} else {
+						if (previousOnline) onConnectionLost (bridge);
+						initializeBridge() ;
 					}
+
 
 				} catch(Exception e) {
 					logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
@@ -158,7 +168,9 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	}
 
 	public Device getDeviceById(String maxCubeDeviceSerial) {
-		bridge.getDevice (maxCubeDeviceSerial);
+		if (bridge !=null){
+			bridge.getDevice (maxCubeDeviceSerial);
+		}
 		return null;
 	}
 
@@ -176,46 +188,26 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	}
 
 	public boolean registerDeviceStatusListener(DeviceStatusListener deviceStatusListener) {
-        if (deviceStatusListener == null) {
-            throw new NullPointerException("It's not allowed to pass a null LightStatusListener.");
-        }
-        boolean result = deviceStatusListeners.add(deviceStatusListener);
-        if (result) {
-           // onUpdate();
-        }
-        return result;
-    }
-
-    public boolean unregisterDeviceStatusListener(DeviceStatusListener deviceStatusListener) {
-        boolean result = deviceStatusListeners.remove(deviceStatusListener);
-        if (result) {
-         //   onUpdate();
-        }
-        return result;
-    }
-}
-	/*
-public void onLightAdded(MaxCubeBridge bridge, String  rfID) {
-		
-		ThingUID thingUID = rfID ; //getThingUID(rfID);
-		if(thingUID!=null) {
-			ThingUID bridgeUID = "br";  //MaxCubeBridgeHandler.getThing().getUID();
-	        Map<String, Object> properties = new HashMap<>(1);
-	        properties.put( "thermostat" , rfID);
-	        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-	        		.withProperties(properties)
-	        		.withBridge(bridgeUID)
-	        		.withLabel(rfID)
-	        		.build();
-	        
-	        thingDiscovered(discoveryResult);
-		} else {
-			logger.debug("EERRROOORRRf type '{}' with id {}", rfID.getModelID(), rfID.getId());
+		if (deviceStatusListener == null) {
+			throw new NullPointerException("It's not allowed to pass a null LightStatusListener.");
 		}
+		boolean result = deviceStatusListeners.add(deviceStatusListener);
+		if (result) {
+			// onUpdate();
+		}
+		return result;
 	}
-*/
 
-	
+	public boolean unregisterDeviceStatusListener(DeviceStatusListener deviceStatusListener) {
+		boolean result = deviceStatusListeners.remove(deviceStatusListener);
+		if (result) {
+			//   onUpdate();
+		}
+		return result;
+	}
+
+}
+
 
 /*
 	private Device findThing(String serialNumber) {
@@ -266,16 +258,6 @@ if (bridge != null) {
 
 
 /*
-
-public BridgeHeartbeatService getBridgeHeartbeatService() {
-    if (bridgeHeartbeatService == null) {
-        throw new RuntimeException("The heartbeat service for bridge " + bridge.getIPAddress()
-                + " has not been initialized.");
-    } else {
-        return bridgeHeartbeatService;
-    }
-}
-
 public Light getLightById(String lightId) {
     List<Light> lights;
     try {
