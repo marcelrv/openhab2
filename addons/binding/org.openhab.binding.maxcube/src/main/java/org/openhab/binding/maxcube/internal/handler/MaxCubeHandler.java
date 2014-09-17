@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingRegistry;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -53,8 +54,6 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 		super(thing);
 	}
 
-
-
 	@Override
 	public void initialize() {
 		final String configDeviceId = getConfigAs(MaxCubeConfiguration.class).serialNumber;
@@ -66,30 +65,24 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 		else {
 			logger.debug("Initialized maxcube device missing serialNumber configuration... troubles ahead");
 		}
-
-		//TODO:  ?? Check if an item is receiving updates. If not, put status to OFFLINE
-		//deviceOnlineWatchdog();
-	}
-
-
-	private Device getDevice() {
-		if (maxCubeDevice == null) {
-			MaxCubeBridgeHandler bridgeHandler = getMaxCubeBridgeHandler();
-			if(bridgeHandler!=null) {
-				//	maxCubeDevice = bridgeHandler.getDeviceById(maxCubeDeviceSerial);
-			} else {
-				logger.debug("Bridge for maxcube device {} not found.", maxCubeDeviceSerial);	
-			}
-
-		}
-		return null;
+		//until we get an update put the Thing offline
+		updateStatus(ThingStatus.OFFLINE);
+		deviceOnlineWatchdog();
 	}
 
 	private void deviceOnlineWatchdog() {
 		Runnable runnable = new Runnable() {
 			public void run() {
 				try {
-					//TODO:  ?? Check if an item is receiving updates. If not, put status to OFFLINE
+					MaxCubeBridgeHandler bridgeHandler = getMaxCubeBridgeHandler();
+					if(bridgeHandler!=null) {
+						if ( bridgeHandler.getDeviceById(maxCubeDeviceSerial) == null) 	{
+							updateStatus(ThingStatus.OFFLINE);
+						}
+					} else {
+						logger.debug("Bridge for maxcube device {} not found.", maxCubeDeviceSerial);
+						updateStatus(ThingStatus.OFFLINE);
+					}
 
 				} catch(Exception e) {
 					logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
@@ -107,20 +100,17 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 		if(this.bridgeHandler==null) {
 			Bridge bridge = getBridge();
 			if (bridge == null) {
-				//no bridge is assigned to the device, will register it to all maxcube bridges
+				//no bridge is assigned to the device, will register it to the first found bridge 
 				ArrayList<Bridge> maxCubeBridges = new ArrayList<Bridge>();
 				Collection<Thing> allThings = thingRegistry.getAll();
-					for ( Thing br : allThings ){
-						if (br instanceof  Bridge){
-							if (br.getHandler() instanceof MaxCubeBridgeHandler) maxCubeBridges.add ((Bridge) br);
-						}
+				for ( Thing br : allThings ){
+					if (br instanceof  Bridge){
+						if (br.getHandler() instanceof MaxCubeBridgeHandler) maxCubeBridges.add ((Bridge) br);
 					}
-				 	
-					if (!(maxCubeBridges.isEmpty())) bridge = maxCubeBridges.get(0);
-			
+				}
+				if (!(maxCubeBridges.isEmpty())) bridge = maxCubeBridges.get(0);
 				logger.debug("maxCube LAN gateway bridge not assigned. registering automatically to {}." , bridge.getUID() );
-			//	bridge = (Bridge) thingRegistry.getByUID(new ThingUID ("maxcube:bridge:br2")) ;
-			//	getThing().setBridgeUID (new ThingUID ("maxcube:bridge:br2")) ;
+				//TODO: Before assigning would be good to check if the item actually exists in the bridge.
 			}
 			ThingHandler handler = bridge.getHandler();
 			if (handler instanceof MaxCubeBridgeHandler) {
@@ -150,10 +140,11 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 	}
 
 	@Override
-	public void onDeviceStateChanged(MaxCubeBridge bridge, Device device) {
-
+	public void onDeviceStateChanged(ThingUID bridge, Device device) {
 		if (device.getSerialNumber().equals (maxCubeDeviceSerial) ){
 			logger.debug("Updating states of {} ({}) id: {}", device.getType(), device.getSerialNumber(), getThing().getUID()  );
+			updateStatus(ThingStatus.ONLINE);
+			//TODO: Could make this more intelligent by checking first if anything has changed, only then make the update
 			switch (device.getType()) {
 			case WallMountedThermostat:
 			case HeatingThermostat:

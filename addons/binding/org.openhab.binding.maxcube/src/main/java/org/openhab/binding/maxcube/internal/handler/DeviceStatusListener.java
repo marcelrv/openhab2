@@ -7,6 +7,7 @@
  */
 package org.openhab.binding.maxcube.internal.handler;
 
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.maxcube.internal.MaxCubeBridge;
 import org.openhab.binding.maxcube.internal.message.Device;
 
@@ -24,7 +25,7 @@ public interface DeviceStatusListener {
      * @param bridge The maxcube bridge the changed device is connected to.
      * @param device The device which received the state update.
      */
-    public void onDeviceStateChanged(MaxCubeBridge bridge, Device device);
+    public void onDeviceStateChanged(ThingUID bridge, Device device);
 
     /**
      * This method us called whenever a device is removed.

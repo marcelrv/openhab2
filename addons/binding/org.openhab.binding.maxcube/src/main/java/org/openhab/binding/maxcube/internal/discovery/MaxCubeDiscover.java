@@ -48,7 +48,7 @@ public final class MaxCubeDiscover {
 	* Automatic UDP discovery of a MAX!Cube
 	* @return if the cube is found, returns the HashMap containing the details.
 	*/
-	public final static HashMap<String, String > DiscoverCube() {
+	public synchronized  final static HashMap<String, String > DiscoverCube() {
 		
 		HashMap<String, String > discoverResults = new HashMap<String, String>();
 		
@@ -85,15 +85,17 @@ public final class MaxCubeDiscover {
 						DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, broadcast, 23272);
 						bcSend.send(sendPacket);
 					} catch (Exception e) {
+						logger.debug( "Error while sending request packet sent to: {} Interface: '{}' '{}'", broadcast.getHostAddress(),  networkInterface.getDisplayName(),  networkInterface.getName());
+
 						logger.debug(e.getMessage());
 						logger.debug(Utils.getStackTrace(e));
 				}
 
-				logger.trace( "Request packet sent to: {} Interface: {}", broadcast.getHostAddress(),  networkInterface.getDisplayName());
+				logger.debug( "Request packet sent to: {} Interface: {}", broadcast.getHostAddress(),  networkInterface.getDisplayName());
 			}
 		}
 
-		logger.trace( "Done looping over all network interfaces. Now waiting for a reply!");
+		logger.debug( "Done looping over all network interfaces. Now waiting for a reply!");
 		bcSend.close();
 
 		DatagramSocket bcReceipt = new DatagramSocket(23272);
