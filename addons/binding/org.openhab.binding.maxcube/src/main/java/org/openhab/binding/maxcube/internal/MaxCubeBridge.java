@@ -9,6 +9,7 @@ package org.openhab.binding.maxcube.internal;
 
 import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_SETTEMP;
 import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_MODE;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -18,6 +19,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -60,6 +63,7 @@ public class MaxCubeBridge {
 
 	private Logger logger = LoggerFactory.getLogger(MaxCubeBridge.class);
 
+	private ConcurrentHashMap <String, Command> commandBuffer = new ConcurrentHashMap <String, Command>(); 
 
 	/** The IP address of the MAX!Cube LAN gateway */
 	private String ipAddress;
@@ -329,7 +333,24 @@ public class MaxCubeBridge {
 	 * @param command
 	 *            the command data
 	 */
-	public void processCommand(String serialNumber, ChannelUID channelUID,
+	public synchronized  void processCommand(String serialNumber, ChannelUID channelUID,
+			Command command) {
+		
+		commandBuffer.put(serialNumber, command);
+	}
+
+		
+	/**
+	 * Processes device command and sends it to the MAX!Cube Lan Gateway.
+	 * 
+	 * @param serialNumber
+	 *            the serial number of the device as String
+	 * @param channelUID
+	 *            the ChannelUID used to send the command
+	 * @param command
+	 *            the command data
+	 */
+	public void executeCommand(String serialNumber, ChannelUID channelUID,
 			Command command) {
 
 		// send command to MAX!Cube LAN Gateway

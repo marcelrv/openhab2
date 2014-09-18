@@ -37,7 +37,7 @@ public final class MaxCubeDiscover {
 	* Automatic UDP discovery of a MAX!Cube
 	* @return if the cube is found, returns the IP address as a string. Otherwise returns null
 	*/
-	public final static String discoverIp () {
+	public synchronized final static String discoverIp () {
 		HashMap<String, String > discoverResults = new HashMap<String, String>(DiscoverCube());
 		if (discoverResults.containsKey(MaxCubeBridgeConfiguration.IP_ADDRESS)){
 			return discoverResults.get(MaxCubeBridgeConfiguration.IP_ADDRESS);
