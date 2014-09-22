@@ -19,6 +19,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -39,6 +40,7 @@ import org.openhab.binding.maxcube.internal.message.M_Message;
 import org.openhab.binding.maxcube.internal.message.Message;
 import org.openhab.binding.maxcube.internal.message.MessageType;
 import org.openhab.binding.maxcube.internal.message.S_Command;
+import org.openhab.binding.maxcube.internal.message.SendCommand;
 import org.openhab.binding.maxcube.internal.message.ThermostatModeType;
 import org.osgi.service.cm.ConfigurationException;
 import org.slf4j.Logger;
@@ -47,7 +49,8 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link MaxCubeBridge} is responsible for connecting to the Max!Cube Lan gateway and read the data for  
  * each connected device.
- * @author Marcel Verpaalen - Initial contribution. Based on OH1 version by Andreas Heil (info@aheil.de)
+ * @author Marcel Verpaalen - Initial contribution OH2 version
+ * @author Andreas Heil (info@aheil.de) OH1 version
  */
 
 public class MaxCubeBridge {
@@ -63,8 +66,10 @@ public class MaxCubeBridge {
 
 	private Logger logger = LoggerFactory.getLogger(MaxCubeBridge.class);
 
-	private ConcurrentHashMap <String, Command> commandBuffer = new ConcurrentHashMap <String, Command>(); 
+	private ConcurrentHashMap<String,SendCommand> commandBuffer = new ConcurrentHashMap <String, SendCommand>(); 
+	private ArrayBlockingQueue<SendCommand> commandQueue = new ArrayBlockingQueue<SendCommand> (50); 
 
+	
 	/** The IP address of the MAX!Cube LAN gateway */
 	private String ipAddress;
 
@@ -333,10 +338,14 @@ public class MaxCubeBridge {
 	 * @param command
 	 *            the command data
 	 */
-	public synchronized  void processCommand(String serialNumber, ChannelUID channelUID,
-			Command command) {
+	public synchronized  void processCommand(SendCommand sendCommand) {
 		
-		commandBuffer.put(serialNumber, command);
+		if (commandQueue.offer(sendCommand)){
+			logger.debug("Command queued id {} ({}).", sendCommand.getId(),sendCommand.getKey());
+		} else{
+			logger.debug("Command queued full dropping command id {} ({}).", sendCommand.getId(),sendCommand.getKey());
+		}
+				
 	}
 
 		

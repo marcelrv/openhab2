@@ -8,15 +8,13 @@
 package org.openhab.binding.maxcube.internal.discovery;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
-import org.eclipse.smarthome.config.discovery.DiscoveryListener;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
-import org.eclipse.smarthome.config.discovery.ScanListener;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.maxcube.MaxCubeBinding;
@@ -24,8 +22,6 @@ import org.openhab.binding.maxcube.config.MaxCubeBridgeConfiguration;
 import org.openhab.binding.maxcube.config.MaxCubeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.ImmutableSet;
 
 
 
@@ -43,12 +39,19 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService  {
 	@Override
 	protected void activate() {
 		super.activate();
-		discoverCube();
+		Timer timer = new Timer();
+		// to avoid conflict with normal maxcube starting delay this first discovery
+		timer.schedule(new TimerTask() {
+			public void run() {
+				discoverCube();
+			}
+		}, (60*1000));
 	}
+
 
 	public MaxCubeBridgeDiscovery() {
 		super(10);
-	
+
 	}
 
 	@Override
@@ -58,7 +61,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService  {
 
 	private void discoverCube() {
 		String cubeSerialNumber = null;
-		
+
 		HashMap<String, String > discoverResults = new HashMap<String, String>(MaxCubeDiscover.DiscoverCube());
 		if (discoverResults.containsKey(MaxCubeConfiguration.SERIAL_NUMBER)){
 			cubeSerialNumber = discoverResults.get(MaxCubeConfiguration.SERIAL_NUMBER);
@@ -82,7 +85,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService  {
 		}	
 	}
 
-	
+
 	public void startScan() {
 		discoverCube();
 	}
@@ -94,5 +97,5 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService  {
 	}
 
 
-	}
+}
 
