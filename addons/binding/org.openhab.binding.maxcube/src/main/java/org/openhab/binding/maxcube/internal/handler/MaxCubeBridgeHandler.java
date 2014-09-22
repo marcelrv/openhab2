@@ -26,6 +26,7 @@ import org.openhab.binding.maxcube.internal.MaxCubeBridge;
 import org.openhab.binding.maxcube.internal.discovery.MaxCubeBridgeDiscovery;
 import org.openhab.binding.maxcube.internal.message.Device;
 import org.openhab.binding.maxcube.internal.message.DeviceConfiguration;
+import org.openhab.binding.maxcube.internal.message.SendCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -207,11 +208,9 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	 * @param command
 	 *            the command data
 	 */
-	public void processCommand(String serialNumber, ChannelUID channelUID,
-			Command command) {
-		logger.warn("Setting of temp not implemented.");
+	public void processCommand(SendCommand sendCommand) {
 		if (bridge !=null){
-			bridge.processCommand (serialNumber,channelUID,command);
+			bridge.processCommand (sendCommand);
 		} else{
 			logger.warn("Bridge not connected. Cannot set send command.");
 		}

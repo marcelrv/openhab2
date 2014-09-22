@@ -31,6 +31,7 @@ import org.openhab.binding.maxcube.config.MaxCubeConfiguration;
 import org.openhab.binding.maxcube.internal.MaxCubeBridge;
 import org.openhab.binding.maxcube.internal.message.Device;
 import org.openhab.binding.maxcube.internal.message.HeatingThermostat;
+import org.openhab.binding.maxcube.internal.message.SendCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -141,7 +142,8 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 		}
 
 		if(channelUID.getId().equals(CHANNEL_SETTEMP)) {
-			maxCubeBridge.processCommand (maxCubeDeviceSerial, channelUID,command);
+			SendCommand sendCommand = new SendCommand (maxCubeDeviceSerial,channelUID,command);
+			maxCubeBridge.processCommand (sendCommand);
 		}
 		else {
 			logger.warn("Setting of channel {} not possible. Read-only", channelUID);
