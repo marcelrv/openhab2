@@ -12,11 +12,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.openhab.binding.maxcube.internal.Utils;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-
+import org.openhab.binding.maxcube.internal.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,6 +93,7 @@ public abstract class Device {
 		Device device = Device.create(rfAddress, configurations);
 		if (device == null) {
 			logger.warn("Can't create device from received message, returning NULL.");
+			return null;
 		}
 
 		// byte 4 is skipped

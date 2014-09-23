@@ -8,8 +8,6 @@
 package org.openhab.binding.maxcube.internal.discovery;
 
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;

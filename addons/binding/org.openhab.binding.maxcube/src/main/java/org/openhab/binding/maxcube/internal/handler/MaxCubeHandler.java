@@ -7,20 +7,20 @@
  */
 package org.openhab.binding.maxcube.internal.handler;
 
-import static org.openhab.binding.maxcube.MaxCubeBinding.*;
+import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_ACTUALTEMP;
+import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_BATTERY;
+import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_MODE;
+import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_SETTEMP;
+import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_VALVE;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
