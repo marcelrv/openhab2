@@ -7,8 +7,8 @@
  */
 package org.openhab.binding.maxcube.internal;
 
-import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_SETTEMP;
 import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_MODE;
+import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_SETTEMP;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -20,14 +20,11 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.maxcube.internal.discovery.MaxCubeDiscover;
 import org.openhab.binding.maxcube.internal.message.C_Message;
@@ -66,9 +63,11 @@ public class MaxCubeBridge {
 
 	private Logger logger = LoggerFactory.getLogger(MaxCubeBridge.class);
 
-	private ConcurrentHashMap<String,SendCommand> commandBuffer = new ConcurrentHashMap <String, SendCommand>(); 
-	private ArrayBlockingQueue<SendCommand> commandQueue = new ArrayBlockingQueue<SendCommand> (50); 
+	/** maximum queue size that we're allowing */
+	private static final int MAX_COMMANDS = 50;
+	private ArrayBlockingQueue<SendCommand> commandQueue = new ArrayBlockingQueue<SendCommand> (MAX_COMMANDS); 
 
+	private SendCommand lastCommandId = null;
 	
 	/** The IP address of the MAX!Cube LAN gateway */
 	private String ipAddress;
@@ -91,6 +90,7 @@ public class MaxCubeBridge {
 				logger.warn("Cannot discover to Max!Cube Lan interface. Configure manually.");
 			}
 		}
+		//TODO: optional configuration to get the actual temperature on a configured interval by changing the valve / temp setting
 	}
 
 	/**
@@ -117,6 +117,12 @@ public class MaxCubeBridge {
 
 	}
 
+	public void sendCommands() {
+		// TODO Auto-generated method stub
+		SendCommand sendCommand = commandQueue.poll();
+		if (sendCommand!=null){}
+		
+	}
 	/**
 	 * Connects to the Max!Cube Lan gateway and returns the read data 
 	 * corresponding Message.
@@ -197,9 +203,8 @@ public class MaxCubeBridge {
 	 */
 	private void processMessage (Message message){
 
-		message.debug(logger);
-
 		if (message != null) {
+			message.debug(logger);
 			if (message.getType() == MessageType.M) {
 				M_Message msg = (M_Message) message;
 				for (DeviceInformation di : msg.devices) {
@@ -330,7 +335,9 @@ public class MaxCubeBridge {
 
 	/**
 	 * Processes device command and sends it to the MAX!Cube Lan Gateway.
-	 * 
+	 * Note that if multiple commands for the same item-channel combination are send prior that they are processed
+	 * by the Max!Cube, they will be removed from the queue as they would not be meaningful. This will improve the behavior 
+	 * when using sliders in the GUI.
 	 * @param serialNumber
 	 *            the serial number of the device as String
 	 * @param channelUID
@@ -338,10 +345,17 @@ public class MaxCubeBridge {
 	 * @param command
 	 *            the command data
 	 */
-	public synchronized  void processCommand(SendCommand sendCommand) {
+	public synchronized void processCommand(SendCommand sendCommand) {
 		
 		if (commandQueue.offer(sendCommand)){
+			if (lastCommandId != null){	
+			if (lastCommandId.getKey().equals (sendCommand.getKey())){
+				if (commandQueue.remove (lastCommandId)) 
+					logger.debug("Removed Command id {} ({}) from queue. Superceeded by {}", lastCommandId.getId(),lastCommandId.getKey(),sendCommand.getId());
+			}}
+			lastCommandId = sendCommand;
 			logger.debug("Command queued id {} ({}).", sendCommand.getId(),sendCommand.getKey());
+
 		} else{
 			logger.debug("Command queued full dropping command id {} ({}).", sendCommand.getId(),sendCommand.getKey());
 		}
@@ -441,4 +455,6 @@ public class MaxCubeBridge {
 		rawMessage.add ("L:CwsNowkSGQAJAAAACwe25wkSGWAvAAAA");
 		return rawMessage;
 	}
+
+
 }

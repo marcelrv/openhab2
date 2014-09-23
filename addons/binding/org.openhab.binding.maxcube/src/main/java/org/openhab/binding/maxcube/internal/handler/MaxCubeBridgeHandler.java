@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -25,7 +24,6 @@ import org.openhab.binding.maxcube.config.MaxCubeBridgeConfiguration;
 import org.openhab.binding.maxcube.internal.MaxCubeBridge;
 import org.openhab.binding.maxcube.internal.discovery.MaxCubeBridgeDiscovery;
 import org.openhab.binding.maxcube.internal.message.Device;
-import org.openhab.binding.maxcube.internal.message.DeviceConfiguration;
 import org.openhab.binding.maxcube.internal.message.SendCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +57,21 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 
 	private List<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArrayList<>();
 
+	private ScheduledFuture<?> pollingJob;
+	private Runnable pollingRunnable = new Runnable() {
+		@Override
+		public void run() {
+			refreshData(true);  }
+	};
+	private ScheduledFuture<?> sendCommandJob;
+
+	private long sendCommandInterval = 10000;
+
+	private Runnable sendCommandRunnable = new Runnable() {
+		@Override
+		public void run() {
+			refreshData(false);  }
+	};
 	@Override
 	public void handleCommand(ChannelUID channelUID, Command command) {
 		logger.warn("No bridge commands defined.");
@@ -66,7 +79,11 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 
 	@Override
 	public void dispose() {
-		logger.debug("Handler disposes. Unregistering listener.");
+		logger.debug("Handler disposed.");
+		if(pollingJob!=null && !pollingJob.isCancelled()) {
+			pollingJob.cancel(true);
+			pollingJob = null;
+		}
 		if (bridge != null) {
 			bridge = null;
 		}
@@ -105,58 +122,80 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 		}		
 	}
 
-	private void startAutomaticRefresh() {
+	private synchronized void startAutomaticRefresh() {
+		if (bridge != null) {
+			if (pollingJob == null || pollingJob.isCancelled()) {
+				pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, 0, refreshInterval, TimeUnit.MILLISECONDS);
+			}
+			if (sendCommandJob == null || sendCommandJob.isCancelled()) {
+				sendCommandJob = scheduler.scheduleAtFixedRate(sendCommandRunnable, 0, sendCommandInterval, TimeUnit.MILLISECONDS);
+			}
+		}
+	}
 
-		Runnable runnable = new Runnable() {
-			public void run() {
-				try {
 
-					if (bridge !=null){
-						bridge.refreshData();
-						if (bridge.isConnectionEstablished()){
-							if ( previousOnline == false) {
-								updateStatus(ThingStatus.ONLINE);
-								previousOnline = bridge.isConnectionEstablished();
-							}
+	private synchronized void refreshData(Boolean poll) {
+		if (poll) refreshPollData();
+		else sendCommands();
+	}
+	/**
+	 * initiates send commands to the maxCube bridge
+	 */
+	private synchronized void sendCommands() {
+		if (bridge !=null)
+			bridge.sendCommands();
+	}
+	/**
+	 * initiates read data from the maxCube bridge
+	 */
+	private synchronized void refreshPollData() {
 
-							devices = bridge.getDevices();
-							for (Device di : devices){
-								if (lastActiveDevices.contains(di.getSerialNumber())) {
-									for (DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
-										try {
-											deviceStatusListener.onDeviceStateChanged(getThing().getUID(), di);
-										} catch (Exception e) {
-											logger.error(
-													"An exception occurred while calling the DeviceStatusListener", e);
-										}
-									} }
-								//New device, not seen before, pass to Discovery
-								else {
-									for (DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
-										try {
-											deviceStatusListener.onDeviceAdded(bridge, di);
-										} catch (Exception e) {
-											logger.error(
-													"An exception occurred while calling the DeviceStatusListener", e);
-										}
-										lastActiveDevices.add (di.getSerialNumber());
-									}
-								}
-							}
-						}
-					} else {
-						if (previousOnline) onConnectionLost (bridge);
-						initializeBridge() ;
+		try {
+
+			if (bridge !=null){
+				bridge.refreshData();
+				if (bridge.isConnectionEstablished()){
+					if ( previousOnline == false) {
+						updateStatus(ThingStatus.ONLINE);
+						previousOnline = bridge.isConnectionEstablished();
 					}
 
+					devices = bridge.getDevices();
+					for (Device di : devices){
+						if (lastActiveDevices.contains(di.getSerialNumber())) {
+							for (DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
+								try {
+									deviceStatusListener.onDeviceStateChanged(getThing().getUID(), di);
+								} catch (Exception e) {
+									logger.error(
+											"An exception occurred while calling the DeviceStatusListener", e);
+								}
+							} }
+						//New device, not seen before, pass to Discovery
+						else {
+							for (DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
+								try {
+									deviceStatusListener.onDeviceAdded(bridge, di);
+								} catch (Exception e) {
+									logger.error(
+											"An exception occurred while calling the DeviceStatusListener", e);
+								}
+								lastActiveDevices.add (di.getSerialNumber());
+							}
+						}
+					}
+				}
+			} else {
+				if (previousOnline) onConnectionLost (bridge);
+				initializeBridge() ;
+			}
 
-				} catch(Exception e) {
-					logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
-				}}
-		};
 
-		refreshJob = scheduler.scheduleAtFixedRate(runnable, 0, refreshInterval, TimeUnit.MILLISECONDS);
+		} catch(Exception e) {
+			logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
+		}
 	}
+
 
 	public Device getDeviceById(String maxCubeDeviceSerial) {
 		if (bridge !=null){
