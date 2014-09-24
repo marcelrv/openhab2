@@ -48,7 +48,6 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 	ScheduledFuture<?> refreshJob;
 	private MaxCubeBridgeHandler bridgeHandler;
 
-	private MaxCubeBridge maxCubeDevice;	
 	private String maxCubeDeviceSerial;
 
 	public MaxCubeHandler(Thing thing) {
@@ -74,6 +73,17 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 		deviceOnlineWatchdog();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.smarthome.core.thing.binding.BaseThingHandler#dispose()
+	 */
+	@Override
+	public void dispose() {
+		// TODO Auto-generated method stub
+		logger.debug("Thing {} {} disposed.", getThing(), maxCubeDeviceSerial);
+		if(bridgeHandler!=null) bridgeHandler.clearDeviceList();
+		super.dispose();
+	}
+	
 	private void deviceOnlineWatchdog() {
 		Runnable runnable = new Runnable() {
 			public void run() {
@@ -141,7 +151,7 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 			return;
 		}
 
-		if(channelUID.getId().equals(CHANNEL_SETTEMP)) {
+		if(channelUID.getId().equals(CHANNEL_SETTEMP) || channelUID.getId().equals(CHANNEL_MODE)) {
 			SendCommand sendCommand = new SendCommand (maxCubeDeviceSerial,channelUID,command);
 			maxCubeBridge.processCommand (sendCommand);
 		}
@@ -153,7 +163,7 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 	@Override
 	public void onDeviceStateChanged(ThingUID bridge, Device device) {
 		if (device.getSerialNumber().equals (maxCubeDeviceSerial) ){
-			logger.debug("Updating states of {} ({}) id: {}", device.getType(), device.getSerialNumber(), getThing().getUID()  );
+			logger.debug("Updating states of {} {} ({}) id: {}", device.getType(), device.getName(), device.getSerialNumber(), getThing().getUID()  );
 			updateStatus(ThingStatus.ONLINE);
 			//TODO: Could make this more intelligent by checking first if anything has changed, only then make the update
 			switch (device.getType()) {
@@ -179,13 +189,12 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 
 	@Override
 	public void onDeviceRemoved(MaxCubeBridge bridge, Device device) {
-		// TODO Auto-generated method stub
-
+		// not relevant here
 	}
 
 	@Override
 	public void onDeviceAdded(MaxCubeBridge bridge, Device device) {
-		// TODO Auto-generated method stub
+		// not relevant here
 
 	}
 }
