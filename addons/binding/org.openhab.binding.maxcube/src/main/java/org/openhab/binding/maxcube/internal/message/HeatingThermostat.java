@@ -57,8 +57,8 @@ public class HeatingThermostat extends Device {
 	}
 
 
-	@Override
-	public String getName() {
+	//@Override
+	public String getName1() {
 		// TODO Auto-generated method stub
 		return null;
 	}

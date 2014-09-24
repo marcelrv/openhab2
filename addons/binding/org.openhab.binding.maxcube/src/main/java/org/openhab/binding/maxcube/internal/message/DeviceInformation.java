@@ -11,7 +11,7 @@ package org.openhab.binding.maxcube.internal.message;
 
 
 /**
-* Device information provided b the M message meta information. 
+* Device information provided by the M message meta information. 
 * 
 * @author Andreas Heil (info@aheil.de)
 * @since 1.4.0

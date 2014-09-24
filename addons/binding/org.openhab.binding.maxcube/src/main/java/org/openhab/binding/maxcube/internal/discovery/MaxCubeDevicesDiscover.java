@@ -76,7 +76,7 @@ public class MaxCubeDevicesDiscover  extends AbstractDiscoveryService implements
 			DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
 					.withProperty(MaxCubeConfiguration.SERIAL_NUMBER, device.getSerialNumber())
 					.withBridge(bridgeUID)
-					.withLabel(device.getType() + " " + device.getSerialNumber())
+					.withLabel( device.getType() + " " + device.getName() + " (serial: " + device.getSerialNumber() +")")
 					.build();
 			thingDiscovered(discoveryResult);
 		} else {

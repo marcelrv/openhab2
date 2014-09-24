@@ -34,24 +34,11 @@ import org.slf4j.LoggerFactory;
  */
 public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService  {
 	private final static Logger logger = LoggerFactory.getLogger(MaxCubeBridgeDiscovery.class);
-
-
-	@Override
-	protected void activate() {
-		super.activate();
-		Timer timer = new Timer();
-		// to avoid conflict with normal maxcube starting delay this first discovery
-		timer.schedule(new TimerTask() {
-			public void run() {
-				discoverCube();
-			}
-		}, (60*1000));
-	}
+	private static final int INITIAL_START_DELAY = 60;
 
 
 	public MaxCubeBridgeDiscovery() {
-		super(10);
-
+		super(15);
 	}
 
 	@Override
@@ -85,9 +72,24 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService  {
 		}	
 	}
 
-
+	@Override
 	public void startScan() {
 		discoverCube();
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.smarthome.config.discovery.AbstractDiscoveryService#startBackgroundDiscovery()
+	 */
+	@Override
+	protected void startBackgroundDiscovery() {
+		Timer timer = new Timer();
+		// to avoid conflict with normal maxcube starting delay this first discovery
+		timer.schedule(new TimerTask() {
+			public void run() {
+				discoverCube();
+			}
+		}, (INITIAL_START_DELAY * 1000));
 	}
 
 

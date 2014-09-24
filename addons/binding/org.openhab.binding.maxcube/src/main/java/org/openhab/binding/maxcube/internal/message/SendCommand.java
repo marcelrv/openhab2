@@ -106,7 +106,7 @@ public final class SendCommand {
 	/**
 	 * @return the device
 	 */
-	public String getDevice() {
+	public String getDeviceSerial() {
 		return serialNumber;
 	}
 
@@ -115,7 +115,7 @@ public final class SendCommand {
 	/**
 	 * @param device the device to set
 	 */
-	public void setDevice(String device) {
+	public void setDeviceSerial(String device) {
 		this.serialNumber = device;
 		setKey();
 	}

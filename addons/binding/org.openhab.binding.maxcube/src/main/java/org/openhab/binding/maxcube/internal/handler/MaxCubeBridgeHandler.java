@@ -61,16 +61,14 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	private Runnable pollingRunnable = new Runnable() {
 		@Override
 		public void run() {
-			refreshData(true);  }
+			refreshData();  }
 	};
 	private ScheduledFuture<?> sendCommandJob;
-
 	private long sendCommandInterval = 10000;
-
 	private Runnable sendCommandRunnable = new Runnable() {
 		@Override
 		public void run() {
-			refreshData(false);  }
+			sendCommands(); }
 	};
 	@Override
 	public void handleCommand(ChannelUID channelUID, Command command) {
@@ -84,6 +82,10 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 			pollingJob.cancel(true);
 			pollingJob = null;
 		}
+		if(sendCommandJob!=null && !sendCommandJob.isCancelled()) {
+			sendCommandJob.cancel(true);
+			sendCommandJob = null;
+		}
 		if (bridge != null) {
 			bridge = null;
 		}
@@ -95,18 +97,16 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 
 		MaxCubeBridgeConfiguration configuration = getConfigAs(MaxCubeBridgeConfiguration.class);
 
-		MaxCubeBridgeDiscovery test = new MaxCubeBridgeDiscovery ();
-		test.startScan();
-
-		initializeBridge();
-
+//		MaxCubeBridgeDiscovery test = new MaxCubeBridgeDiscovery ();
+//		test.startScan();
+//		initializeBridge();
 		if (configuration.refreshInterval != 0) {
 			logger.debug("MaxCube refreshInterval {}.", configuration.refreshInterval);
 			refreshInterval =  configuration.refreshInterval;}
 		startAutomaticRefresh();
 	}
 
-	private void initializeBridge() {
+	private synchronized void initializeBridge() {
 		MaxCubeBridgeConfiguration configuration = getConfigAs(MaxCubeBridgeConfiguration.class);
 
 		if (bridge == null) {
@@ -123,21 +123,16 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	}
 
 	private synchronized void startAutomaticRefresh() {
-		if (bridge != null) {
 			if (pollingJob == null || pollingJob.isCancelled()) {
 				pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, 0, refreshInterval, TimeUnit.MILLISECONDS);
 			}
 			if (sendCommandJob == null || sendCommandJob.isCancelled()) {
 				sendCommandJob = scheduler.scheduleAtFixedRate(sendCommandRunnable, 0, sendCommandInterval, TimeUnit.MILLISECONDS);
-			}
+			 
 		}
 	}
 
 
-	private synchronized void refreshData(Boolean poll) {
-		if (poll) refreshPollData();
-		else sendCommands();
-	}
 	/**
 	 * initiates send commands to the maxCube bridge
 	 */
@@ -148,10 +143,13 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	/**
 	 * initiates read data from the maxCube bridge
 	 */
-	private synchronized void refreshPollData() {
+	private synchronized void refreshData() {
 
+		if (bridge==null){
+			
+			initializeBridge() ;
+		}
 		try {
-
 			if (bridge !=null){
 				bridge.refreshData();
 				if (bridge.isConnectionEstablished()){
@@ -184,12 +182,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 							}
 						}
 					}
-				}
-			} else {
-				if (previousOnline) onConnectionLost (bridge);
-				initializeBridge() ;
-			}
-
+				}else if (previousOnline) onConnectionLost (bridge);
+			} 
 
 		} catch(Exception e) {
 			logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
@@ -236,7 +230,10 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 		return result;
 	}
 
-
+	public void clearDeviceList(){
+	lastActiveDevices=null;
+	}
+	
 	/**
 	 * Processes device command and sends it to the MAX!Cube Lan Gateway.
 	 * 
@@ -249,7 +246,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	 */
 	public void processCommand(SendCommand sendCommand) {
 		if (bridge !=null){
-			bridge.processCommand (sendCommand);
+			bridge.queueCommand (sendCommand);
 		} else{
 			logger.warn("Bridge not connected. Cannot set send command.");
 		}
@@ -259,70 +256,3 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 
 
 }
-
-
-/*
-	private Device findThing(String serialNumber) {
-		for (Thing thing : Things) {
-			if (device.getSerialNumber().toUpperCase().equals(serialNumber)) {
-				return device;
-			}
-		}
-		return null;
-	}
- */
-
-/*
-public MaxCubeDevice getDeviceById(String lightId) {
-    List<Light> lights;
-    try {
-        lights = bridge.getLights();
-        for (Light light : lights) {
-            if (light.getId().equals(lightId)) {
-                return light;
-            }
-        }
-    } catch (IOException | ApiException e) {
-        throw new RuntimeException(e);
-    } catch (IllegalStateException e) {
-        logger.trace("Error while accessing light: {}", e.getMessage());
-    }
-    return null;
-
-}
-
- */
-
-/*   public void updateLightState(Light light, StateUpdate stateUpdate) {
-
-if (bridge != null) {
-    try {
-        bridge.setLightState(light, stateUpdate);
-    } catch (IOException | ApiException e) {
-        throw new RuntimeException(e);
-    }
-} else {
-    logger.warn("No bridge connected or selected. Cannot set light state.");
-}
-}
- */
-
-
-
-/*
-public Light getLightById(String lightId) {
-    List<Light> lights;
-    try {
-        lights = bridge.getLights();
-        for (Light light : lights) {
-            if (light.getId().equals(lightId)) {
-                return light;
-            }
-        }
-    } catch (IOException | ApiException e) {
-        throw new RuntimeException(e);
-    }
-    return null;
-
-}
- */

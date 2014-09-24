@@ -31,6 +31,7 @@ public abstract class Device {
 	private String serialNumber = "";
 	private String rfAddress = "";
 	private int roomId = -1;
+	private DeviceConfiguration config;
 
 	private boolean batteryLow;
 
@@ -46,12 +47,14 @@ public abstract class Device {
 	public Device(DeviceConfiguration c) {
 		this.serialNumber = c.getSerialNumber();
 		this.rfAddress = c.getRFAddress();
-		this.roomId = c.getRoomId();
+		this.config = c;
 	}
 
 	public abstract DeviceType getType();
 
-	public abstract String getName();
+	public String getName(){
+		return config.getName();	
+	}
 
 	public abstract Calendar getLastUpdate();
 

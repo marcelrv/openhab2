@@ -68,7 +68,7 @@ public class MaxCubeBridge {
 	private ArrayBlockingQueue<SendCommand> commandQueue = new ArrayBlockingQueue<SendCommand> (MAX_COMMANDS); 
 
 	private SendCommand lastCommandId = null;
-	
+
 	/** The IP address of the MAX!Cube LAN gateway */
 	private String ipAddress;
 
@@ -117,19 +117,24 @@ public class MaxCubeBridge {
 
 	}
 
+	/**
+	 * Takes a command from the command queue and send it to
+	 * {@link executeCommand} for execution.
+	 * 
+	 */
 	public void sendCommands() {
-		// TODO Auto-generated method stub
 		SendCommand sendCommand = commandQueue.poll();
-		if (sendCommand!=null){}
-		
+		if (sendCommand!=null){
+			executeCommand (sendCommand);
+		}
 	}
+
 	/**
 	 * Connects to the Max!Cube Lan gateway and returns the read data 
 	 * corresponding Message.
 	 * 
 	 * @return the raw message text as ArrayList of String 
 	 */
-
 	private ArrayList<String> getRawMessage() {
 		//Fake a message for testing purposes
 		if (ipAddress.equals( "fakeMessage")){
@@ -137,40 +142,40 @@ public class MaxCubeBridge {
 			logger.warn("Content based on faked data!!");
 			return getRawFAKEMessage();
 		}
+		synchronized (MaxCubeBridge.class){
+			Socket socket = null;
+			BufferedReader reader = null;
+			ArrayList<String> rawMessage = new ArrayList<String> () ;
 
-		Socket socket = null;
-		BufferedReader reader = null;
-		ArrayList<String> rawMessage = new ArrayList<String> () ;
+			try {
+				String raw = null;
+				socket = new Socket(ipAddress, port);
+				reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-		try {
-			String raw = null;
-			socket = new Socket(ipAddress, port);
-			reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-			boolean cont = true;
-			while (cont) {
-				raw = reader.readLine();
-				if (raw == null) {
-					cont = false;
-					continue;
+				boolean cont = true;
+				while (cont) {
+					raw = reader.readLine();
+					if (raw == null) {
+						cont = false;
+						continue;
+					}
+					rawMessage.add(raw);
+					if (raw.startsWith("L:")) {
+						socket.close();
+						cont = false;
+						connectionEstablished = true;
+					}
 				}
-				rawMessage.add(raw);
-				if (raw.startsWith("L:")) {
-					socket.close();
-					cont = false;
-					connectionEstablished = true;
-				}
+			} catch (ConnectException  e) {
+				logger.debug("Connection timed out on {} port {}",ipAddress, port );
+				connectionEstablished = false;
+			} catch(Exception e) {
+				logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
+				connectionEstablished = false;
 			}
-		} catch (ConnectException  e) {
-			logger.debug("Connection timed out on {} port {}",ipAddress, port );
-			connectionEstablished = false;
-		} catch(Exception e) {
-			logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
-			connectionEstablished = false;
-		}
 
-		return rawMessage;
-	}
+			return rawMessage;
+		}}
 	/**
 	 * Processes the raw TCP data read from the MAX protocol, returning the
 	 * corresponding Message.
@@ -334,47 +339,44 @@ public class MaxCubeBridge {
 	}
 
 	/**
-	 * Processes device command and sends it to the MAX!Cube Lan Gateway.
+	 * Takes the device command and puts it on the command queue to be processed by the MAX!Cube Lan Gateway.
 	 * Note that if multiple commands for the same item-channel combination are send prior that they are processed
 	 * by the Max!Cube, they will be removed from the queue as they would not be meaningful. This will improve the behavior 
 	 * when using sliders in the GUI.
-	 * @param serialNumber
-	 *            the serial number of the device as String
-	 * @param channelUID
-	 *            the ChannelUID used to send the command
-	 * @param command
-	 *            the command data
+	 * @param SendCommand 
+	 *       	the SendCommand containing the serial number of the device as String
+	 * 			the channelUID used to send the command and the the command data
 	 */
-	public synchronized void processCommand(SendCommand sendCommand) {
-		
+	public synchronized void queueCommand(SendCommand sendCommand) {
+
 		if (commandQueue.offer(sendCommand)){
 			if (lastCommandId != null){	
-			if (lastCommandId.getKey().equals (sendCommand.getKey())){
-				if (commandQueue.remove (lastCommandId)) 
-					logger.debug("Removed Command id {} ({}) from queue. Superceeded by {}", lastCommandId.getId(),lastCommandId.getKey(),sendCommand.getId());
-			}}
+				if (lastCommandId.getKey().equals (sendCommand.getKey())){
+					if (commandQueue.remove (lastCommandId)) 
+						logger.debug("Removed Command id {} ({}) from queue. Superceeded by {}", lastCommandId.getId(),lastCommandId.getKey(),sendCommand.getId());
+				}}
 			lastCommandId = sendCommand;
 			logger.debug("Command queued id {} ({}).", sendCommand.getId(),sendCommand.getKey());
 
 		} else{
 			logger.debug("Command queued full dropping command id {} ({}).", sendCommand.getId(),sendCommand.getKey());
 		}
-				
+
 	}
 
-		
+
 	/**
 	 * Processes device command and sends it to the MAX!Cube Lan Gateway.
 	 * 
-	 * @param serialNumber
-	 *            the serial number of the device as String
-	 * @param channelUID
-	 *            the ChannelUID used to send the command
-	 * @param command
-	 *            the command data
+	 * @param SendCommand 
+	 *       	the SendCommand containing the serial number of the device as String
+	 * 			the channelUID used to send the command and the the command data
 	 */
-	public void executeCommand(String serialNumber, ChannelUID channelUID,
-			Command command) {
+	public void executeCommand(SendCommand sendCommand) {
+
+		String serialNumber = sendCommand.getDeviceSerial();
+		ChannelUID channelUID= sendCommand.getChannelUID();
+		Command command = sendCommand.getCommand();
 
 		// send command to MAX!Cube LAN Gateway
 		Device device = findDevice(serialNumber, devices);
@@ -401,7 +403,7 @@ public class MaxCubeBridge {
 				S_Command cmd = new S_Command(rfAddress, device.getRoomId(), decimalType.doubleValue());
 				commandString = cmd.getCommandString();
 			} 
-		//Mode setting
+			//Mode setting
 		} else if(channelUID.getId().equals(CHANNEL_MODE)) {
 			if (command instanceof StringType) {
 				String commandContent = command.toString().trim().toUpperCase();
@@ -418,29 +420,30 @@ public class MaxCubeBridge {
 				commandString = cmd.getCommandString();
 			}	
 		}
+		//Actual sending of the data to the Max!Cube Lan Gateway
+		synchronized (MaxCubeBridge.class){
+			if (commandString != null) {
+				Socket socket = null;
+				try {
+					socket = new Socket(ipAddress, port);
+					DataOutputStream stream = new DataOutputStream(socket.getOutputStream());
 
-		if (commandString != null) {
-			Socket socket = null;
-			try {
-				socket = new Socket(ipAddress, port);
-				DataOutputStream stream = new DataOutputStream(socket.getOutputStream());
+					byte[] b = commandString.getBytes();
+					stream.write(b);
+					socket.close();
 
-				byte[] b = commandString.getBytes();
-				stream.write(b);
-				socket.close();
-
-			} catch (UnknownHostException e) {
-				logger.warn("Cannot establish connection with MAX!cube lan gateway while sending command to '{}'", ipAddress);
-				logger.debug(Utils.getStackTrace(e));
-			} catch (IOException e) {
-				logger.warn("Cannot write data from MAX!Cube lan gateway while connecting to '{}'", ipAddress);
-				logger.debug(Utils.getStackTrace(e));
+				} catch (UnknownHostException e) {
+					logger.warn("Cannot establish connection with MAX!cube lan gateway while sending command to '{}'", ipAddress);
+					logger.debug(Utils.getStackTrace(e));
+				} catch (IOException e) {
+					logger.warn("Cannot write data from MAX!Cube lan gateway while connecting to '{}'", ipAddress);
+					logger.debug(Utils.getStackTrace(e));
+				}
+				logger.debug("Command {} ({}) sent to Max!Cube at IP: {}", sendCommand.getId(),sendCommand.getKey(),ipAddress);
+			} else {
+				logger.debug("Null Command not sent to {}", ipAddress);
 			}
-			logger.debug("Command Sent to {}", ipAddress);
-		} else {
-			logger.debug("Null Command not sent to {}", ipAddress);
-		}
-	}
+		}}
 
 
 
