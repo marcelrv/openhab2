@@ -49,7 +49,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService  {
 	private void discoverCube() {
 		String cubeSerialNumber = null;
 
-		HashMap<String, String > discoverResults = new HashMap<String, String>(MaxCubeDiscover.DiscoverCube());
+		HashMap<String, String > discoverResults = new HashMap<String, String>(MaxCubeDiscover.DiscoverCube(null));
 		if (discoverResults.containsKey(MaxCubeConfiguration.SERIAL_NUMBER)){
 			cubeSerialNumber = discoverResults.get(MaxCubeConfiguration.SERIAL_NUMBER);
 		}

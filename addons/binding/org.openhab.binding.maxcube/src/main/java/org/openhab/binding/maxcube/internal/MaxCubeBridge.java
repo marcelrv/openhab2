@@ -87,7 +87,7 @@ public class MaxCubeBridge {
 				logger.info("Discover Max!Cube Lan interface.");
 				this.ipAddress = discoveryGatewayIp();
 			} catch (ConfigurationException e) {
-				logger.warn("Cannot discover to Max!Cube Lan interface. Configure manually.");
+				logger.warn("Cannot discover to Max!Cube Lan interface. Configure IP address manually.");
 			}
 		}
 		//TODO: optional configuration to get the actual temperature on a configured interval by changing the valve / temp setting
@@ -284,7 +284,7 @@ public class MaxCubeBridge {
 		if (ip == null) {
 			throw new ConfigurationException("maxcube:ip", "IP address for MAX!Cube must be set manually");
 		} else {
-			logger.info("Discovered MAX!Cube lan gateway at '{}'", ip);
+			logger.info("Discovered MAX!Cube Lan Gateway at '{}'", ip);
 		}
 		return ip;
 	}

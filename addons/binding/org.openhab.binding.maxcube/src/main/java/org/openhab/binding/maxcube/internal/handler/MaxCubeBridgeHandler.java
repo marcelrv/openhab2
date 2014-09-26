@@ -96,10 +96,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 		logger.debug("Initializing MaxCube bridge handler.");
 
 		MaxCubeBridgeConfiguration configuration = getConfigAs(MaxCubeBridgeConfiguration.class);
-
-//		MaxCubeBridgeDiscovery test = new MaxCubeBridgeDiscovery ();
-//		test.startScan();
-//		initializeBridge();
 		if (configuration.refreshInterval != 0) {
 			logger.debug("MaxCube refreshInterval {}.", configuration.refreshInterval);
 			refreshInterval =  configuration.refreshInterval;}
@@ -112,7 +108,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 		if (bridge == null) {
 			bridge = new MaxCubeBridge (configuration.ipAddress);
 			if (configuration.port != 0) {
-				logger.debug("MaxCube Port {}.", configuration.port);
+				logger.trace("MaxCube Port {}.", configuration.port);
 				bridge.setPort ( configuration.port);
 			}
 			if (bridge.getIp()==null) {
