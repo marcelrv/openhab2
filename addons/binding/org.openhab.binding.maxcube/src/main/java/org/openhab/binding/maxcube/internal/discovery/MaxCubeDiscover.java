@@ -14,6 +14,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
+import java.net.SocketTimeoutException;
 import java.util.Enumeration;
 import java.util.HashMap;
 
@@ -27,21 +28,27 @@ import org.slf4j.LoggerFactory;
  * Automatic UDP discovery of a MAX!Cube Lan Gateway on the local network. 
  * 
  * @author Marcel Verpaalen, based on UDP client code of Michiel De Mey 
+ * @author Marcel Verpaalen, major revision for OH2 allowing discovery of a specific Max!Cube based on serial 
  * @since 1.4.0
  */
 public final class MaxCubeDiscover {
 
+	static final String MAXCUBE_DISCOVER_STRING ="eQ3Max*\0**********I";
+	static final String RFADDRESS ="rfAddress";
 	static Logger logger = LoggerFactory.getLogger(MaxCubeDiscover.class);
+	static boolean discoveryRunning = false;
 
 	/**
 	 * Automatic UDP discovery of a MAX!Cube
+	 * @param
 	 * @return if the cube is found, returns the IP address as a string. Otherwise returns null
 	 */
-	public synchronized final static String discoverIp () {
-		HashMap<String, String > discoverResults = new HashMap<String, String>(DiscoverCube());
+	public final static String discoverIp () {
+		HashMap<String, String > discoverResults = new HashMap<String, String>(DiscoverCube(null));
 		if (discoverResults.containsKey(MaxCubeBridgeConfiguration.IP_ADDRESS)){
 			return discoverResults.get(MaxCubeBridgeConfiguration.IP_ADDRESS);
 		} else {
+			logger.debug( "No Max!Cube Lan Gateway discovery on the network.");
 			return null;
 		}
 	}
@@ -50,20 +57,110 @@ public final class MaxCubeDiscover {
 	 * Automatic UDP discovery of a MAX!Cube
 	 * @return if the cube is found, returns the HashMap containing the details.
 	 */
-	public synchronized final static HashMap<String, String > DiscoverCube() {
-
+	public synchronized final static HashMap<String, String > DiscoverCube(final String cubeSerialNumber) {
+		discoveryRunning = true;
 		HashMap<String, String > discoverResults = new HashMap<String, String>();
 		String maxCubeIP = null;
 		String maxCubeName = null;
 		String serialNumber = null;
+		String rfAddress = null;
 
+		Thread thread = new Thread("Sendbroadcast"){
+			 public void run(){
+				 if (cubeSerialNumber !=null){
+				 sendBroadcastforDevice(cubeSerialNumber);
+				 } else {
+					 sendBroadcast();			
+				 }
+			try {
+				sleep(5000);
+			} catch (Exception e) {
+			}
+			discoveryRunning = false;
+			logger.trace( "Done sending broadcast discovery messages.");
+			 }
+		};
+		thread.start();
+		DatagramSocket bcReceipt = null;
+
+		try{
+			bcReceipt = new DatagramSocket(23272);
+			bcReceipt.setReuseAddress(true);
+			bcReceipt.setSoTimeout(10000);
+		
+			while (discoveryRunning){
+			//Wait for a response
+			byte[] recvBuf = new byte[1500];
+			DatagramPacket receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
+			bcReceipt.receive(receivePacket);
+
+			//We have a response
+			String message = new String(receivePacket.getData()).trim();
+			logger.trace( "Broadcast response from {} : {} '{}'", receivePacket.getAddress(),message.length(),message);
+
+			//Check if the message is correct
+			if (message.startsWith("eQ3Max") &&  !message.equals(MAXCUBE_DISCOVER_STRING)) {
+				maxCubeIP=receivePacket.getAddress().getHostAddress();
+				maxCubeName=message.substring(0, 8);
+				serialNumber=message.substring(8, 18);
+				byte[] unknownData=message.substring(18,21).getBytes();
+				rfAddress=Utils.getHex(message.substring(21).getBytes()).replace(" ", "").toLowerCase();
+				logger.info("Max!Cube found on network");
+				logger.debug("Found at  : {}", maxCubeIP);
+				logger.debug("Name      : {}", maxCubeName);
+				logger.debug("Serial    : {}", serialNumber);
+				logger.debug("RF Address: {}", rfAddress);
+				logger.trace("Unknown   : {}", Utils.getHex(unknownData));
+			}
+			}
+		} catch (SocketTimeoutException ex) {
+			logger.debug("No further response");
+		} catch (IOException ex) {
+			logger.debug(ex.toString());
+		} finally {
+			//Close the port!		
+			try {
+				if (bcReceipt !=null) 
+					bcReceipt.close();
+			}	catch (Exception e) {
+				logger.debug(e.toString());
+			}
+		}
+		//TODO add this to a discoverResults array to deal with possible multiple Lan gateways on the network
+		discoverResults.put(MaxCubeBridgeConfiguration.IP_ADDRESS, maxCubeIP);
+		discoverResults.put(MaxCubeConfiguration.FRIENDLY_NAME, maxCubeName);
+		discoverResults.put(MaxCubeConfiguration.SERIAL_NUMBER, serialNumber);
+		discoverResults.put(RFADDRESS, serialNumber);
+		return discoverResults;
+	}
+
+	/**
+	 * Send broadcast message over all active interfaces for a specific device
+	 * @param serialnumber of the Max!Cube lan gateway searched.
+	 */
+	private static void sendBroadcastforDevice(String serialnumber) { 
+		sendBroadcastMessage ("eQ3Max*\0" + serialnumber + "I");
+	}
+
+	/**
+	 * Send a generic broadcast message over all active interfaces to find all devices
+	 */
+	private static void sendBroadcast() { 
+		sendBroadcastMessage (MAXCUBE_DISCOVER_STRING);
+	}
+
+	/**
+	 * Send broadcast message over all active interfaces
+	 * @param discoverString String to be used for the discovery
+	 */
+	private static void sendBroadcastMessage(String discoverString) {
 		DatagramSocket bcSend = null;
 		//Find the MaxCube using UDP broadcast
 		try {
 			bcSend = new DatagramSocket();
 			bcSend.setBroadcast(true);
-
-			byte[] sendData = "eQ3Max*\0**********I".getBytes();
+			
+			byte[] sendData = discoverString.getBytes();
 
 			// Broadcast the message over all the network interfaces
 			Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
@@ -81,6 +178,7 @@ public final class MaxCubeDiscover {
 					}
 
 					//ugly hack to workaround Java issue of wrong broadcast address for Wlan devices 
+					//http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7158636
 							byte[] networkIpAddress = interfaceAddress.getAddress().getAddress();
 							byte[] broadcastIpAddress = broadcast.getAddress();
 						
@@ -116,92 +214,7 @@ public final class MaxCubeDiscover {
 			}	catch (Exception e) {
 				logger.debug(e.toString());
 			}}
-
-		logger.debug( "Done looping over all network interfaces. Now waiting for a reply!");
-		DatagramSocket bcReceipt = null;
-		try{
-			bcReceipt = new DatagramSocket(23272);
-			bcReceipt.setReuseAddress(true);
-			bcReceipt.setSoTimeout(10000);
-			//Wait for a response
-			byte[] recvBuf = new byte[15000];
-			DatagramPacket receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
-			bcReceipt.receive(receivePacket);
-
-			//We have a response
-			logger.trace( "Broadcast response from server: {}", receivePacket.getAddress());
-
-			//Check if the message is correct
-			String message = new String(receivePacket.getData()).trim();
-			if (message.startsWith("eQ3Max")) {
-				maxCubeIP=receivePacket.getAddress().getHostAddress();
-				maxCubeName=message.substring(0, 8);
-				serialNumber=message.substring(8, 18);
-				logger.debug("Found at: {}", maxCubeIP);
-				logger.debug("Name    : {}", maxCubeName);
-				logger.debug("Serial  : {}", serialNumber);
-				logger.trace("Message : {}", message);
-
-			} else {
-				logger.info("No Max!Cube gateway found on network");
-			}
-
-		} catch (IOException ex) {
-			logger.debug(ex.toString());
-		} finally {
-			//Close the port!		
-			try {
-				if (bcReceipt !=null) 
-					bcReceipt.close();
-			}	catch (Exception e) {
-				logger.debug(e.toString());
-			}
-		}
-
-		discoverResults.put(MaxCubeBridgeConfiguration.IP_ADDRESS, maxCubeIP);
-		discoverResults.put(MaxCubeConfiguration.FRIENDLY_NAME, maxCubeName);
-		discoverResults.put(MaxCubeConfiguration.SERIAL_NUMBER, serialNumber);
-		return discoverResults;
+		 
 	}
-
-
-public static void test(){
-	DatagramSocket bcReceipt = null;
-	try{
-		bcReceipt = new DatagramSocket(23272);
-		bcReceipt.setReuseAddress(true);
-		bcReceipt.setSoTimeout(3000);
-		//Wait for a response
-		byte[] recvBuf = new byte[15000];
-		DatagramPacket receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
-		bcReceipt.receive(receivePacket);
-
-		//We have a response
-		logger.trace( "Broadcast response from server: {}", receivePacket.getAddress());
-
-		//Check if the message is correct
-		String message = new String(receivePacket.getData()).trim();
-		if (message.startsWith("eQ3Max")) {
-			String maxCubeIP=receivePacket.getAddress().getHostAddress();
-			String maxCubeName=message.substring(0, 8);
-			String  serialNumber=message.substring(8, 18);
-			logger.debug("Found at: {}", maxCubeIP);
-			logger.debug("Name    : {}", maxCubeName);
-			logger.debug("Serial  : {}", serialNumber);
-			logger.trace("Message : {}", message);
-
-		} else {
-			logger.info("No Max!Cube gateway found on network");
-		}
-
-	} catch (IOException ex) {
-		logger.debug(ex.toString());
-	}
-
-try {
-	if (bcReceipt !=null) 
-		bcReceipt.close();
-}	catch (Exception e) {
-	logger.debug(e.toString());
-}}}
+}
 
