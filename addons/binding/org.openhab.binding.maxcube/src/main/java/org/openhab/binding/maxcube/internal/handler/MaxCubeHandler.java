@@ -12,6 +12,7 @@ import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_BATTERY;
 import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_MODE;
 import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_SETTEMP;
 import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_VALVE;
+import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_SWITCH_STATE;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,8 +31,10 @@ import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.maxcube.config.MaxCubeConfiguration;
 import org.openhab.binding.maxcube.internal.MaxCubeBridge;
 import org.openhab.binding.maxcube.internal.message.Device;
+import org.openhab.binding.maxcube.internal.message.EcoSwitch;
 import org.openhab.binding.maxcube.internal.message.HeatingThermostat;
 import org.openhab.binding.maxcube.internal.message.SendCommand;
+import org.openhab.binding.maxcube.internal.message.ShutterContact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -177,8 +180,13 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 				updateState(new ChannelUID(getThing().getUID(), CHANNEL_VALVE), (State) ( (HeatingThermostat) device).getValvePosition());
 				break;
 			case ShutterContact:
+				updateState(new ChannelUID(getThing().getUID(), CHANNEL_SWITCH_STATE), (State) ( (ShutterContact) device).getShutterState());
+				updateState(new ChannelUID(getThing().getUID(), CHANNEL_BATTERY), (State) ( (ShutterContact) device).getBatteryLow());
+				break;
 			case EcoSwitch:
-				updateState(new ChannelUID(getThing().getUID(), CHANNEL_BATTERY), (State) ( (HeatingThermostat) device).getBatteryLow());
+				updateState(new ChannelUID(getThing().getUID(), CHANNEL_SWITCH_STATE), (State) ( (EcoSwitch) device).getShutterState());
+				updateState(new ChannelUID(getThing().getUID(), CHANNEL_BATTERY), (State) ( (EcoSwitch) device).getBatteryLow());
+				break;
 			default:
 				logger.debug("Unhandled Device {}.",device.getType());
 				break;

@@ -22,7 +22,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.maxcube.config.MaxCubeBridgeConfiguration;
 import org.openhab.binding.maxcube.internal.MaxCubeBridge;
-import org.openhab.binding.maxcube.internal.discovery.MaxCubeBridgeDiscovery;
 import org.openhab.binding.maxcube.internal.message.Device;
 import org.openhab.binding.maxcube.internal.message.SendCommand;
 import org.slf4j.Logger;
@@ -119,12 +118,12 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	}
 
 	private synchronized void startAutomaticRefresh() {
-			if (pollingJob == null || pollingJob.isCancelled()) {
-				pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, 0, refreshInterval, TimeUnit.MILLISECONDS);
-			}
-			if (sendCommandJob == null || sendCommandJob.isCancelled()) {
-				sendCommandJob = scheduler.scheduleAtFixedRate(sendCommandRunnable, 0, sendCommandInterval, TimeUnit.MILLISECONDS);
-			 
+		if (pollingJob == null || pollingJob.isCancelled()) {
+			pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, 0, refreshInterval, TimeUnit.MILLISECONDS);
+		}
+		if (sendCommandJob == null || sendCommandJob.isCancelled()) {
+			sendCommandJob = scheduler.scheduleAtFixedRate(sendCommandRunnable, 0, sendCommandInterval, TimeUnit.MILLISECONDS);
+
 		}
 	}
 
@@ -142,7 +141,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	private synchronized void refreshData() {
 
 		if (bridge==null){
-			
+
 			initializeBridge() ;
 		}
 		try {
@@ -227,9 +226,9 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	}
 
 	public void clearDeviceList(){
-	lastActiveDevices=null;
+		lastActiveDevices=null;
 	}
-	
+
 	/**
 	 * Processes device command and sends it to the MAX!Cube Lan Gateway.
 	 * 

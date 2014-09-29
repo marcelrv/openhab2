@@ -30,6 +30,30 @@
         </config-description>
 	</thing-type>
 
+	<!-- All Switches (EcoSwitch, Pushbutton/ShutterContact) -->
+	<thing-type id="switch">
+	    <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge" />
+        </supported-bridge-type-refs>
+	
+		<label>MaxCube Switches</label>
+		<description>MaxCube All Switches (EcoSwitch, Pushbutton/ShutterContact)</description>
+
+		<channels>
+			<channel id="state" typeId="switch_state-channel" />
+			<channel id="battery" typeId="battery-channel" />
+
+		</channels>
+
+        <config-description>
+            <parameter name="serialNumber" type="text">
+                <label>Serial Number</label>
+                <description>The Serial Number identifier identifies one specific device.</description>
+                <required>true</required>
+            </parameter>
+        </config-description>
+	</thing-type>
+
 	<channel-type id="valve-channel">
 		<item-type>maxcubeItem</item-type>
 		<label>Valve Position Channel</label>
@@ -60,5 +84,11 @@
 		<description>Thermostat temperature setpoint</description>
 	</channel-type>
 
+
+		<channel-type id="switch_state-channel">
+		<item-type>maxcubeItem</item-type>
+		<label>Switch state Channel</label>
+		<description>Switch state information</description>
+	</channel-type>
 
 </thing:thing-descriptions>
