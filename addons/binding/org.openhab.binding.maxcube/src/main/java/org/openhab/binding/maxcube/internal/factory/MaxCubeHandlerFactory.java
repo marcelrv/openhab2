@@ -35,88 +35,91 @@ import org.slf4j.LoggerFactory;
  */
 
 public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
-    
-	 private Logger logger = LoggerFactory.getLogger(MaxCubeHandlerFactory.class);
-    private ServiceRegistration<?> discoveryServiceReg;
 
-    
-    @Override
-    public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
-            ThingUID thingUID, ThingUID bridgeUID) {
-    	
-    	logger.debug("Thing createThing run");
-        if (MaxCubeBinding.CubeBridge_THING_TYPE.equals(thingTypeUID)) {
-            ThingUID cubeBridgeUID = getBridgeThingUID(thingTypeUID, thingUID, configuration);
-            return super.createThing(thingTypeUID, configuration, cubeBridgeUID, null);
-        }
-        if (MaxCubeBinding.HEATHINGTHERMOSTAT_THING_TYPE.equals(thingTypeUID)) {
-            ThingUID thermostatUID = getThermostatUID(thingTypeUID, thingUID, configuration, bridgeUID);
-             return super.createThing(thingTypeUID, configuration, thermostatUID , bridgeUID);
-        }
-        throw new IllegalArgumentException("The thing type " + thingTypeUID
-                + " is not supported by the MaxCube binding.");
-    }
-    
-    @Override
-    public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-    	logger.debug("Thing supportsThingType run");
-        return MaxCubeBinding.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
-    }
+	private Logger logger = LoggerFactory.getLogger(MaxCubeHandlerFactory.class);
+	private ServiceRegistration<?> discoveryServiceReg;
 
-  
-    private ThingUID getBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID,
-            Configuration configuration) {
-    	logger.debug("mybridgethingie Thing supportsThingType run");
-        if (thingUID == null) {
-            String ipAddress = (String) configuration.get(MaxCubeBridgeConfiguration.IP_ADDRESS);
-            thingUID = new ThingUID(thingTypeUID, ipAddress);
-        }
-        return thingUID;
-    }
 
-    private ThingUID getThermostatUID(ThingTypeUID thingTypeUID, ThingUID thingUID,
-            Configuration configuration , ThingUID bridgeUID ) {
-         String SerialNumber = (String) configuration.get(MaxCubeConfiguration.SERIAL_NUMBER);
+	@Override
+	public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
+			ThingUID thingUID, ThingUID bridgeUID) {
 
-        if (thingUID == null) {
-            thingUID = new ThingUID(thingTypeUID, "Device" + SerialNumber , bridgeUID.getId());
-        }
-        return thingUID;
-    }
-    
+		logger.debug("Thing createThing run");
+		if (MaxCubeBinding.CubeBridge_THING_TYPE.equals(thingTypeUID)) {
+			ThingUID cubeBridgeUID = getBridgeThingUID(thingTypeUID, thingUID, configuration);
+			return super.createThing(thingTypeUID, configuration, cubeBridgeUID, null);
+		}
+		if (MaxCubeBinding.HEATHINGTHERMOSTAT_THING_TYPE.equals(thingTypeUID)) {
+			ThingUID thermostatUID = getMaxCubeDeviceUID(thingTypeUID, thingUID, configuration, bridgeUID);
+			return super.createThing(thingTypeUID, configuration, thermostatUID , bridgeUID);
+		}
+		if (MaxCubeBinding.SWITCH_THING_TYPE.equals(thingTypeUID)) {
+			ThingUID thermostatUID = getMaxCubeDeviceUID(thingTypeUID, thingUID, configuration, bridgeUID);
+			return super.createThing(thingTypeUID, configuration, thermostatUID , bridgeUID);
+		}
+		throw new IllegalArgumentException("The thing type " + thingTypeUID
+				+ " is not supported by the MaxCube binding.");
+	}
 
-    
-    private void registerDeviceDiscoveryService(MaxCubeBridgeHandler maxCubeBridgeHandler) {
-    	MaxCubeDevicesDiscover discoveryService = new MaxCubeDevicesDiscover(maxCubeBridgeHandler);
-    	discoveryService.activate();
-    	this.discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>());
-    }
-    
-    @Override
-    protected void removeHandler(ThingHandler thingHandler) {
-    	if(this.discoveryServiceReg!=null) {
-    		MaxCubeDevicesDiscover service = (MaxCubeDevicesDiscover) bundleContext.getService(discoveryServiceReg.getReference());
-    		service.deactivate();
-    		discoveryServiceReg.unregister();
-    		discoveryServiceReg = null;
-    	}
-    }
-    
-    @Override
-    protected ThingHandler createHandler(Thing thing) {
-    	logger.debug("ThingHandler createHandler run");
-        if (thing.getThingTypeUID().equals(MaxCubeBinding.CubeBridge_THING_TYPE)) {
-            MaxCubeBridgeHandler handler = new MaxCubeBridgeHandler((Bridge) thing);
-  //TODO: FIX
-            registerDeviceDiscoveryService(handler);
-            return handler;
+	@Override
+	public boolean supportsThingType(ThingTypeUID thingTypeUID) {
+		logger.debug("Thing supportsThingType run");
+		return MaxCubeBinding.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+	}
 
-        } else if (thing.getThingTypeUID().equals(MaxCubeBinding.HEATHINGTHERMOSTAT_THING_TYPE)) {
-            return new MaxCubeHandler(thing);
-        } else {
-        	logger.debug("ThingHandler createHandler return null");
-            return null;
-        }
-    }
+
+	private ThingUID getBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID,
+			Configuration configuration) {
+		if (thingUID == null) {
+			//TODO: Should this look at IP or at serial #
+			String ipAddress = (String) configuration.get(MaxCubeBridgeConfiguration.IP_ADDRESS);
+			thingUID = new ThingUID(thingTypeUID, ipAddress);
+		}
+		return thingUID;
+	}
+
+	private ThingUID getMaxCubeDeviceUID(ThingTypeUID thingTypeUID, ThingUID thingUID,
+			Configuration configuration , ThingUID bridgeUID ) {
+		String SerialNumber = (String) configuration.get(MaxCubeConfiguration.SERIAL_NUMBER);
+
+		if (thingUID == null) {
+			thingUID = new ThingUID(thingTypeUID, "Device" + SerialNumber , bridgeUID.getId());
+		}
+		return thingUID;
+	}
+
+
+
+	private void registerDeviceDiscoveryService(MaxCubeBridgeHandler maxCubeBridgeHandler) {
+		MaxCubeDevicesDiscover discoveryService = new MaxCubeDevicesDiscover(maxCubeBridgeHandler);
+		discoveryService.activate();
+		this.discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>());
+	}
+
+	@Override
+	protected void removeHandler(ThingHandler thingHandler) {
+		if(this.discoveryServiceReg!=null) {
+			MaxCubeDevicesDiscover service = (MaxCubeDevicesDiscover) bundleContext.getService(discoveryServiceReg.getReference());
+			service.deactivate();
+			discoveryServiceReg.unregister();
+			discoveryServiceReg = null;
+		}
+	}
+
+	@Override
+	protected ThingHandler createHandler(Thing thing) {
+		if (thing.getThingTypeUID().equals(MaxCubeBinding.CubeBridge_THING_TYPE)) {
+			MaxCubeBridgeHandler handler = new MaxCubeBridgeHandler((Bridge) thing);
+			registerDeviceDiscoveryService(handler);
+			return handler;
+		} else if (thing.getThingTypeUID().equals(MaxCubeBinding.SWITCH_THING_TYPE)) {
+			return new MaxCubeHandler(thing);            
+		} else if (thing.getThingTypeUID().equals(MaxCubeBinding.HEATHINGTHERMOSTAT_THING_TYPE)) {
+			return new MaxCubeHandler(thing);
+		} else {
+			logger.debug("ThingHandler createHandler return null");
+			return null;
+		}
+	}
 
 }

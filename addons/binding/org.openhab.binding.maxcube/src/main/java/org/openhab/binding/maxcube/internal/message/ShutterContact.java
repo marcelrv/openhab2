@@ -45,12 +45,6 @@ public class ShutterContact extends Device {
 	}
 
 	@Override
-	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Calendar getLastUpdate() {
 		// TODO Auto-generated method stub
 		return null;
