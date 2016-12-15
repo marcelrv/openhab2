@@ -33,4 +33,17 @@ Optional configuration is the number of Wind Parts ("Wind Delen") and the refres
 
 
 ## Full example
-N/A
+```
+Group   gReiger "WindCentrale Reiger"   <wind>
+
+Number  ReigerWindSpeed         "Wind Snelheid[%1.0f Bf]"         <wind>    (gReiger) {channel="windcentrale:mill:reiger:windSpeed")
+String  ReigerWindDirection     "Wind Richting [%s]"              <wind>    (gReiger) {channel="windcentrale:mill:reiger:windDirection")
+Number  ReigerPowerAbsTot       "Productie molen [%1.0f kW]"      <wind>    (gReiger) {channel="windcentrale:mill:reiger:powerAbsTot")
+Number  ReigerPowerAbsWd        "WD Power [%1.0f W]"              <wind>    (gReiger) {channel="windcentrale:mill:reiger:powerAbsWd")
+Number  ReigerPowerRel          "Productie Vermogen [%1.0f %%]"   <wind>    (gReiger) {channel="windcentrale:mill:reiger:powerRel")
+Number  ReigerKwh               "kwh [%1.0f]"                     <wind>    (gReiger) {channel="windcentrale:mill:reiger:kwh")
+Number  ReigerKwhForecast       "Productie Forecast [%1.0f]"      <wind>    (gReiger) {channel="windcentrale:mill:reiger:kwhForecast")
+Number  ReigerRunPercentage     "Run Percentage [%1.0f %%]"       <wind>    (gReiger) {channel="windcentrale:mill:reiger:runPercentage")
+Number  ReigerTimestamp         "Update Timestamp [%1$ta %1$tR]"  <wind>    (gReiger) {channel="windcentrale:mill:reiger:timestamp")
+
+```
