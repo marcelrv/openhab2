@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="jointspace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="tv">
+		<label>Philips Television</label>
+
+		<channels>
+			<channel id="windSpeed" typeId="windSpeedType" />
+			<channel id="windDirection" typeId="windDirectionType" />
+			<channel id="powerAbsTot" typeId="powerKType">
+				<label>Total Power</label>
+			</channel>
+			<channel id="powerAbsWd" typeId="powerType">
+				<label>WD Power</label>
+			</channel>
+			<channel id="powerRel" typeId="powerRelType">
+			</channel>
+
+			<channel id="kwh" typeId="energyType">
+			</channel>
+			<channel id="kwhForecast" typeId="energyType">
+				<label>Energy Forecast</label>
+			</channel>
+			<channel id="runPercentage" typeId="powerRelType">
+				<label>Run Percentage</label>
+				<description>Run Percentage this year</description>
+			</channel>
+			<channel id="timestamp" typeId="timestampType" />
+		</channels>
+
+		<properties>
+			<property name="vendor">Philips</property>
+		</properties>
+
+		<config-description>
+		          <parameter name="ipAddress" type="text" required="true" groupName="network">
+                <context>network-address</context>
+                <label>IP Address of TV</label>
+                <description>The IP address of Philips television
+                </description>
+            </parameter>
+            <parameter name="port" type="integer" required="false" min="1" max="65335" groupName="network">
+                <context>network-address</context>
+                <label>port</label>
+                <description>Port of the LAN gateway</description>
+                <default>1925</default>
+                <advanced>true</advanced>
+            </parameter>
+			     <parameter name="udn" type="text" required="true" groupName="network">
+                <context>network-address</context>
+                <label>UDN</label>
+                <description>UDN address
+                </description>
+            </parameter>
+            
+				</config-description>
+	</thing-type>
+
+	<channel-type id="windSpeedType">
+		<item-type>Number</item-type>
+		<label>Wind Speed</label>
+		<category>Wind</category>
+		<state pattern="%.1d Bft" readOnly="true" />
+	</channel-type>
+	<channel-type id="windDirectionType">
+		<item-type>String</item-type>
+		<label>Wind Direction</label>
+		<state pattern="%s" readOnly="true" />
+	</channel-type>
+	<channel-type id="powerRelType">
+		<item-type>Number</item-type>
+		<label>Relative Power</label>
+		<category>Energy</category>
+		<state pattern="%.1f %%" readOnly="true" />
+	</channel-type>
+	<channel-type id="powerType">
+		<item-type>Number</item-type>
+		<label>Power</label>
+		<category>Energy</category>
+		<state pattern="%.1f Wh" readOnly="true" />
+	</channel-type>
+	<channel-type id="powerKType">
+		<item-type>Number</item-type>
+		<label>Power</label>
+		<category>Energy</category>
+		<state pattern="%.1f kWh" readOnly="true" />
+	</channel-type>
+	<channel-type id="energyType">
+		<item-type>Number</item-type>
+		<label>Energy</label>
+		<category>Energy</category>
+		<state pattern="%.0f kWh" readOnly="true" />
+	</channel-type>
+	<channel-type id="timestampType">
+		<item-type>DateTime</item-type>
+		<label>Last Updated</label>
+		<category>Date</category>
+		<state readOnly="true" />
+	</channel-type>
+</thing:thing-descriptions>
