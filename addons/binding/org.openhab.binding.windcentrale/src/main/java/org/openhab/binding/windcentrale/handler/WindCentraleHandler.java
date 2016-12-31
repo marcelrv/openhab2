@@ -31,12 +31,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-/*
-import com.google.gson.JsonArray;
-  import com.google.gson.JsonElement;
-  import com.google.gson.JsonObject;
-  import com.google.gson.JsonParser;
-*/
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -119,8 +113,6 @@ public class WindCentraleHandler extends BaseThingHandler {
         logger.debug("Update WindMolen data '{}'", getThing().getUID());
 
         try {
-
-            //String getMillData = "{\"powerProducerId\":\"563fbecd-d6f8-4d5e-9c3a-5e8577c7e256\",\"windSpeed\":4.0,\"windDirection\":\"NW\",\"powerAbsTot\":141.0,\"powerAbsWd\":26.0,\"powerRel\":17.0,\"diameter\":29.0,\"rpm\":22.4,\"pulsating\":false,\"kwh\":1459683.0,\"kwhForecast\":2767000.0,\"hoursRunThisYear\":4606.0,\"runPercentage\":97.98130630630631,\"windSpeedForecast\":3.0,\"windDirectionForecast\":\"NW\",\"timestamp\":\"2016-07-14T11:30:08\"}";
             String getMillData = getMillData();
             JsonParser parser = new JsonParser();
             JsonObject millData = (JsonObject) parser.parse(getMillData);
