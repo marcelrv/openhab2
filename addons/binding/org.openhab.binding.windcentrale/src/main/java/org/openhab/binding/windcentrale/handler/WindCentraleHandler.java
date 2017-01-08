@@ -74,7 +74,7 @@ public class WindCentraleHandler extends BaseThingHandler {
             millId = 1;
         }
 
-        param = getConfig().get(PROPERTY_WD);
+        param = getConfig().get(PROPERTY_QTY_WINDDELEN);
         if (param instanceof BigDecimal && param != null) {
             wd = (BigDecimal) param;
         } else {

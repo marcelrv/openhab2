@@ -41,7 +41,7 @@ public class WindCentraleBindingConstants {
     public final static String CHANNEL_LAST_UPDATE = "timestamp";
 
     public final static String PROPERTY_MILL_ID = "millId";
-    public final static String PROPERTY_WD = "wd";
+    public final static String PROPERTY_QTY_WINDDELEN = "wd";
     public final static String PROPERTY_REFRESH_INTERVAL = "refreshInterval";
 
 }
