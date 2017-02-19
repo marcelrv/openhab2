@@ -1,10 +1,10 @@
-# WindCentraleBinding
+# WindcentraleBinding
 
-This Binding is used to display the details of a WindCentrale wind mill. 
+This Binding is used to display the details of a Windcentrale wind mill. 
 
 ## Supported Things
 
-This Binding supports WindCentrale mills devices.
+This Binding supports Windcentrale mills devices.
 
 ## Discovery
 
@@ -17,7 +17,7 @@ No binding configuration required.
 ## Thing Configuration
 
 The thing mandatory configuration is the selection of the mill.
-Optional configuration is the number of Wind Parts ("Wind Delen") and the refresh interval.
+Optional configuration is the number of wind shares ("Winddelen") and the refresh interval.
 
 ## Channels
 
@@ -34,7 +34,7 @@ Optional configuration is the number of Wind Parts ("Wind Delen") and the refres
 
 ## Full example
 ```
-Group   gReiger "WindCentrale Reiger"   <wind>
+Group   gReiger "Windcentrale Reiger"   <wind>
 
 Number  ReigerWindSpeed         "Wind Snelheid[%1.0f Bf]"         <wind>    (gReiger) {channel="windcentrale:mill:reiger:windSpeed")
 String  ReigerWindDirection     "Wind Richting [%s]"              <wind>    (gReiger) {channel="windcentrale:mill:reiger:windDirection")

@@ -4,39 +4,27 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="mill">
-		<label>WindCentrale Wind Mill</label>
+		<label>Windcentrale Wind Mill</label>
 
 		<channels>
-			<channel id="windSpeed" typeId="windSpeedType" />
-			<channel id="windDirection" typeId="windDirectionType" />
-			<channel id="powerAbsTot" typeId="powerKType">
-				<label>Total Power</label>
-			</channel>
-			<channel id="powerAbsWd" typeId="powerType">
-				<label>WD Power</label>
-			</channel>
-			<channel id="powerRel" typeId="powerRelType">
-			</channel>
-
-			<channel id="kwh" typeId="energyType">
-			</channel>
-			<channel id="kwhForecast" typeId="energyType">
-				<label>Energy Forecast</label>
-			</channel>
-			<channel id="runPercentage" typeId="powerRelType">
-				<label>Run Percentage</label>
-				<description>Run Percentage this year</description>
-			</channel>
-			<channel id="timestamp" typeId="timestampType" />
+			<channel id="windSpeed" typeId="windSpeed" />
+			<channel id="windDirection" typeId="windDirection" />
+			<channel id="powerAbsTot" typeId="powerAbsTot" />
+			<channel id="powerAbsWd" typeId="powerAbsWd" />
+			<channel id="powerRel" typeId="powerRel" />
+			<channel id="kwh" typeId="kwh" />
+			<channel id="kwhForecast" typeId="kwhForecast" />
+			<channel id="runPercentage" typeId="runPercentage" />
+			<channel id="timestamp" typeId="timestamp" />
 		</channels>
 
 		<properties>
-			<property name="vendor">WindCentrale</property>
+			<property name="vendor">Windcentrale</property>
 		</properties>
 
 		<config-description>
 			<parameter name="millId" type="integer" required="true">
-				<label>WindMill</label>
+				<label>Wind Mill</label>
 				<options>
 					<option value="1">De Grote Geert</option>
 					<option value="2">De Jonge Held</option>
@@ -52,55 +40,68 @@
 				<default>131</default>
 			</parameter>
 			<parameter name="wd" type="integer" required="false">
-				<label>Wind Parts</label>
-				<description># of wind parts ("winddelen")</description>
+				<label>Wind Shares</label>
+				<description># of wind shares ("Winddelen")</description>
 				<default>1</default>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="1" max="9999" required="false">
 				<label>Refresh Interval</label>
-				<description>Refresh Interval for refreshing the data in s</description>
+				<description>Refresh interval for refreshing the data in s</description>
 				<default>30</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
 
-	<channel-type id="windSpeedType">
+	<channel-type id="windSpeed">
 		<item-type>Number</item-type>
 		<label>Wind Speed</label>
 		<category>Wind</category>
 		<state pattern="%.1d Bft" readOnly="true" />
 	</channel-type>
-	<channel-type id="windDirectionType">
+	<channel-type id="windDirection">
 		<item-type>String</item-type>
 		<label>Wind Direction</label>
 		<state pattern="%s" readOnly="true" />
 	</channel-type>
-	<channel-type id="powerRelType">
+	<channel-type id="powerRel">
 		<item-type>Number</item-type>
 		<label>Relative Power</label>
 		<category>Energy</category>
 		<state pattern="%.1f %%" readOnly="true" />
 	</channel-type>
-	<channel-type id="powerType">
+	<channel-type id="runPercentage">
 		<item-type>Number</item-type>
-		<label>Power</label>
+		<label>Run Percentage</label>
+		<description>Run percentage this year</description>
 		<category>Energy</category>
-		<state pattern="%.1f Wh" readOnly="true" />
+		<state pattern="%.1f %%" readOnly="true" />
 	</channel-type>
-	<channel-type id="powerKType">
+	<channel-type id="powerAbsWd">
 		<item-type>Number</item-type>
-		<label>Power</label>
+		<label>Wind Shares Power</label>
 		<category>Energy</category>
-		<state pattern="%.1f kWh" readOnly="true" />
+		<state pattern="%.1f W" readOnly="true" />
 	</channel-type>
-	<channel-type id="energyType">
+	<channel-type id="powerAbsTot">
+		<item-type>Number</item-type>
+		<label>Total Power</label>
+		<category>Energy</category>
+		<state pattern="%.1f kW" readOnly="true" />
+	</channel-type>
+	<channel-type id="kwh">
 		<item-type>Number</item-type>
 		<label>Energy</label>
 		<category>Energy</category>
 		<state pattern="%.0f kWh" readOnly="true" />
 	</channel-type>
-	<channel-type id="timestampType">
+	<channel-type id="kwhForecast">
+		<item-type>Number</item-type>
+		<label>Energy Forecast</label>
+		<category>Energy</category>
+		<state pattern="%.0f kWh" readOnly="true" />
+	</channel-type>
+	<channel-type id="timestamp">
 		<item-type>DateTime</item-type>
 		<label>Last Updated</label>
 		<category>Date</category>

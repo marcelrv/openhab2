@@ -9,9 +9,9 @@
     http://www.eclipse.org/legal/epl-v10.html
 
 -->
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.windcentrale.internal.WindCentraleHandlerFactory">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.windcentrale.internal.WindcentraleHandlerFactory">
 
-   <implementation class="org.openhab.binding.windcentrale.internal.WindCentraleHandlerFactory"/>
+   <implementation class="org.openhab.binding.windcentrale.internal.WindcentraleHandlerFactory"/>
 
    <service>
       <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>

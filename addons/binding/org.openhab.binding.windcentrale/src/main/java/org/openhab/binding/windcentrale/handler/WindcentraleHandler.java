@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2014-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,13 +8,13 @@
  */
 package org.openhab.binding.windcentrale.handler;
 
-import static org.openhab.binding.windcentrale.WindCentraleBindingConstants.*;
+import static org.openhab.binding.windcentrale.WindcentraleBindingConstants.*;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -35,19 +35,22 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-/* The {@link WindCentraleHandler} is responsible for handling commands, which are
+/**
+ * The {@link WindcentraleHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Marcel Verpaalen - Initial contribution
  */
-public class WindCentraleHandler extends BaseThingHandler {
+public class WindcentraleHandler extends BaseThingHandler {
 
+    public final static String BASE_URL = "https://zep-api.windcentrale.nl/production/";
     private int millId = 131;
-    BigDecimal wd = BigDecimal.ONE;
-    private Logger logger = LoggerFactory.getLogger(WindCentraleHandler.class);
+    private URL millUrl;
+    private BigDecimal wd = BigDecimal.ONE;
+    private Logger logger = LoggerFactory.getLogger(WindcentraleHandler.class);
     private ScheduledFuture<?> pollingJob;
 
-    public WindCentraleHandler(Thing thing) {
+    public WindcentraleHandler(Thing thing) {
         super(thing);
     }
 
@@ -63,19 +66,19 @@ public class WindCentraleHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing WindCentrale handler '{}'", getThing().getUID());
+        logger.debug("Initializing Windcentrale handler '{}'", getThing().getUID());
 
         Object param;
 
         param = getConfig().get(PROPERTY_MILL_ID);
-        if (param instanceof BigDecimal && param != null) {
+        if (param instanceof BigDecimal) {
             millId = ((BigDecimal) param).intValue();
         } else {
             millId = 1;
         }
 
         param = getConfig().get(PROPERTY_QTY_WINDDELEN);
-        if (param instanceof BigDecimal && param != null) {
+        if (param instanceof BigDecimal) {
             wd = (BigDecimal) param;
         } else {
             wd = BigDecimal.ONE;
@@ -83,13 +86,22 @@ public class WindCentraleHandler extends BaseThingHandler {
 
         int pollingPeriod = 30;
         param = getConfig().get(PROPERTY_REFRESH_INTERVAL);
-        if (param instanceof BigDecimal && param != null) {
+        if (param instanceof BigDecimal) {
             pollingPeriod = ((BigDecimal) param).intValue();
         }
 
-        updateProperty(Thing.PROPERTY_VENDOR, "WindCentrale");
+        updateProperty(Thing.PROPERTY_VENDOR, "Windcentrale");
         updateProperty(Thing.PROPERTY_MODEL_ID, "WindMolen");
         updateProperty(Thing.PROPERTY_SERIAL_NUMBER, Integer.toString(millId));
+
+        String urlString = BASE_URL + millId + "/live?ignoreLoadingBar=true";
+        try {
+            millUrl = new URL(urlString);
+        } catch (MalformedURLException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Constructed url '" + urlString + "' is not valid: " + e.getLocalizedMessage());
+            return;
+        }
 
         pollingJob = scheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
@@ -102,7 +114,7 @@ public class WindCentraleHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("Disposing WindCentrale handler '{}'", getThing().getUID());
+        logger.debug("Disposing Windcentrale handler '{}'", getThing().getUID());
         if (pollingJob != null) {
             pollingJob.cancel(true);
             pollingJob = null;
@@ -141,16 +153,8 @@ public class WindCentraleHandler extends BaseThingHandler {
     }
 
     private String getMillData() throws IOException {
-
-        String baseURL = "https://zep-api.windcentrale.nl/production/";
-        String urlString = baseURL + millId + "/live?ignoreLoadingBar=true";
-        try {
-            URL url = new URL(urlString);
-            URLConnection connection = url.openConnection();
-            return IOUtils.toString(connection.getInputStream());
-        } catch (MalformedURLException e) {
-            logger.debug("Constructed url '{}' is not valid: {}", urlString, e.getMessage());
-            return null;
+        try (InputStream connection = millUrl.openStream()) {
+            return IOUtils.toString(connection);
         }
     }
 }

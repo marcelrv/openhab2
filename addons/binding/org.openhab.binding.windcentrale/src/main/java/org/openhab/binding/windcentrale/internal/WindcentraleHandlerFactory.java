@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2014-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,21 +8,21 @@
  */
 package org.openhab.binding.windcentrale.internal;
 
-import static org.openhab.binding.windcentrale.WindCentraleBindingConstants.*;
+import static org.openhab.binding.windcentrale.WindcentraleBindingConstants.*;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.windcentrale.handler.WindCentraleHandler;
+import org.openhab.binding.windcentrale.handler.WindcentraleHandler;
 
 /**
- * The {@link WindCentraleHandlerFactory} is responsible for creating things and thing
+ * The {@link WindcentraleHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Marcel Verpaalen - Initial contribution
  */
-public class WindCentraleHandlerFactory extends BaseThingHandlerFactory {
+public class WindcentraleHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -35,7 +35,7 @@ public class WindCentraleHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_MILL)) {
-            return new WindCentraleHandler(thing);
+            return new WindcentraleHandler(thing);
         }
 
         return null;
