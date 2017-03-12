@@ -1,10 +1,10 @@
-# WindcentraleBinding
+# Windcentrale Binding
 
-This Binding is used to display the details of a Windcentrale wind mill. 
+This Binding is used to display the details of a Windcentrale windmill.
 
 ## Supported Things
 
-This Binding supports Windcentrale mills devices.
+This Binding supports Windcentrale mill devices.
 
 ## Discovery
 
@@ -23,27 +23,28 @@ Optional configuration is the number of wind shares ("Winddelen") and the refres
 
 - **windSpeed** Measured current wind speed 
 - **windDirection** Current wind direction
-- **powerAbsTot** Total Power
-- **powerAbsWd** Power provided for your windparts
+- **powerAbsTot** Total power
+- **powerAbsWd** Power provided for your wind shares
 - **powerRel** Relative power
-- **kwh** Current Energy
-- **kwhForecast** Energy Forecast
-- **runPercentage** Run Percentage this year
+- **kwh** Current energy
+- **kwhForecast** Energy forecast
+- **runPercentage** Run percentage this year
 - **timestamp** Timestamp of the last update
 
 
 ## Full example
+
 ```
 Group   gReiger "Windcentrale Reiger"   <wind>
 
-Number  ReigerWindSpeed         "Wind Snelheid[%1.0f Bf]"         <wind>    (gReiger) {channel="windcentrale:mill:reiger:windSpeed")
-String  ReigerWindDirection     "Wind Richting [%s]"              <wind>    (gReiger) {channel="windcentrale:mill:reiger:windDirection")
+Number  ReigerWindSpeed         "Windsnelheid [%1.0f Bft]"        <wind>    (gReiger) {channel="windcentrale:mill:reiger:windSpeed")
+String  ReigerWindDirection     "Windrichting [%s]"               <wind>    (gReiger) {channel="windcentrale:mill:reiger:windDirection")
 Number  ReigerPowerAbsTot       "Productie molen [%1.0f kW]"      <wind>    (gReiger) {channel="windcentrale:mill:reiger:powerAbsTot")
-Number  ReigerPowerAbsWd        "WD Power [%1.0f W]"              <wind>    (gReiger) {channel="windcentrale:mill:reiger:powerAbsWd")
-Number  ReigerPowerRel          "Productie Vermogen [%1.0f %%]"   <wind>    (gReiger) {channel="windcentrale:mill:reiger:powerRel")
+Number  ReigerPowerAbsWd        "WD power [%1.0f W]"              <wind>    (gReiger) {channel="windcentrale:mill:reiger:powerAbsWd")
+Number  ReigerPowerRel          "Productie vermogen [%1.0f %%]"   <wind>    (gReiger) {channel="windcentrale:mill:reiger:powerRel")
 Number  ReigerKwh               "kwh [%1.0f]"                     <wind>    (gReiger) {channel="windcentrale:mill:reiger:kwh")
-Number  ReigerKwhForecast       "Productie Forecast [%1.0f]"      <wind>    (gReiger) {channel="windcentrale:mill:reiger:kwhForecast")
-Number  ReigerRunPercentage     "Run Percentage [%1.0f %%]"       <wind>    (gReiger) {channel="windcentrale:mill:reiger:runPercentage")
-Number  ReigerTimestamp         "Update Timestamp [%1$ta %1$tR]"  <wind>    (gReiger) {channel="windcentrale:mill:reiger:timestamp")
+Number  ReigerKwhForecast       "Productie forecast [%1.0f]"      <wind>    (gReiger) {channel="windcentrale:mill:reiger:kwhForecast")
+Number  ReigerRunPercentage     "Run percentage [%1.0f %%]"       <wind>    (gReiger) {channel="windcentrale:mill:reiger:runPercentage")
+Number  ReigerTimestamp         "Update timestamp [%1$ta %1$tR]"  <wind>    (gReiger) {channel="windcentrale:mill:reiger:timestamp")
 
 ```

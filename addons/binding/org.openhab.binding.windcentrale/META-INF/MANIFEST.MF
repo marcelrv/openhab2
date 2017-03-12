@@ -8,6 +8,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .
 Import-Package: com.google.common.collect,
  com.google.gson,
+ org.apache.commons.io,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
@@ -18,5 +19,4 @@ Import-Package: com.google.common.collect,
 Service-Component: OSGI-INF/*
 Export-Package: org.openhab.binding.windcentrale,
  org.openhab.binding.windcentrale.handler
-Require-Bundle: org.apache.commons.io
 Bundle-ActivationPolicy: lazy
