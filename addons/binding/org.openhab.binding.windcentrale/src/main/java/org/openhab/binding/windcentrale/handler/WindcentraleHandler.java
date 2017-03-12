@@ -91,7 +91,7 @@ public class WindcentraleHandler extends BaseThingHandler {
         }
 
         updateProperty(Thing.PROPERTY_VENDOR, "Windcentrale");
-        updateProperty(Thing.PROPERTY_MODEL_ID, "WindMolen");
+        updateProperty(Thing.PROPERTY_MODEL_ID, "Windmolen");
         updateProperty(Thing.PROPERTY_SERIAL_NUMBER, Integer.toString(millId));
 
         String urlString = BASE_URL + millId + "/live?ignoreLoadingBar=true";
@@ -122,7 +122,7 @@ public class WindcentraleHandler extends BaseThingHandler {
     }
 
     private synchronized void updateData() {
-        logger.debug("Update WindMolen data '{}'", getThing().getUID());
+        logger.debug("Update windmill data '{}'", getThing().getUID());
 
         try {
             String getMillData = getMillData();
