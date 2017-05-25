@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -42,12 +42,11 @@ import com.google.gson.JsonParser;
  * @author Marcel Verpaalen - Initial contribution
  */
 public class WindcentraleHandler extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(WindcentraleHandler.class);
 
-    public final static String BASE_URL = "https://zep-api.windcentrale.nl/production/";
-    private int millId = 131;
+    private static final String BASE_URL = "https://zep-api.windcentrale.nl/production/";
     private URL millUrl;
     private BigDecimal wd = BigDecimal.ONE;
-    private Logger logger = LoggerFactory.getLogger(WindcentraleHandler.class);
     private ScheduledFuture<?> pollingJob;
 
     public WindcentraleHandler(Thing thing) {
@@ -71,6 +70,7 @@ public class WindcentraleHandler extends BaseThingHandler {
         Object param;
 
         param = getConfig().get(PROPERTY_MILL_ID);
+        int millId;
         if (param instanceof BigDecimal) {
             millId = ((BigDecimal) param).intValue();
         } else {
@@ -103,12 +103,7 @@ public class WindcentraleHandler extends BaseThingHandler {
             return;
         }
 
-        pollingJob = scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                updateData();
-            }
-        }, 0, pollingPeriod, TimeUnit.SECONDS);
+        pollingJob = scheduler.scheduleWithFixedDelay(this::updateData, 0, pollingPeriod, TimeUnit.SECONDS);
         logger.debug("Polling job scheduled to run every {} sec. for '{}'", pollingPeriod, getThing().getUID());
     }
 
@@ -128,7 +123,9 @@ public class WindcentraleHandler extends BaseThingHandler {
             String getMillData = getMillData();
             JsonParser parser = new JsonParser();
             JsonObject millData = (JsonObject) parser.parse(getMillData);
-            logger.debug(millData.toString());
+
+            logger.trace("Retrieved updated mill data: {}", millData);
+
             updateState(CHANNEL_WIND_SPEED, new DecimalType(millData.get(CHANNEL_WIND_SPEED).getAsString()));
             updateState(CHANNEL_WIND_DIRECTION, new StringType(millData.get(CHANNEL_WIND_DIRECTION).getAsString()));
             updateState(CHANNEL_POWER_TOTAL, new DecimalType(millData.get(CHANNEL_POWER_TOTAL).getAsBigDecimal()));
@@ -147,7 +144,7 @@ public class WindcentraleHandler extends BaseThingHandler {
             }
 
         } catch (Exception e) {
-            logger.debug(e.getMessage());
+            logger.debug("Failed to update windmill data", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
         }
     }
