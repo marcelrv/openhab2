@@ -1,0 +1,108 @@
+{
+    "device": {
+        "id": "zhimi.airpurifier.m1",
+        "properties": [{
+            "property": "power",
+            "friendlyName": "Power",
+            "channel": "action#power",
+            "type": "OnOffType",
+            "refresh": true
+        },
+        {
+            "property": "mode",
+            "friendlyName": "",
+            "channel": "action#mode",
+            "type": "StringType",
+            "refresh": true
+        },
+        {
+            "property": "temperature",
+            "friendlyName": "",
+            "friendlyName": "",
+            "channel": "status#temperature",
+            "type": "DecimalType",
+            "refresh": false
+        },
+        {
+            "property": "humidity",
+            "friendlyName": "",
+            "channel": "status#humidity",
+            "type": "DecimalType",
+            "refresh": true
+        },
+        {
+            "property": "aqi",
+            "friendlyName": "Air Quality Index",
+            "channel": "status#aqi",
+            "type": "DecimalType",
+            "refresh": true
+        },
+        {
+            "property": "bright",
+            "friendlyName": "Brightness",
+            "channel": "status#brightness",
+            "type": "DecimalType",
+            "refresh": true
+        },
+        {
+            "property": "led",
+            "friendlyName": "LedStatus",
+            "channel": "status#led",
+            "type": "OnOffType",
+            "refresh": true
+        },
+        {
+            "property": "act_det",
+            "friendlyName": "AirAutoDetect",
+            "channel": "",
+            "type": "OnOffType",
+            "refresh": false
+        },
+        {
+            "property": "buzzer",
+            "friendlyName": "BuzzerStatus",
+            "channel": "action#buzzer",
+            "type": "OnOffType",
+            "refresh": false
+        },
+        {
+            "property": "f1_hour",
+            "friendlyName": "FilterMaxLife",
+            "channel": "",
+            "type": "DecimalType",
+            "refresh": false
+        },
+        {
+            "property": "filter1_life",
+            "friendlyName": "FilterLife",
+            "channel": "",
+            "type": "DecimalType",
+            "refresh": false
+        }],
+        "actions": [{
+            "command": "set_power",
+            "channel": "action#power",
+            "type": "OnOffType"
+        },
+        {
+            "command": "set_mode",
+            "channel": "action#mode",
+            "type": "StringType"
+        },
+        {
+            "command": "set_led_b",
+            "channel": "action#brightness",
+            "type": "DecimalType"
+        },
+        {
+            "command": "set_led",
+            "channel": "action#led",
+            "type": "OnOffType"
+        },
+        {
+            "command": "set_buzzer",
+            "channel": "action#buzzer",
+            "type": "OnOffType"
+        }]
+    }
+}
