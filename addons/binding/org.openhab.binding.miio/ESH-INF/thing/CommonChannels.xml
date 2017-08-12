@@ -35,21 +35,64 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<!-- Common Actions channels-->
+	<!-- Common Actions channels -->
 	<channel-type id="commands" advanced="true">
 		<item-type>String</item-type>
 		<label>Execute Command</label>
 	</channel-type>
-	<channel-type id="power">
-        <item-type>Switch</item-type>
-        <label>Power On/Off</label>
-    </channel-type>
 
-    <!-- Common Properties channels-->
-    <channel-type id="temperature">
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power On/Off</label>
+	</channel-type>
+	<channel-type id="mode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+	</channel-type>
+	<channel-type id="brightness">
+		<item-type>Number</item-type>
+		<label>Brightness</label>
+	</channel-type>
+	<channel-type id="led">
+		<item-type>Switch</item-type>
+		<label>Led</label>
+	</channel-type>
+	<channel-type id="act_det">
+		<item-type>Switch</item-type>
+		<label>AirAutoDetect</label>
+	</channel-type>
+	<channel-type id="buzzer">
+		<item-type>Switch</item-type>
+		<label>Buzzer</label>
+	</channel-type>
+
+	<!-- Common Properties channels -->
+	<channel-type id="temperature">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="humidity">
+		<item-type>Number</item-type>
+		<label>Humidity</label>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="aqi">
+		<item-type>Number</item-type>
+		<label>Air Quality Index</label>
+		<state readOnly="true" />
+	</channel-type>
+    <channel-type id="filtermaxlive">
         <item-type>Number</item-type>
-        <label>Temperature</label>
+        <label>Filter Max Life</label>
         <state readOnly="true" />
     </channel-type>
-    
+    <channel-type id="filterlive">
+        <item-type>Number</item-type>
+        <label>Filter Life</label>
+        <state readOnly="true" />
+    </channel-type>
+
+
 </thing:thing-descriptions>

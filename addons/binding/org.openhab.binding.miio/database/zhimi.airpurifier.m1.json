@@ -4,105 +4,116 @@
         "properties": [{
             "property": "power",
             "friendlyName": "Power",
-            "channel": "action#power",
-            "type": "OnOffType",
-            "refresh": true
+            "channel": "power",
+            "type": "Switch",
+            "refresh": true,
+            "ChannelGroup": "actions"
         },
         {
             "property": "mode",
-            "friendlyName": "",
-            "channel": "action#mode",
-            "type": "StringType",
-            "refresh": true
+            "friendlyName": "Mode",
+            "channel": "mode",
+            "type": "String",
+            "refresh": true,
+            "ChannelGroup": "actions"
         },
         {
             "property": "temperature",
-            "friendlyName": "",
-            "friendlyName": "",
-            "channel": "status#temperature",
-            "type": "DecimalType",
-            "refresh": false
+            "friendlyName": "Temperature",
+            "channel": "temperature",
+            "type": "Number",
+            "refresh": false,
+            "ChannelGroup": "Status"
         },
         {
             "property": "humidity",
-            "friendlyName": "",
-            "channel": "status#humidity",
-            "type": "DecimalType",
-            "refresh": true
+            "friendlyName": "Humidity",
+            "channel": "humidity",
+            "type": "Number",
+            "refresh": true,
+            "ChannelGroup": "Status"
         },
         {
             "property": "aqi",
             "friendlyName": "Air Quality Index",
-            "channel": "status#aqi",
-            "type": "DecimalType",
-            "refresh": true
+            "channel": "aqi",
+            "type": "Number",
+            "refresh": true,
+            "ChannelGroup": "Status"
         },
         {
             "property": "bright",
             "friendlyName": "Brightness",
-            "channel": "status#brightness",
-            "type": "DecimalType",
-            "refresh": true
+            "channel": "brightness",
+            "type": "Number",
+            "refresh": true,
+            "ChannelGroup": "actions"
         },
         {
             "property": "led",
             "friendlyName": "LedStatus",
-            "channel": "status#led",
-            "type": "OnOffType",
-            "refresh": true
+            "channel": "led",
+            "type": "Switch",
+            "refresh": true,
+            "ChannelGroup": "actions"
         },
         {
             "property": "act_det",
             "friendlyName": "AirAutoDetect",
-            "channel": "",
-            "type": "OnOffType",
-            "refresh": false
+            "channel": "act_det",
+            "type": "Switch",
+            "refresh": true,
+            "ChannelGroup": "actions"
         },
         {
             "property": "buzzer",
             "friendlyName": "BuzzerStatus",
-            "channel": "action#buzzer",
-            "type": "OnOffType",
-            "refresh": false
+            "channel": "buzzer",
+            "type": "Switch",
+            "refresh": true,
+            "ChannelGroup": "actions"
         },
         {
             "property": "f1_hour",
-            "friendlyName": "FilterMaxLife",
-            "channel": "",
-            "type": "DecimalType",
-            "refresh": false
+            "friendlyName": "Filter Max Life",
+            "channel": "filtermaxlive",
+            "type": "Number",
+            "refresh": true,
+            "ChannelGroup": "Status"
         },
         {
             "property": "filter1_life",
-            "friendlyName": "FilterLife",
-            "channel": "",
-            "type": "DecimalType",
-            "refresh": false
+            "friendlyName": "Filter Life",
+            "channel": "filterlive",
+            "type": "Number",
+            "refresh": true,
+            "ChannelGroup": "Status"
         }],
         "actions": [{
             "command": "set_power",
-            "channel": "action#power",
-            "type": "OnOffType"
+            "channel": "power",
+            "type": "Switch"
         },
         {
             "command": "set_mode",
-            "channel": "action#mode",
-            "type": "StringType"
+            "channel": "mode",
+            "type": "String"
         },
         {
             "command": "set_led_b",
-            "channel": "action#brightness",
-            "type": "DecimalType"
+            "channel": "brightness",
+            "type": "Number"
         },
         {
             "command": "set_led",
-            "channel": "action#led",
-            "type": "OnOffType"
+            "channel": "led",
+            "type": "Switch"
         },
         {
             "command": "set_buzzer",
-            "channel": "action#buzzer",
-            "type": "OnOffType"
+            "channel": "buzzer",
+            "type": "Switch"
         }]
     }
 }
+

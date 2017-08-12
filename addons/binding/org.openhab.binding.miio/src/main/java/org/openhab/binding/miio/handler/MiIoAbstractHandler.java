@@ -30,9 +30,9 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.miio.MiIoBindingConfiguration;
 import org.openhab.binding.miio.internal.Message;
 import org.openhab.binding.miio.internal.MiIoCommand;
-import org.openhab.binding.miio.internal.MiIoDevices;
 import org.openhab.binding.miio.internal.MiIoCommunication;
 import org.openhab.binding.miio.internal.MiIoCryptoException;
+import org.openhab.binding.miio.internal.MiIoDevices;
 import org.openhab.binding.miio.internal.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,7 +125,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler {
     }
 
     protected String sendCommand(MiIoCommand command) {
-        return sendCommand(command, "");
+        return sendCommand(command, "[]");
     }
 
     protected String sendCommand(MiIoCommand command, String params) {
@@ -159,7 +159,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler {
             String param = "";
             int loc = command.indexOf("[");
             if (loc > 0) {
-                param = command.substring(loc + 1, command.length() - 1).trim();
+                param = command.substring(loc).trim();
                 command = command.substring(0, loc).trim();
             }
             return miioCom.sendCommand(command, param);
@@ -290,6 +290,12 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler {
         properties.put(Thing.PROPERTY_MODEL_ID, miioInfo.get("model").getAsString());
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, miioInfo.get("fw_ver").getAsString());
         properties.put(Thing.PROPERTY_HARDWARE_VERSION, miioInfo.get("hw_ver").getAsString());
+        if (miioInfo.get("wifi_fw_ver") != null) {
+            properties.put("wifi_firmware", miioInfo.get("wifi_fw_ver").getAsString());
+        }
+        if (miioInfo.get("mcu_fw_ver") != null) {
+            properties.put("mcu_firmware", miioInfo.get("mcu_fw_ver").getAsString());
+        }
         updateProperties(properties);
     }
 

@@ -57,7 +57,7 @@ public class MiIoCommunication {
     }
 
     public String sendCommand(MiIoCommand command) throws MiIoCryptoException, IOException {
-        return sendCommand(command, "");
+        return sendCommand(command, "[]");
     }
 
     public String sendCommand(MiIoCommand command, String params) throws MiIoCryptoException, IOException {
@@ -69,7 +69,7 @@ public class MiIoCommunication {
         JsonObject fullCommand = new JsonObject();
         fullCommand.addProperty("id", id.incrementAndGet());
         fullCommand.addProperty("method", command);
-        fullCommand.add("params", parser.parse("[" + params + "]").getAsJsonArray());
+        fullCommand.add("params", parser.parse(params).getAsJsonArray());
         logger.debug("Send command: {} -> {} (Device: {} token: {})", fullCommand.toString(), ip,
                 Utils.getHex(deviceId), Utils.getHex(token));
         return sendCommand(fullCommand.toString(), token, ip, deviceId);

@@ -26,11 +26,12 @@ public final class MiIoBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_MIIO = new ThingTypeUID(BINDING_ID, "generic");
+    public static final ThingTypeUID THING_TYPE_BASIC = new ThingTypeUID(BINDING_ID, "basic");
     public static final ThingTypeUID THING_TYPE_VACUUM = new ThingTypeUID(BINDING_ID, "vacuum");
     public static final ThingTypeUID THING_TYPE_UNSUPPORTED = new ThingTypeUID(BINDING_ID, "unsupported");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_VACUUM,
-            THING_TYPE_MIIO, THING_TYPE_UNSUPPORTED);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_MIIO,
+            THING_TYPE_BASIC, THING_TYPE_VACUUM, THING_TYPE_UNSUPPORTED);
 
     // List of all Channel IDs
     public static final String CHANNEL_BATTERY = "status#battery";
@@ -81,5 +82,6 @@ public final class MiIoBindingConstants {
     public static final int PORT = 54321;
     public static final Set<String> IGNORED_TOLKENS = ImmutableSet.of("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
             "00000000000000000000000000000000");
+    public static final String DATABASE_PATH = "database/";
 
 }

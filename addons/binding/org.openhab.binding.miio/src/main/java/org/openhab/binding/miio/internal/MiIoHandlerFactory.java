@@ -14,6 +14,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.miio.handler.MiIoBasicHandler;
 import org.openhab.binding.miio.handler.MiIoGenericHandler;
 import org.openhab.binding.miio.handler.MiIoUnsupportedHandler;
 import org.openhab.binding.miio.handler.MiIoVacuumHandler;
@@ -34,11 +35,14 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (thingTypeUID.equals(THING_TYPE_VACUUM)) {
-            return new MiIoVacuumHandler(thing);
-        }
         if (thingTypeUID.equals(THING_TYPE_MIIO)) {
             return new MiIoGenericHandler(thing);
+        }
+        if (thingTypeUID.equals(THING_TYPE_BASIC)) {
+            return new MiIoBasicHandler(thing);
+        }
+        if (thingTypeUID.equals(THING_TYPE_VACUUM)) {
+            return new MiIoVacuumHandler(thing);
         }
         if (thingTypeUID.equals(THING_TYPE_UNSUPPORTED)) {
             return new MiIoUnsupportedHandler(thing);
