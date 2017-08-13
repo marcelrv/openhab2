@@ -1,0 +1,63 @@
+{
+    "device": {
+        "id": "yeelink.light.ceiling1",
+        "properties": [{
+            "property": "power",
+            "friendlyName": "Power",
+            "channel": "actions#power",
+            "type": "Switch",
+            "refresh": true,
+            "ChannelGroup": ""
+        },
+        {
+            "property": "color_mode",
+            "friendlyName": "ColorMode",
+            "channel": "actions#colorMode",
+            "type": "String",
+            "refresh": true,
+            "ChannelGroup": "actions"
+        },
+        {
+            "property": "ct",
+            "friendlyName": "ColorTemperature",
+            "channel": "actions#colorTemperature",
+            "type": "Number",
+            "refresh": true,
+            "ChannelGroup": "actions"
+        },
+        {
+            "property": "bright",
+            "friendlyName": "Brightness",
+            "channel": "actions#brightness",
+            "type": "Dimmer",
+            "refresh": true,
+            "ChannelGroup": "actions"
+        }],
+        "actions": [{
+            "command": "set_power",
+            "channel": "actions#power",
+            "type": "Switch"
+        },
+        {
+            "command": "set_scene",
+            "channel": "actions#colorMode",
+            "type": "String"
+        },
+        {
+            "command": "set_bright",
+            "channel": "actions#brightness",
+            "type": "Dimmer"
+        },
+        {
+            "command": "set_ct_abx",
+            "channel": "actions#colorTemperature",
+            "type": "Number"
+        },
+        {
+            "command": "set_default",
+            "channel": "actions#saveCurrentState",
+            "type": "Switch"
+        }]
+    }
+}
+
