@@ -11,10 +11,11 @@ package org.openhab.binding.miio.internal.basic;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-/*  Mapping MiIoBasicDevice from json
-*
-* @author Marcel Verpaalen - Initial contribution
-*/
+/**
+ * Mapping devices from json
+ *
+ * @author Marcel Verpaalen - Initial contribution
+ */
 public class MiIoBasicDevice {
 
     @SerializedName("device")

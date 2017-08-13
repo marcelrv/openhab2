@@ -13,10 +13,11 @@ import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-/*  Mapping devices from json
-*
-* @author Marcel Verpaalen - Initial contribution
-*/
+/**
+ * Mapping devices from json
+ *
+ * @author Marcel Verpaalen - Initial contribution
+ */
 public class DeviceMapping {
 
     @SerializedName("id")

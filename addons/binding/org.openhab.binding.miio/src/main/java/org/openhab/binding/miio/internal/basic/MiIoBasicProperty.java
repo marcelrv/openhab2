@@ -11,10 +11,11 @@ package org.openhab.binding.miio.internal.basic;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-/*  Mapping prpperties from json
-*
-* @author Marcel Verpaalen - Initial contribution
-*/
+/**
+ * Mapping properties from json
+ *
+ * @author Marcel Verpaalen - Initial contribution
+ */
 public class MiIoBasicProperty {
 
     @SerializedName("property")
