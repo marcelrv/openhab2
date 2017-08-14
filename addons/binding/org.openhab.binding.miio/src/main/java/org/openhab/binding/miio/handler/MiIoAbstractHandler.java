@@ -11,9 +11,7 @@ package org.openhab.binding.miio.handler;
 import static org.openhab.binding.miio.MiIoBindingConstants.*;
 
 import java.io.IOException;
-import java.net.URL;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -22,34 +20,24 @@ import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.miio.MiIoBindingConfiguration;
-import org.openhab.binding.miio.MiIoBindingConstants;
 import org.openhab.binding.miio.internal.Message;
 import org.openhab.binding.miio.internal.MiIoCommand;
 import org.openhab.binding.miio.internal.MiIoCommunication;
 import org.openhab.binding.miio.internal.MiIoCryptoException;
 import org.openhab.binding.miio.internal.MiIoDevices;
 import org.openhab.binding.miio.internal.Utils;
-import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
-import org.openhab.binding.miio.internal.basic.MiIoBasicProperty;
-import org.openhab.binding.miio.internal.basic.MiIoDeviceAction;
-import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -66,8 +54,6 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler {
     protected ScheduledFuture<?> pollingJob;
     protected MiIoBindingConfiguration configuration;
     protected MiIoDevices miDevice = MiIoDevices.UNKNOWN;
-    MiIoBasicDevice miioDevice;
-    private Map<String, MiIoDeviceAction> actions;
     protected boolean isIdentified;
 
     protected JsonParser parser;
@@ -296,7 +282,6 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler {
         if (miioInfo != null) {
             updateProperties(miioInfo);
             updateThingType(miioInfo);
-            buildChannelStructure(miioInfo.get("model").getAsString());
         }
     }
 
@@ -356,69 +341,5 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler {
             logger.trace("Empty response received.");
         }
         return null;
-    }
-
-    private boolean buildChannelStructure(String deviceName) {
-        // TODO: This still needs significant cleanup but should be functional
-        try {
-            Bundle bundle = bundleContext.getBundle();
-            URL fn = bundle.getEntry(MiIoBindingConstants.DATABASE_PATH + deviceName + ".json");
-            logger.debug("bundle: {}, {}, {}", bundle, fn.getFile(), fn);
-            JsonObject deviceMapping = Utils.convertFileToJSON(fn);
-            logger.debug("Device Mapper: {}, {}, {}", fn.getFile(), deviceMapping.toString());
-
-            Gson gson = new GsonBuilder().serializeNulls().create();
-            miioDevice = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
-
-            actions = new HashMap<String, MiIoDeviceAction>();
-
-            // make a map of the actions
-            for (MiIoDeviceAction action : miioDevice.getDevice().getActions()) {
-                actions.put(action.getChannel(), action);
-            }
-
-            for (Channel ch : getThing().getChannels()) {
-                logger.debug("Current thing channels {}, type: {}", ch.getUID(), ch.getChannelTypeUID());
-            }
-            ThingBuilder thingBuilder = editThing();
-            int channelsAdded = 0;
-            for (MiIoBasicProperty miProperty : miioDevice.getDevice().getProperties()) {
-
-                logger.debug("properties {}", miProperty);
-                ChannelUID channelUID = new ChannelUID(getThing().getUID(), miProperty.getChannel());
-
-                // TODO: only for testing. This should not be done finally. Channel only to be added when not there
-                // already
-                if (getThing().getChannel(miProperty.getChannel()) == null) {
-                    logger.info("Add Channel '{}' for thing {}", miProperty.getChannel(), getThing().getUID());
-
-                    Channel channel = ChannelBuilder.create(channelUID, miProperty.getType())
-                            .withLabel(miProperty.getFriendlyName()).build();
-                    thingBuilder.withChannel(channel);
-                    channelsAdded += 1;
-                }
-            }
-            // only update if channels were added/removed
-            if (channelsAdded > 0) {
-                updateThing(thingBuilder.build());
-            }
-
-        } catch (JsonIOException e) {
-            logger.debug("Error reading Json", e);
-        } catch (JsonSyntaxException e) {
-            logger.debug("Error reading Json", e);
-        } catch (IOException e) {
-            logger.debug("Error reading Json", e);
-        } catch (NullPointerException e) {
-            logger.debug("Error crreating channel structure", e);
-        } catch (Exception e) {
-            logger.debug("Error crreating channel structure", e);
-        }
-
-        return false;
-    }
-
-    Map<String, MiIoDeviceAction> getActions() {
-        return actions;
     }
 }
