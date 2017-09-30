@@ -52,12 +52,14 @@ public class MiIoDiscoveryParticipant implements MDNSDiscoveryParticipant {
             logger.trace("ServiceInfo: {}", service);
             String id[] = service.getName().split("_miio");
             if (id.length != 2) {
+                logger.warn("mDNS Could not identify Type / Device Id from '{}'", service.getName());
                 return null;
             }
             int did;
             try {
-                did = Integer.parseInt(id[1]);
+                did = Integer.parseUnsignedInt(id[1]);
             } catch (Exception e) {
+                logger.warn("mDNS Could not identify Device ID from '{}'", id[1]);
                 return null;
             }
             ThingTypeUID thingType = MiIoDevices.getType(id[0].replaceAll("-", ".")).getThingType();

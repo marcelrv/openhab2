@@ -7,7 +7,7 @@
 	<config-description uri="thing-type:miio:config">
 		<parameter name="host" type="text" required="true">
 			<context>network-address</context>
-			<label>IP address Vacuum</label>
+			<label>IP address</label>
 		</parameter>
 		<parameter name="token" type="text" pattern="^([A-Fa-f0-9]{96}|[A-Fa-f0-9]{32}|.{16})$" required="true">
 			<label>Token</label>
