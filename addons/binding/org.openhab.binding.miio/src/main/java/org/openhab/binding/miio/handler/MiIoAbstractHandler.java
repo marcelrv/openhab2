@@ -123,8 +123,10 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                 try {
                     token = Utils
                             .hexStringToByteArray(MiIoCrypto.decryptTolken(Utils.hexStringToByteArray(tokenSting)));
+                    logger.debug("IOS token decrypted to {}", Utils.getHex(token));
                 } catch (MiIoCryptoException e) {
-                    logger.debug("Could not decrypt token {}", tokenSting, e.getMessage());
+                    logger.warn("Could not decrypt token {}", tokenSting, e.getMessage());
+                    return false;
                 }
                 return true;
             default:

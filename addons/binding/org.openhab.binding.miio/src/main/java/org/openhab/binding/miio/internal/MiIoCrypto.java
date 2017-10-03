@@ -88,7 +88,8 @@ public class MiIoCrypto {
     public static String decryptTolken(byte[] cipherText) throws MiIoCryptoException {
         try {
             Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
-            SecretKeySpec keySpec = new SecretKeySpec(new byte[32], "AES");
+
+            SecretKeySpec keySpec = new SecretKeySpec(new byte[16], "AES");
             cipher.init(Cipher.DECRYPT_MODE, keySpec);
             byte[] decrypted = cipher.doFinal(cipherText);
             try {
