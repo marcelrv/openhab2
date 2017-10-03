@@ -88,6 +88,51 @@
 				"actions": []
 			},
 			{
+				"property": "f1_hour_used",
+				"friendlyName": "Filter Hours used",
+				"channel": "filterhours",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "use_time",
+				"friendlyName": "Filter Hours usage",
+				"channel": "filterusedhours",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "motor1_speed",
+				"friendlyName": "Motor Speed",
+				"channel": "motorspeed",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "filter1_life",
+				"friendlyName": "Filter  Life",
+				"channel": "filterlife",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "favorite_level",
+				"friendlyName": "Favorite Level",
+				"channel": "favoritelevel",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
 				"property": "temp_dec",
 				"friendlyName": "Temperature",
 				"channel": "temperature",
@@ -95,6 +140,9 @@
 				"refresh": true,
 				"ChannelGroup": "Status",
 				"actions": []
+			},
+			{
+				[
 			}
 		]
 	}

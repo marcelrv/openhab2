@@ -75,7 +75,11 @@
 		<item-type>Switch</item-type>
 		<label>Buzzer</label>
 	</channel-type>
-
+    <channel-type id="childlock">
+        <item-type>Switch</item-type>
+        <label>Child Lock</label>
+    </channel-type>
+    
 	<!-- Common Properties channels -->
 	<channel-type id="temperature">
 		<item-type>Number</item-type>
@@ -93,15 +97,35 @@
 		<label>Air Quality Index</label>
 		<state readOnly="true" />
 	</channel-type>
+    <channel-type id="favoritelevel">
+        <item-type>Number</item-type>
+        <label>Favorite_level</label>
+            <state pattern="%.0f"/>
+    </channel-type>
 	<channel-type id="filtermaxlive">
 		<item-type>Number</item-type>
 		<label>Filter Max Life</label>
 		<state readOnly="true" />
 	</channel-type>
+    <channel-type id="filterhours">
+        <item-type>Number</item-type>
+        <label>Filter Use Time</label>
+        <state pattern="%.0f" readOnly="true" />
+    </channel-type>
+    <channel-type id="filterusedhours">
+        <item-type>Number</item-type>
+        <label>Filter Hours Used</label>
+        <state pattern="%.0f h" readOnly="true" />
+    </channel-type>
+    <channel-type id="motorspeed">
+        <item-type>Number</item-type>
+        <label>Motor Speed</label>
+        <state pattern="%.0f" readOnly="true" />
+    </channel-type>
 	<channel-type id="filterlive">
 		<item-type>Number</item-type>
 		<label>Filter Life</label>
-		<state readOnly="true" />
+        <state pattern="%.0f%%" readOnly="true" />
 	</channel-type>
 	<channel-type id="current">
 		<item-type>Number</item-type>
