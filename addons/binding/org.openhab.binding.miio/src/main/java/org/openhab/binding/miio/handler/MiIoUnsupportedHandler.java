@@ -77,7 +77,7 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
                 testCommands = new String[] { "miIO.info", "get_current_sound", "get_map_v1", "get_serial_number",
                         "get_timezone" };
                 break;
-            case AIR_PURIFIER:
+            case AIR_PURIFIERM:
             case AIR_PURIFIER1:
             case AIR_PURIFIER2:
             case AIR_PURIFIER3:

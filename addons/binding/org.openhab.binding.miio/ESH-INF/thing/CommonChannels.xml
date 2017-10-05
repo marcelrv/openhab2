@@ -91,12 +91,16 @@
 		<label>Humidity</label>
 		<state readOnly="true" />
 	</channel-type>
-
 	<channel-type id="aqi">
 		<item-type>Number</item-type>
 		<label>Air Quality Index</label>
 		<state readOnly="true" />
 	</channel-type>
+    <channel-type id="averageaqi">
+        <item-type>Number</item-type>
+        <label>Air Quality Index Average</label>
+        <state readOnly="true" />
+    </channel-type>
     <channel-type id="favoritelevel">
         <item-type>Number</item-type>
         <label>Favorite_level</label>
@@ -112,10 +116,10 @@
         <label>Filter Use Time</label>
         <state pattern="%.0f" readOnly="true" />
     </channel-type>
-    <channel-type id="filterusedhours">
+    <channel-type id="usedhours">
         <item-type>Number</item-type>
-        <label>Filter Hours Used</label>
-        <state pattern="%.0f h" readOnly="true" />
+        <label>Run Time</label>
+        <state pattern="%.0f" readOnly="true" />
     </channel-type>
     <channel-type id="motorspeed">
         <item-type>Number</item-type>
@@ -127,6 +131,11 @@
 		<label>Filter Life</label>
         <state pattern="%.0f%%" readOnly="true" />
 	</channel-type>
+	   <channel-type id="purifyvolume">
+        <item-type>Number</item-type>
+        <label>Volume Purified</label>
+        <state pattern="%.0f m3" readOnly="true" />
+    </channel-type>
 	<channel-type id="current">
 		<item-type>Number</item-type>
 		<label>Current</label>

@@ -18,11 +18,12 @@ import org.openhab.binding.miio.MiIoBindingConstants;
  */
 public enum MiIoDevices {
     VACUUM("rockrobo.vacuum.v1", "Mi Robot Vacuum", MiIoBindingConstants.THING_TYPE_VACUUM),
-    AIR_PURIFIER("zhimi.airpurifier.m1", "Mi Air Purifier", MiIoBindingConstants.THING_TYPE_BASIC),
+    AIR_PURIFIERM("zhimi.airpurifier.m1", "Mi Air Purifier 2 (mini)", MiIoBindingConstants.THING_TYPE_BASIC),
+    AIR_PURIFIERM2("zhimi.airpurifier.m2", "Mi Air Purifier (mini)", MiIoBindingConstants.THING_TYPE_BASIC),
     AIR_PURIFIER1("zhimi.airpurifier.v1", "Mi Air Purifier v1", MiIoBindingConstants.THING_TYPE_BASIC),
     AIR_PURIFIER2("zhimi.airpurifier.v2", "Mi Air Purifier v2", MiIoBindingConstants.THING_TYPE_BASIC),
     AIR_PURIFIER3("zhimi.airpurifier.v3", "Mi Air Purifier v3", MiIoBindingConstants.THING_TYPE_BASIC),
-    AIR_PURIFIER6("zhimi.airpurifier.v6", "Mi Air Purifier v6", MiIoBindingConstants.THING_TYPE_BASIC),
+    AIR_PURIFIER6("zhimi.airpurifier.v6", "Mi Air Purifier Pro v6", MiIoBindingConstants.THING_TYPE_BASIC),
     HUMIDIFIER("zhimi.humidifier.v1", "Mi Humdifier", MiIoBindingConstants.THING_TYPE_UNSUPPORTED),
     AIRMONITOR1("zhimi.airmonitor.v1", "Mi Air Monitor v1", MiIoBindingConstants.THING_TYPE_BASIC),
     WATER_PURIFIER2("yunmi.waterpuri.v2", "Mi Water Purifier v2", MiIoBindingConstants.THING_TYPE_UNSUPPORTED),

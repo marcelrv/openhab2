@@ -13,6 +13,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 
 /**
  * The {@link Message} is responsible for creating Xiaomi messages.
@@ -204,6 +205,6 @@ public class Message {
     }
 
     public boolean isChecksumValid() {
-        return getChecksum().equals(checksum);
+        return Arrays.equals(getChecksum(), checksum);
     }
 }

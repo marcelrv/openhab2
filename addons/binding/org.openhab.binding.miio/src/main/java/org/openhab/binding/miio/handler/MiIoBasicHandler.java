@@ -274,8 +274,6 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             logger.warn("Error reading database Json", e);
         } catch (IOException e) {
             logger.warn("Error reading database file", e);
-        } catch (NullPointerException e) {
-            logger.warn("Error creating channel structure", e);
         } catch (Exception e) {
             logger.warn("Error creating channel structure", e);
         }

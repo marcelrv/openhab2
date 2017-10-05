@@ -1,7 +1,8 @@
 {
 	"deviceMapping": {
 		"id": [
-			"zhimi.airpurifier.m1"
+			"zhimi.airpurifier.m1",
+			"zhimi.airpurifier.m2"
 		],
 		"channels": [
 			{
@@ -45,6 +46,15 @@
 				"property": "aqi",
 				"friendlyName": "Air Quality Index",
 				"channel": "aqi",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "average_aqi",
+				"friendlyName": "Average Air Quality Index",
+				"channel": "averageaqi",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
@@ -98,8 +108,8 @@
 			},
 			{
 				"property": "use_time",
-				"friendlyName": "Filter Hours usage",
-				"channel": "filterusedhours",
+				"friendlyName": "Run Time",
+				"channel": "usedhours",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
@@ -130,7 +140,12 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [
+					{
+						"command": "set_level_favorite",
+						"parameterType": "NUMBER"
+					}
+				]
 			},
 			{
 				"property": "temp_dec",
@@ -140,6 +155,29 @@
 				"refresh": true,
 				"ChannelGroup": "Status",
 				"actions": []
+			},
+			{
+				"property": "purify_volume",
+				"friendlyName": "Purivied Volume",
+				"channel": "purifyvolume",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "child_lock",
+				"friendlyName": "Child Lock",
+				"channel": "childlock",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": [
+					{
+						"command": "set_child_lock",
+						"parameterType": "ONOFF"
+					}
+				]
 			}
 		]
 	}
