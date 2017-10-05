@@ -13,6 +13,7 @@ import static org.openhab.binding.miio.MiIoBindingConstants.CHANNEL_COMMAND;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -160,7 +161,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     }
 
     private boolean refreshProperties(MiIoBasicDevice device) {
-        // TODO do not refresh for unlinked channels
+        // TODO do not refresh for unlinked channels or channels that have refresh no
         JsonArray getPropString = new JsonArray();
         for (MiIoBasicChannel miChannel : refreshList) {
             getPropString.add(miChannel.getProperty());
@@ -217,29 +218,47 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         }
     }
 
-    private boolean buildChannelStructure(String deviceName) {
-        // TODO This still needs significant cleanup but should be functional.
-        // TODO If the model can't be found by the filename, load the other files and check for the id's
-        logger.debug("Building Channel Structure for {} - Model: {}", getThing().getUID().toString(), deviceName);
+    private URL findDatabaseEntry(String deviceName) {
         URL fn;
         try {
             Bundle bundle = bundleContext.getBundle();
             fn = bundle.getEntry(MiIoBindingConstants.DATABASE_PATH + deviceName + ".json");
-            if (fn == null) {
-                logger.warn("Database entry for model '{}' cannot be found.", deviceName);
-                return false;
-            } else {
-                logger.debug("bundle: {}, {}, {}", bundle, fn.getFile());
+            if (fn != null) {
+                logger.trace("bundle: {}, {}, {}", bundle, fn.getFile());
+                return fn;
+            }
+            for (URL db : Collections.list(bundle.findEntries(MiIoBindingConstants.DATABASE_PATH, "*.json", false))) {
+                try {
+                    JsonObject deviceMapping = Utils.convertFileToJSON(db);
+                    Gson gson = new GsonBuilder().serializeNulls().create();
+                    MiIoBasicDevice devdb = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
+                    for (String id : devdb.getDevice().getId()) {
+                        if (deviceName.equals(id)) {
+                            return db;
+                        }
+                    }
+                } catch (Exception e) {
+                    // not relevant
+                    logger.debug("Error while searching for {} in database '{}': {}", deviceName, db, e.getMessage());
+                }
             }
         } catch (Exception e) {
+            logger.debug("Error while searching for {} in database: {}", deviceName, e.getMessage());
+        }
+        return null;
+    }
+
+    private boolean buildChannelStructure(String deviceName) {
+        // TODO This still needs significant cleanup but should be functional.
+        logger.debug("Building Channel Structure for {} - Model: {}", getThing().getUID().toString(), deviceName);
+        URL fn = findDatabaseEntry(deviceName);
+        if (fn == null) {
             logger.warn("Database entry for model '{}' cannot be found.", deviceName);
             return false;
         }
         try {
             JsonObject deviceMapping = Utils.convertFileToJSON(fn);
-            // TODO Change to Trace later onwards
-            logger.debug("Device Mapper: {}, {}, {}", fn.getFile(), deviceMapping.toString());
-
+            logger.debug("Using device database: {} for device {}", fn.getFile(), deviceName);
             Gson gson = new GsonBuilder().serializeNulls().create();
             miioDevice = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
 
