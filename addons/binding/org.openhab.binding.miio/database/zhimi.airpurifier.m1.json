@@ -13,7 +13,7 @@
 				"property": "power",
 				"friendlyName": "Power",
 				"channel": "power",
-				"type": "OnOffType",
+                "type": "Switch",
 				"refresh": true,
 				"channelGroup": "actions",
 				"actions": [
