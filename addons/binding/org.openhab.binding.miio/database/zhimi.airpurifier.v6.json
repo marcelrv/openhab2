@@ -88,23 +88,9 @@
 				]
 			},
 			{
-				"property": "buzzer",
-				"friendlyName": "Buzzer Status",
-				"channel": "buzzer",
-				"type": "Switch",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "set_buzzer",
-						"parameterType": "ONOFF"
-					}
-				]
-			},
-			{
 				"property": "f1_hour",
 				"friendlyName": "Filter Max Life",
-				"channel": "filtermaxlive",
+				"channel": "filtermaxlife",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
@@ -116,6 +102,7 @@
 				"channel": "filterhours",
 				"type": "Number",
 				"refresh": true,
+				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
 				"actions": []
 			},
@@ -125,6 +112,7 @@
 				"channel": "usedhours",
 				"type": "Number",
 				"refresh": true,
+				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
 				"actions": []
 			},

@@ -36,6 +36,7 @@ import org.openhab.binding.miio.internal.MiIoCryptoException;
 import org.openhab.binding.miio.internal.MiIoSendCommand;
 import org.openhab.binding.miio.internal.Utils;
 import org.openhab.binding.miio.internal.basic.CommandParameterType;
+import org.openhab.binding.miio.internal.basic.Conversions;
 import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
 import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
 import org.openhab.binding.miio.internal.basic.MiIoDeviceAction;
@@ -47,6 +48,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
@@ -339,27 +341,33 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     para.size(), res.size(), para.toString(), res.toString());
         }
         for (int i = 0; i < para.size(); i++) {
-            if (res.get(i).isJsonNull()) {
+            JsonElement val = res.get(i);
+            if (val.isJsonNull()) {
                 logger.debug("Property '{}' returned null (is it supported?).", para.get(i).getAsString());
                 continue;
             }
             MiIoBasicChannel basicChannel = getChannel(para.get(i).getAsString());
             if (basicChannel != null) {
-                // TODO add mapping to JSON database and apply here
+                if (basicChannel.getTransfortmation() != null) {
+                    JsonElement transformed = Conversions.execute(basicChannel.getTransfortmation(), val);
+                    logger.debug("Transformed with '{}': {} {} -> {} ", basicChannel.getTransfortmation(),
+                            basicChannel.getFriendlyName(), val, transformed);
+                    val = transformed;
+                }
                 try {
                     if (basicChannel.getType().equals("Number")) {
-                        updateState(basicChannel.getChannel(), new DecimalType(res.get(i).getAsBigDecimal()));
+                        updateState(basicChannel.getChannel(), new DecimalType(val.getAsBigDecimal()));
                     }
                     if (basicChannel.getType().equals("String")) {
-                        updateState(basicChannel.getChannel(), new StringType(res.get(i).getAsString()));
+                        updateState(basicChannel.getChannel(), new StringType(val.getAsString()));
                     }
                     if (basicChannel.getType().equals("Switch")) {
                         updateState(basicChannel.getChannel(),
-                                res.get(i).getAsString().toLowerCase().equals("on") ? OnOffType.ON : OnOffType.OFF);
+                                val.getAsString().toLowerCase().equals("on") ? OnOffType.ON : OnOffType.OFF);
                     }
                 } catch (Exception e) {
                     logger.debug("Error updating propery {} with '{}' : {}", basicChannel.getChannel(),
-                            res.get(i).getAsString(), e.getMessage());
+                            val.getAsString(), e.getMessage());
                 }
             } else {
                 logger.debug("Channel not found for {}", para.get(i).getAsString());

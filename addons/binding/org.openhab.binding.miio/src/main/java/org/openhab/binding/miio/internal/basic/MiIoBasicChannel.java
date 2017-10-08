@@ -39,6 +39,9 @@ public class MiIoBasicChannel {
     @SerializedName("refresh")
     @Expose
     private Boolean refresh;
+    @SerializedName("transformation")
+    @Expose
+    private String transfortmation;
     @SerializedName("ChannelGroup")
     @Expose
     private String channelGroup;
@@ -108,6 +111,14 @@ public class MiIoBasicChannel {
 
     public void setActions(List<MiIoDeviceAction> miIoDeviceActions) {
         this.miIoDeviceActions = miIoDeviceActions;
+    }
+
+    public String getTransfortmation() {
+        return transfortmation;
+    }
+
+    public void setTransfortmation(String transfortmation) {
+        this.transfortmation = transfortmation;
     }
 
     @Override

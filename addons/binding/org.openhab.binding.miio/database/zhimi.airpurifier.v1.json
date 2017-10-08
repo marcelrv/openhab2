@@ -104,7 +104,7 @@
       {
         "property": "f1_hour",
         "friendlyName": "Filter Max Life",
-        "channel": "filtermaxlive",
+        "channel": "filtermaxlife",
         "type": "Number",
         "refresh": true,
         "ChannelGroup": "Status",

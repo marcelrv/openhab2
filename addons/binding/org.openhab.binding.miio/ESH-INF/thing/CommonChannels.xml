@@ -106,7 +106,7 @@
         <label>Favorite_level</label>
             <state pattern="%.0f"/>
     </channel-type>
-	<channel-type id="filtermaxlive">
+	<channel-type id="filtermaxlife">
 		<item-type>Number</item-type>
 		<label>Filter Max Life</label>
 		<state readOnly="true" />

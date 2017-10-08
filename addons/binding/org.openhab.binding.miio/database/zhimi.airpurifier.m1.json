@@ -95,7 +95,7 @@
 			{
 				"property": "f1_hour",
 				"friendlyName": "Filter Max Life",
-				"channel": "filtermaxlive",
+				"channel": "filtermaxlife",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
@@ -107,6 +107,7 @@
 				"channel": "filterhours",
 				"type": "Number",
 				"refresh": true,
+				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
 				"actions": []
 			},
@@ -116,6 +117,7 @@
 				"channel": "usedhours",
 				"type": "Number",
 				"refresh": true,
+				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
 				"actions": []
 			},
