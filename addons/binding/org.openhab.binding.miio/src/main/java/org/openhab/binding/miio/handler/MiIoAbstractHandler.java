@@ -258,7 +258,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             if (deviceId != null && deviceId.length() == 8 && tolkenCheckPass(configuration.token)) {
                 logger.debug("Ping Mi IO device {} at {}", deviceId, configuration.host);
                 miioCom = new MiIoAsyncCommunication(configuration.host, token, Utils.hexStringToByteArray(deviceId),
-                        lastId);
+                        lastId, configuration.timeout);
                 Message miIoResponse = miioCom.sendPing(configuration.host);
                 ;
                 if (miIoResponse != null) {
@@ -271,7 +271,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             } else {
                 logger.debug("No device ID defined. Retrieving MiIO device ID");
                 MiIoAsyncCommunication miioCom = new MiIoAsyncCommunication(configuration.host, token, new byte[0],
-                        lastId);
+                        lastId, configuration.timeout);
                 Message miIoResponse = miioCom.sendPing(configuration.host);
                 if (miIoResponse != null) {
                     logger.debug("Ping response from device {} at {}. Time stamp: {}, OH time {}, delta {}",

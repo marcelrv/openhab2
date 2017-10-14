@@ -65,13 +65,13 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             return;
         }
         if (channelUID.getId().equals(CHANNEL_CONTROL)) {
-            if (command.toString().equals("vacuum")) {
+            if (command.toString().equals("vacuum") || command.toString().toLowerCase().equals("on")) {
                 sendCommand(MiIoCommand.START_VACUUM);
             } else if (command.toString().equals("spot")) {
                 sendCommand(MiIoCommand.START_SPOT);
             } else if (command.toString().equals("pause")) {
                 sendCommand(MiIoCommand.PAUSE);
-            } else if (command.toString().equals("dock")) {
+            } else if (command.toString().equals("dock") || command.toString().toLowerCase().equals("off")) {
                 sendCommand(MiIoCommand.STOP_VACUUM);
                 sendCommand(MiIoCommand.CHARGE);
             } else {

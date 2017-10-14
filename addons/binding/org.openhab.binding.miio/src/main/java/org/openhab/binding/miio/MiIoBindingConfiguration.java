@@ -20,4 +20,5 @@ public final class MiIoBindingConfiguration {
     public String deviceId;
     public String model;
     public int refreshInterval;
+    public int timeout;
 }

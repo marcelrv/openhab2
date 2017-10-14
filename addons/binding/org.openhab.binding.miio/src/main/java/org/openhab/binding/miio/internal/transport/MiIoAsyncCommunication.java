@@ -44,15 +44,13 @@ import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link MiIoAsyncCommunication} is responsible for communications with the Mi IO devices
- *
- * The MiIoAsyncCommunication is WORK IN PROGRESS! to replace the synchronous MiIoCommunication class
+ * *
  *
  * @author Marcel Verpaalen - Initial contribution
  */
 public class MiIoAsyncCommunication {
 
     private static final int MSG_BUFFER_SIZE = 2048;
-    private static final int TIMEOUT = 10000;
 
     private final Logger logger = LoggerFactory.getLogger(MiIoAsyncCommunication.class);
 
@@ -71,15 +69,17 @@ public class MiIoAsyncCommunication {
     private boolean connected;
     private ThingStatusDetail status;
     private int errorCounter;
+    private int timeout;
     private boolean needPing = true;
     private static final int MAX_ERRORS = 3;
 
     private ConcurrentLinkedQueue<MiIoSendCommand> concurrentLinkedQueue = new ConcurrentLinkedQueue<MiIoSendCommand>();
 
-    public MiIoAsyncCommunication(String ip, byte[] token, byte[] did, int id) {
+    public MiIoAsyncCommunication(String ip, byte[] token, byte[] did, int id, int timeout) {
         this.ip = ip;
         this.token = token;
         this.deviceId = did;
+        this.timeout = timeout;
         setId(id);
         parser = new JsonParser();
         senderThread = new MessageSenderThread();
@@ -97,6 +97,7 @@ public class MiIoAsyncCommunication {
      * @param listener - {@link XiaomiSocketListener} to be called back
      */
     public synchronized void registerListener(MiIoMessageListener listener) {
+        needPing = true;
         startReceiver();
         if (!getListeners().contains(listener)) {
             logger.trace("Adding socket listener {}", listener);
@@ -176,8 +177,7 @@ public class MiIoAsyncCommunication {
         return miIoSendCommand;
     }
 
-    private synchronized void startReceiver() {
-        needPing = true;
+    public synchronized void startReceiver() {
         if (senderThread == null) {
             senderThread = new MessageSenderThread();
         }
@@ -344,7 +344,7 @@ public class MiIoAsyncCommunication {
     private DatagramSocket getSocket() throws SocketException {
         if (socket == null || socket.isClosed()) {
             socket = new DatagramSocket();
-            socket.setSoTimeout(TIMEOUT);
+            socket.setSoTimeout(timeout);
             return socket;
         } else {
             return socket;

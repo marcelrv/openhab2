@@ -31,5 +31,11 @@
 			<default>30</default>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="timeout" type="integer" min="1000" max="60000" required="false">
+			<label>Time out</label>
+			<description>Timeout time in m sec</description>
+			<default>10000</default>
+			<advanced>true</advanced>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>

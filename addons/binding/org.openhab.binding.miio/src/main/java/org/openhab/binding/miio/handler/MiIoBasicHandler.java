@@ -140,12 +140,13 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
 
     @Override
     protected synchronized void updateData() {
+        logger.debug("Periodic update for '{}' ({})", getThing().getUID().toString(), getThing().getThingTypeUID());
         try {
-            if (skipUpdate()) {
+            if (!hasConnection() || skipUpdate()) {
                 return;
             }
-            logger.debug("Periodic update for '{}' ({})", getThing().getUID().toString(), getThing().getThingTypeUID());
             try {
+                miioCom.startReceiver();
                 miioCom.sendPing(configuration.host);
             } catch (Exception e) {
                 // ignore
@@ -187,7 +188,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     @Override
     protected boolean initializeData() {
         miioCom = new MiIoAsyncCommunication(configuration.host, token,
-                Utils.hexStringToByteArray(configuration.deviceId), lastId);
+                Utils.hexStringToByteArray(configuration.deviceId), lastId, configuration.timeout);
         miioCom.registerListener(this);
         try {
             miioCom.sendPing(configuration.host);
