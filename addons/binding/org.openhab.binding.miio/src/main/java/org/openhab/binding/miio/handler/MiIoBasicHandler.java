@@ -140,16 +140,16 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
 
     @Override
     protected synchronized void updateData() {
-        if (skipUpdate()) {
-            return;
-        }
-        logger.debug("Periodic update for '{}' ({})", getThing().getUID().toString(), getThing().getThingTypeUID());
         try {
-            miioCom.sendPing(configuration.host);
-        } catch (Exception e) {
-            // ignore
-        }
-        try {
+            if (skipUpdate()) {
+                return;
+            }
+            logger.debug("Periodic update for '{}' ({})", getThing().getUID().toString(), getThing().getThingTypeUID());
+            try {
+                miioCom.sendPing(configuration.host);
+            } catch (Exception e) {
+                // ignore
+            }
             checkChannelStructure();
             if (!isIdentified) {
                 miioCom.queueCommand(MiIoCommand.MIIO_INFO);

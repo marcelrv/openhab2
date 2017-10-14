@@ -19,8 +19,13 @@ public enum MiIoCommand {
     MIIO_WIFI("miIO.wifi_assoc_state"),
     MIIO_ROUTERCONFIG("miIO.miIO.config_router"),
 
+    // Basic device commands
     GET_PROPERTY("get_prop"),
+    SET_MODE_BASIC("set_mode"),
+    SET_POWER("set_power"),
+    SET_BRIGHT("set_bright"),
 
+    // vacuum commands
     START_VACUUM("app_start"),
     STOP_VACUUM("app_stop"),
     START_SPOT("app_spot"),

@@ -42,10 +42,8 @@ import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link MiIoAbstractHandler} is responsible for handling commands, which are
@@ -336,15 +334,6 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         });
     }
 
-    // TODO for removal once transitioned
-    protected void defineDeviceType() {
-        JsonObject miioInfo = getJsonResultHelper(network.getValue());
-        if (miioInfo != null) {
-            updateProperties(miioInfo);
-            isIdentified = updateThingType(miioInfo);
-        }
-    }
-
     protected void defineDeviceType(JsonObject miioInfo) {
         updateProperties(miioInfo);
         isIdentified = updateThingType(miioInfo);
@@ -409,22 +398,6 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                     miDevice.getThingType().toString());
             changeThingType(MiIoDevices.getType(modelId).getThingType(), getConfig());
         }, 10, TimeUnit.SECONDS);
-    }
-
-    protected JsonObject getJsonResultHelper(String response) {
-        try {
-            JsonObject result = (JsonObject) parser.parse(response);
-            if (result.get("result").getClass().isAssignableFrom(JsonArray.class)) {
-                return result.getAsJsonArray("result").get(0).getAsJsonObject();
-            } else {
-                return result.getAsJsonObject("result");
-            }
-        } catch (JsonSyntaxException e) {
-            logger.debug("Could not parse result from response: '{}'", response);
-        } catch (NullPointerException e) {
-            logger.trace("Empty response received.");
-        }
-        return null;
     }
 
     @Override

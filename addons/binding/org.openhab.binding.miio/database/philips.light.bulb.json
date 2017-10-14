@@ -55,7 +55,7 @@
         "ChannelGroup": "actions",
         "actions": [
           {
-            "command": "apply_fixed_scene",
+            "command": "apply_scene",
             "parameterType": "NUMBER"
           }
         ]
@@ -68,8 +68,7 @@
         "ChannelGroup": "actions",
         "actions": [
           {
-            "command": "apply_scene",
-            "parameterType": "NUMBER"
+           
           }
         ]
       },
@@ -97,7 +96,7 @@
         "actions": [
           {
             "command": "delay_off",
-            "parameterType": "EMPTY"
+            "parameterType": "NUMBER"
           }
         ]
       },
