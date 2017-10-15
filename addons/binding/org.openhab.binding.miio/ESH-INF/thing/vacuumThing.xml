@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="miio" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="vacuum">
 		<label>Xiaomi Robot Vacuum</label>
@@ -12,6 +12,7 @@
 			<channel-group id="consumables" typeId="consumables" />
 			<channel-group id="dnd" typeId="dnd" />
 			<channel-group id="history" typeId="history" />
+			<channel-group id="cleaning" typeId="cleaning" />
 			<channel-group id="network" typeId="network" />
 		</channel-groups>
 
@@ -64,6 +65,18 @@
 			<channel id="dnd_function" typeId="dnd_function" />
 			<channel id="dnd_start" typeId="dnd_start" />
 			<channel id="dnd_end" typeId="dnd_end" />
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="cleaning">
+		<label>Last Cleaning Details</label>
+		<channels>
+			<channel id="last_clean_start_time" typeId="last_clean_start_time" />
+			<channel id="last_clean_end_time" typeId="last_clean_end_time" />
+			<channel id="last_clean_area" typeId="last_clean_area" />
+			<channel id="last_clean_duration" typeId="last_clean_duration" />
+			<channel id="last_clean_error" typeId="last_clean_error" />
+			<channel id="last_clean_finish" typeId="last_clean_finish" />
+			<channel id="last_clean_record" typeId="last_clean_record" />
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="history">
@@ -221,5 +234,47 @@
 		<item-type>Number</item-type>
 		<label>Total Cleanings</label>
 		<state pattern="%.0f" readOnly="true" />
+	</channel-type>
+
+	<!-- Clean Record -->
+	<channel-type id="last_clean_start_time">
+		<item-type>DateTime</item-type>
+		<label>Cleaning Start</label>
+		<description>Last Cleaning Start Time</description>
+		<category>Date</category>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="last_clean_end_time">
+		<item-type>DateTime</item-type>
+		<label>Cleaning End</label>
+		<description>Last Cleaning End Time</description>
+		<category>Date</category>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="last_clean_duration">
+		<item-type>Number</item-type>
+		<label>Cleaning Duration</label>
+		<description>Cleaning Duration in minutes</description>
+		<state pattern="%.0f'" readOnly="true" />
+	</channel-type>
+	<channel-type id="last_clean_area">
+		<item-type>Number</item-type>
+		<label>Cleaning Area</label>
+		<state pattern="%.1f m²" readOnly="true" />
+	</channel-type>
+	<channel-type id="last_clean_error">
+		<item-type>Number</item-type>
+		<label>Error</label>
+		<state pattern="%.0f" readOnly="true" />
+	</channel-type>
+	<channel-type id="last_clean_finish">
+		<item-type>Boolean</item-type>
+		<label>Cleaning Finished</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="last_clean_record" advanced="true">
+		<item-type>String</item-type>
+		<label>Cleaning Record</label>
+		<state readOnly="true" />
 	</channel-type>
 </thing:thing-descriptions>

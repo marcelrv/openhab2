@@ -10,10 +10,15 @@ package org.openhab.binding.miio.handler;
 
 import static org.openhab.binding.miio.MiIoBindingConstants.*;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -47,6 +52,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private ExpiringCache<String> consumables;
     private ExpiringCache<String> dnd;
     private ExpiringCache<String> history;
+    private String lastHistoryId;
 
     @NonNullByDefault
     public MiIoVacuumHandler(Thing thing) {
@@ -200,7 +206,39 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                 new DecimalType(TimeUnit.SECONDS.toMinutes(historyData.get(0).getAsLong())));
         updateState(CHANNEL_HISTORY_TOTALAREA, new DecimalType(historyData.get(1).getAsDouble() / 1000000D));
         updateState(CHANNEL_HISTORY_COUNT, new DecimalType(historyData.get(2).toString()));
+        if (historyData.get(3).getAsJsonArray().size() > 0) {
+            String lastClean = historyData.get(3).getAsJsonArray().get(0).getAsString();
+            if (!lastClean.equals(lastHistoryId)) {
+                lastHistoryId = lastClean;
+                sendCommand(MiIoCommand.CLEAN_RECORD_GET, "[" + lastClean + "]");
+            }
+        }
         return true;
+    }
+
+    private void updateHistoryRecord(JsonArray historyData) {
+        ZonedDateTime startTime = ZonedDateTime.ofInstant(Instant.ofEpochSecond(historyData.get(0).getAsLong()),
+                ZoneId.systemDefault());
+        ZonedDateTime endTime = ZonedDateTime.ofInstant(Instant.ofEpochSecond(historyData.get(1).getAsLong()),
+                ZoneId.systemDefault());
+        long duration = TimeUnit.SECONDS.toMinutes(historyData.get(2).getAsLong());
+        double area = historyData.get(3).getAsDouble() / 1000000D;
+        int error = historyData.get(4).getAsInt();
+        int finished = historyData.get(5).getAsInt();
+        JsonObject historyRecord = new JsonObject();
+        historyRecord.addProperty("start", startTime.toString());
+        historyRecord.addProperty("end", endTime.toString());
+        historyRecord.addProperty("duration", duration);
+        historyRecord.addProperty("area", area);
+        historyRecord.addProperty("error", error);
+        historyRecord.addProperty("finished", finished);
+        updateState(CHANNEL_HISTORY_START_TIME, new DateTimeType(GregorianCalendar.from(startTime)));
+        updateState(CHANNEL_HISTORY_END_TIME, new DateTimeType(GregorianCalendar.from(endTime)));
+        updateState(CHANNEL_HISTORY_DURATION, new DecimalType(duration));
+        updateState(CHANNEL_HISTORY_AREA, new DecimalType(area));
+        updateState(CHANNEL_HISTORY_ERROR, new DecimalType(error));
+        updateState(CHANNEL_HISTORY_FINISH, new DecimalType(finished));
+        updateState(CHANNEL_HISTORY_RECORD, new StringType(historyRecord.toString()));
     }
 
     @Override
@@ -209,7 +247,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             logger.debug("Skipping periodic update for '{}'. No Connection", getThing().getUID().toString());
             return true;
         }
-        if (getThing().getStatusInfo().getStatusDetail().equals(ThingStatusDetail.CONFIGURATION_ERROR)) {
+        if (ThingStatusDetail.CONFIGURATION_ERROR.equals(getThing().getStatusInfo().getStatusDetail())) {
             logger.debug("Skipping periodic update for '{}'. Thing Status", getThing().getUID().toString(),
                     getThing().getStatusInfo().getStatusDetail());
             network.getValue();
@@ -316,6 +354,14 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             case CLEAN_SUMMARY_GET:
                 if (response.getResult().isJsonArray()) {
                     updateHistory(response.getResult().getAsJsonArray());
+                }
+                break;
+            case CLEAN_RECORD_GET:
+                if (response.getResult().isJsonArray() && response.getResult().getAsJsonArray().size() > 0
+                        && response.getResult().getAsJsonArray().get(0).isJsonArray()) {
+                    updateHistoryRecord(response.getResult().getAsJsonArray().get(0).getAsJsonArray());
+                } else {
+                    logger.debug("Could not extract cleaning history record from: {}", response);
                 }
                 break;
             case UNKNOWN:
