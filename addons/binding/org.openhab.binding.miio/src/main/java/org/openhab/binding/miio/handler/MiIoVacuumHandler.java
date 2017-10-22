@@ -20,12 +20,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.miio.internal.MiIoCommand;
 import org.openhab.binding.miio.internal.MiIoSendCommand;
@@ -70,14 +72,24 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             updateData();
             return;
         }
+        if (channelUID.getId().equals(CHANNEL_VACUUM)) {
+            if (command instanceof OnOffType) {
+                if (command.equals(OnOffType.ON)) {
+                    sendCommand(MiIoCommand.START_VACUUM);
+                } else {
+                    sendCommand(MiIoCommand.STOP_VACUUM);
+                    sendCommand(MiIoCommand.CHARGE);
+                }
+            }
+        }
         if (channelUID.getId().equals(CHANNEL_CONTROL)) {
-            if (command.toString().equals("vacuum") || command.toString().toLowerCase().equals("on")) {
+            if (command.toString().equals("vacuum")) {
                 sendCommand(MiIoCommand.START_VACUUM);
             } else if (command.toString().equals("spot")) {
                 sendCommand(MiIoCommand.START_SPOT);
             } else if (command.toString().equals("pause")) {
                 sendCommand(MiIoCommand.PAUSE);
-            } else if (command.toString().equals("dock") || command.toString().toLowerCase().equals("off")) {
+            } else if (command.toString().equals("dock")) {
                 sendCommand(MiIoCommand.STOP_VACUUM);
                 sendCommand(MiIoCommand.CHARGE);
             } else {
@@ -101,6 +113,10 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             status.getValue();
             return;
         }
+        if (channelUID.getId().equals(CHANNEL_CONSUMABLE_RESET)) {
+            sendCommand(MiIoCommand.CONSUMABLES_RESET, "[" + command.toString() + "]");
+            updateState(CHANNEL_CONSUMABLE_RESET, new StringType("none"));
+        }
         if (channelUID.getId().equals(CHANNEL_COMMAND)) {
             cmds.put(sendCommand(command.toString()), command.toString());
         }
@@ -122,10 +138,12 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         updateState(CHANNEL_MAP_PRESENT, new DecimalType(statusData.get("map_present").getAsBigDecimal()));
         StatusType state = StatusType.getType(statusData.get("state").getAsInt());
         updateState(CHANNEL_STATE, new StringType(state.getDescription()));
+        State vacuum = OnOffType.OFF;
         String control;
         switch (state) {
             case CLEANING:
                 control = "vacuum";
+                vacuum = OnOffType.ON;
                 break;
             case CHARGING:
                 control = "dock";
@@ -153,6 +171,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                 break;
             case SPOTCLEAN:
                 control = "spot";
+                vacuum = OnOffType.ON;
                 break;
             default:
                 control = "undef";
@@ -163,6 +182,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         } else {
             updateState(CHANNEL_CONTROL, new StringType(control));
         }
+        updateState(CHANNEL_VACUUM, vacuum);
         return true;
     }
 
@@ -263,7 +283,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
 
     @Override
     protected synchronized void updateData() {
-        if (skipUpdate()) {
+        if (!hasConnection() || skipUpdate()) {
             return;
         }
         logger.debug("Periodic update for '{}' ({})", getThing().getUID().toString(), getThing().getThingTypeUID());
@@ -280,6 +300,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
 
     @Override
     protected boolean initializeData() {
+        initalizeNetworkCache();
         status = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
             try {
                 int ret = sendCommand(MiIoCommand.GET_STATUS);
@@ -324,7 +345,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             }
             return null;
         });
-        initalizeNetworkCache();
+        updateState(CHANNEL_CONSUMABLE_RESET, new StringType("none"));
         this.miioCom = getConnection();
         return true;
     }

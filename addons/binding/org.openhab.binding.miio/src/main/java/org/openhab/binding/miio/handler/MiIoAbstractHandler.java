@@ -89,7 +89,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             return;
         }
         isIdentified = false;
-        scheduler.schedule(this::initializeData, 0, TimeUnit.SECONDS);
+        scheduler.schedule(this::initializeData, 1, TimeUnit.SECONDS);
         int pollingPeriod = configuration.refreshInterval;
         if (pollingPeriod > 0) {
             pollingJob = scheduler.scheduleWithFixedDelay(() -> {
@@ -98,10 +98,11 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                 } catch (Exception e) {
                     logger.debug("Unexpected error during refresh.", e);
                 }
-            }, 5, pollingPeriod, TimeUnit.SECONDS);
+            }, 10, pollingPeriod, TimeUnit.SECONDS);
             logger.debug("Polling job scheduled to run every {} sec. for '{}'", pollingPeriod, getThing().getUID());
         } else {
             logger.debug("Polling job disabled. for '{}'", getThing().getUID());
+            scheduler.schedule(this::updateData, 10, TimeUnit.SECONDS);
         }
         updateStatus(ThingStatus.OFFLINE);
     }
@@ -141,6 +142,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         }
         if (miioCom != null) {
             lastId = miioCom.getId();
+            miioCom.unregisterListener(this);
             miioCom.close();
             miioCom = null;
         }

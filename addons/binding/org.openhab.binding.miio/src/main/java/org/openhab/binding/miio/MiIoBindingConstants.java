@@ -49,6 +49,7 @@ public final class MiIoBindingConstants {
 
     public static final String CHANNEL_CONTROL = "actions#control";
     public static final String CHANNEL_COMMAND = "actions#commands";
+    public static final String CHANNEL_VACUUM = "actions#vacuum";
     public static final String CHANNEL_FAN_CONTROL = "actions#fan";
     public static final String CHANNEL_TESTCOMMANDS = "actions#testcommands";
     public static final String CHANNEL_POWER = "actions#power";
@@ -66,6 +67,7 @@ public final class MiIoBindingConstants {
     public static final String CHANNEL_CONSUMABLE_SIDE_TIME = "consumables#side_brush_time";
     public static final String CHANNEL_CONSUMABLE_FILTER_TIME = "consumables#filter_time";
     public static final String CHANNEL_CONSUMABLE_SENSOR_TIME = "consumables#sensor_dirt_time";
+    public static final String CHANNEL_CONSUMABLE_RESET = "consumables#consumable_reset";
 
     public static final String CHANNEL_DND_FUNCTION = "dnd#dnd_function";
     public static final String CHANNEL_DND_START = "dnd#dnd_start";

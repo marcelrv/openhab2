@@ -29,6 +29,7 @@
 			<channel id="control" typeId="control" />
 			<channel id="commands" typeId="commands" />
 			<channel id="fan" typeId="fan" />
+			<channel id="vacuum" typeId="vacuum" />
 		</channels>
 	</channel-group-type>
 
@@ -57,6 +58,7 @@
 			<channel id="side_brush_time" typeId="side_brush_time" />
 			<channel id="filter_time" typeId="filter_time" />
 			<channel id="sensor_dirt_time" typeId="sensor_dirt_time" />
+            <channel id="consumable_reset" typeId="consumable_reset" />
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="dnd">
@@ -203,7 +205,23 @@
 			</options>
 		</state>
 	</channel-type>
-
+	<channel-type id="vacuum" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Vacuum On/Off</label>
+	</channel-type>
+	<channel-type id="consumable_reset">
+		<item-type>String</item-type>
+		<label>Reset Consumable</label>
+		<state>
+			<options>
+				<option value="none">Select Consumable</option>
+				<option value="main_brush_work_time">Reset Mainbrush</option>
+				<option value="side_brush_work_time">Reset Sidebrush</option>
+				<option value="filter_work_time">Reset Filter</option>
+				<option value="sensor_dirty_time">Reset Sensors</option>
+			</options>		
+		</state>
+	</channel-type>
 	<!-- DND Setting -->
 	<channel-type id="dnd_function">
 		<item-type>Switch</item-type>

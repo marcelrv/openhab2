@@ -24,15 +24,22 @@ import com.google.gson.JsonPrimitive;
 public class Conversions {
     private final static Logger logger = LoggerFactory.getLogger(Conversions.class);
 
-    public static JsonElement SecondsToHours(JsonElement seconds) {
+    public static JsonElement secondsToHours(JsonElement seconds) {
         long hours = TimeUnit.SECONDS.toHours(seconds.getAsInt());
         return new JsonPrimitive(hours);
+    }
+
+    public static JsonElement divideTen(JsonElement value10) {
+        double value = value10.getAsDouble() / 10;
+        return new JsonPrimitive(value);
     }
 
     public static JsonElement execute(String transfortmation, JsonElement value) {
         switch (transfortmation.toUpperCase()) {
             case "SECONDSTOHOURS":
-                return SecondsToHours(value);
+                return secondsToHours(value);
+            case "/10":
+                return divideTen(value);
             default:
                 logger.debug("Transformation {} not found. Returning '{}'", transfortmation, value.toString());
                 return value;

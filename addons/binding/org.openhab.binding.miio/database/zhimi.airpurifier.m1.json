@@ -13,7 +13,7 @@
 				"property": "power",
 				"friendlyName": "Power",
 				"channel": "power",
-                "type": "Switch",
+				"type": "Switch",
 				"refresh": true,
 				"channelGroup": "actions",
 				"actions": [
@@ -159,6 +159,7 @@
 				"channel": "temperature",
 				"type": "Number",
 				"refresh": true,
+                "transformation": "/10",
 				"ChannelGroup": "Status",
 				"actions": []
 			},
