@@ -146,4 +146,9 @@
 		<label>Power Usage</label>
 		<state pattern="%.0fW" readOnly="true" />
 	</channel-type>
+    <channel-type id="powerPrice">
+        <item-type>Number</item-type>
+        <label>Power Price</label>
+        <state pattern="%.0f kW/h" />
+    </channel-type>
 </thing:thing-descriptions>

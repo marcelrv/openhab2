@@ -92,7 +92,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         scheduler.schedule(this::initializeData, 1, TimeUnit.SECONDS);
         int pollingPeriod = configuration.refreshInterval;
         if (pollingPeriod > 0) {
-            pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+            pollingJob = scheduler.scheduleAtFixedRate(() -> {
                 try {
                     updateData();
                 } catch (Exception e) {
