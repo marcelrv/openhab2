@@ -230,6 +230,7 @@ public class MiIoAsyncCommunication {
         encr = MiIoCrypto.encrypt(command.getBytes(), token);
         timeStamp = (int) TimeUnit.MILLISECONDS.toSeconds(Calendar.getInstance().getTime().getTime());
         byte[] sendMsg = Message.createMsgData(encr, token, deviceId, timeStamp + timeDelta);
+        logger.debug("About to send to device {} at {} for command {}.", Utils.getHex(deviceId), ip, command);
         Message miIoResponseMsg = sendData(sendMsg, ip);
         if (miIoResponseMsg == null) {
             if (logger.isTraceEnabled()) {
@@ -263,6 +264,7 @@ public class MiIoAsyncCommunication {
 
     public Message sendPing(String ip) throws IOException {
         for (int i = 0; i < 3; i++) {
+            logger.debug("Sending PING command");
             Message resp = sendData(MiIoBindingConstants.DISCOVER_STRING, ip);
             if (resp != null) {
                 pingSuccess();
@@ -274,12 +276,14 @@ public class MiIoAsyncCommunication {
     }
 
     private void pingFail() {
+        logger.debug("Ping failed");
         connected = false;
         status = ThingStatusDetail.COMMUNICATION_ERROR;
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
     }
 
     private void pingSuccess() {
+        logger.debug("Ping success");
         if (!connected) {
             connected = true;
             status = ThingStatusDetail.NONE;
@@ -309,7 +313,9 @@ public class MiIoAsyncCommunication {
         byte[] response = comms(sendMsg, ip);
         if (response.length >= 32) {
             Message miIoResponse = new Message(response);
+            timeStamp = (int) TimeUnit.MILLISECONDS.toSeconds(Calendar.getInstance().getTime().getTime());
             timeDelta = miIoResponse.getTimestampAsInt() - timeStamp;
+            logger.debug("Received stamp {} current stamp {} delta {}",miIoResponse.getTimestampAsInt(),timeStamp,timeDelta);
             logger.trace("Message Details:{} ", miIoResponse.toSting());
             return miIoResponse;
         } else {
@@ -331,6 +337,7 @@ public class MiIoAsyncCommunication {
             clientSocket.send(sendPacket);
             sendPacket.setData(new byte[MSG_BUFFER_SIZE]);
             clientSocket.receive(receivePacket);
+            logger.debug("Received datagram length {}", receivePacket.getLength());
             byte[] response = Arrays.copyOfRange(receivePacket.getData(), receivePacket.getOffset(),
                     receivePacket.getOffset() + receivePacket.getLength());
             return response;
