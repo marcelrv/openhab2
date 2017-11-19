@@ -336,6 +336,13 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         });
     }
 
+    protected void refreshNetwork() {
+        if (network == null) {
+            initalizeNetworkCache();
+        }
+        network.getValue();
+    }
+
     protected void defineDeviceType(JsonObject miioInfo) {
         updateProperties(miioInfo);
         isIdentified = updateThingType(miioInfo);
@@ -390,6 +397,10 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
      * @param model
      */
     private void changeType(final String modelId) {
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
+            pollingJob = null;
+        }
         scheduler.schedule(() -> {
             ThingBuilder thingBuilder = editThing();
             thingBuilder.withLabel(miDevice.getDescription());

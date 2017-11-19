@@ -270,7 +270,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         if (ThingStatusDetail.CONFIGURATION_ERROR.equals(getThing().getStatusInfo().getStatusDetail())) {
             logger.debug("Skipping periodic update for '{}'. Thing Status", getThing().getUID().toString(),
                     getThing().getStatusInfo().getStatusDetail());
-            network.getValue();
+            refreshNetwork();
             return true;
         }
         if (miioCom.getQueueLenght() > MAX_QUEUE) {
@@ -291,7 +291,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             dnd.getValue();
             history.getValue();
             status.getValue();
-            network.getValue();
+            refreshNetwork();
             consumables.getValue();
         } catch (Exception e) {
             logger.debug("Error while updating '{}': ", getThing().getUID().toString(), e.getLocalizedMessage(), e);

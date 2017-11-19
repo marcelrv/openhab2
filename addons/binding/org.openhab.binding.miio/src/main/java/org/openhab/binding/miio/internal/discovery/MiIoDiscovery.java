@@ -129,8 +129,8 @@ public class MiIoDiscovery extends AbstractDiscoveryService implements ExtendedD
                 break;
             }
             // TODO Double check why ExistingDiscoveryResult not working. This seems to be a bug.
-            // logger.debug("Test {} Existing result {}", thingUID,
-            // discoveryServiceCallback.getExistingDiscoveryResult(thingUID));
+            logger.debug("Test {} Existing result {}", thingUID,
+                    discoveryServiceCallback.getExistingDiscoveryResult(thingUID));
             // if (discoveryServiceCallback.getExistingDiscoveryResult(thingUID).getThingTypeUID().equals(typeU)) {
             // logger.debug("Mi IO device {} was already discovered as {}.", id, thingUID.toString());
             // uid = thingUID;
@@ -148,7 +148,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService implements ExtendedD
             logger.debug("Discovered token for device {}: {} ('{}')", id, token, new String(msg.getChecksum()));
             thingDiscovered(DiscoveryResultBuilder.create(uid).withProperty(PROPERTY_HOST_IP, ip)
                     .withProperty(PROPERTY_DID, id).withProperty(PROPERTY_TOKEN, token).withRepresentationProperty(id)
-                    .withLabel("Discovered Xiaomi Mi IO Device").build());
+                    .withLabel("Discovered Xiaomi Mi IO Device with token").build());
         }
     }
 

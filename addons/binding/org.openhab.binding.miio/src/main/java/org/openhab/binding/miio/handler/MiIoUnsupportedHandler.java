@@ -105,7 +105,7 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         }
         logger.debug("Periodic update for '{}' ({})", getThing().getUID().toString(), getThing().getThingTypeUID());
         try {
-            network.getValue();
+            refreshNetwork();
         } catch (Exception e) {
             logger.debug("Error while updating '{}' ({})", getThing().getUID().toString(), getThing().getThingTypeUID(),
                     e);

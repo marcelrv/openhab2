@@ -63,10 +63,8 @@ public class MiIoDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 return null;
             }
             ThingTypeUID thingType = MiIoDevices.getType(id[0].replaceAll("-", ".")).getThingType();
-            logger.debug("mDNS {} identified as thingtype {}", id[0], thingType);
             String uidName = String.format("%08X", did);
-            logger.debug("mDNS {} identified as thingtype {}", id[0], uidName);
-
+            logger.debug("mDNS {} identified as thingtype {} with did {}", id[0], thingType, uidName);
             return new ThingUID(thingType, uidName);
         }
         return null;
