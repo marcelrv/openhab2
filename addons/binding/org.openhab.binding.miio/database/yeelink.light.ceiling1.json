@@ -70,7 +70,7 @@
         "actions": [
           {
             "command": "set_default",
-            "parameterType": "NONE"
+            "parameterType": "EMPTY"
           }
         ]
       }

@@ -83,8 +83,8 @@
         "ChannelGroup": "actions",
         "actions": [
           {
-            "command": "set_mode[toggle]",
-            "parameterType": "NONE"
+            "command": "toggle",
+            "parameterType": "EMPTY"
           }
         ]
       }

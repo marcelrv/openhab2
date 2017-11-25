@@ -112,28 +112,33 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             if (actions.containsKey(channelUID.getId())) {
                 String cmd = actions.get(channelUID.getId()).getCommand();
                 CommandParameterType paramType = actions.get(channelUID.getId()).getparameterType();
-                if (command instanceof OnOffType) {
+                if (paramType == CommandParameterType.EMPTY) {
+                    cmd = cmd + "[]";
+                } else if (paramType == CommandParameterType.NONE) {
+                    // ignore other
+                } else if (command instanceof OnOffType) {
                     if (paramType == CommandParameterType.ONOFF) {
                         cmd = cmd + "[\"" + command.toString().toLowerCase() + "\"]";
                     } else {
                         cmd = cmd + "[]";
                     }
-                }
-                if (command instanceof StringType) {
+                } else if (command instanceof StringType) {
                     cmd = cmd + "[\"" + command.toString() + "\"]";
-                }
-                if (command instanceof DecimalType) {
+                } else if (command instanceof DecimalType) {
                     cmd = cmd + "[" + command.toString().toLowerCase() + "]";
                 }
-                logger.debug(" sending command {}", cmd);
+                logger.debug("Sending command {}", cmd);
                 sendCommand(cmd);
             } else {
-                logger.debug("Channel Id {} not in mapping. Available:", channelUID.getId());
+                logger.debug("Channel Id {} not in mapping.", channelUID.getId());
                 for (String a : actions.keySet()) {
-                    logger.debug("entries: {} : {}", a, actions.get(a));
+                    logger.trace("Available entries: {} : {}", a, actions.get(a).getCommand());
                 }
             }
-        } else {
+            updateData();
+        } else
+
+        {
             logger.debug("Actions not loaded yet");
         }
     }
