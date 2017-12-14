@@ -57,6 +57,7 @@ public enum MiIoDevices {
     POWERSTRIP2("zimi.powerstrip.v2", "Mi Power-strip v2", MiIoBindingConstants.THING_TYPE_BASIC),
     TOOTHBRUSH("soocare.toothbrush.x3", "Mi Toothbrush", MiIoBindingConstants.THING_TYPE_UNSUPPORTED),
     VACUUM("rockrobo.vacuum.v1", "Mi Robot Vacuum", MiIoBindingConstants.THING_TYPE_VACUUM),
+    VACUUM2("roborock-vacuum-s5", "Mi Robot Vacuum v2", MiIoBindingConstants.THING_TYPE_VACUUM),
     WATER_PURIFIER2("yunmi.waterpuri.v2", "Mi Water Purifier v2", MiIoBindingConstants.THING_TYPE_UNSUPPORTED),
     WIFI2("xiaomi.repeater.v2", "Xiaomi Wifi Extender", MiIoBindingConstants.THING_TYPE_UNSUPPORTED),
     WIFISPEAKER("xiaomi.wifispeaker.v1", "Mi Internet Speaker", MiIoBindingConstants.THING_TYPE_UNSUPPORTED),

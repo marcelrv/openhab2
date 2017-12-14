@@ -1,6 +1,6 @@
 # Xiaomi Robot Vacuum Binding
 
-This Binding is used to control Xiaomi Mi IO devices.
+This Binding is used to control Xiaomi Mi IO devices. This is the set of devices from Xiaomi that are part of the Mi Ecosystem which is branded as MiJia.
 
 ![MIIO logo](doc/miio.png)
 
@@ -8,22 +8,24 @@ This Binding is used to control Xiaomi Mi IO devices.
 
 This Binding supports Xiaomi Mi IO devices (Several Xiaomi wifi devices).
 Currently mainly the Xiaomi Robot Vacuum is supported, remaining devices are experimental.
-Experimental means that most likely you can send commands to the devices
+Experimental means that most likely you can send commands to the devices.
 
-The following things are available
+The following things are available:
 
 | Thing Type | Description |
 |--------|---------| 
-| miio:generic | Generic type for discovered devices. Once the tolken is available and the device model is determined, this thingtype will automatically change to the appropriate thingtype for the model |
+| miio:generic | Generic type for discovered devices. Once the token is available and the device model is determined, this Thing Type will automatically change to the appropriate Thing Type |
 | miio:vacuum | For Xiaomi Robot Vacuum |
 | miio:basic | For several basic devices like yeelights, airpurifiers. Channels and commands are determined by database configuration |
 | miio:unsupported | For experimenting with other devices which use the Mi IO protocol)
 
 ## Mi IO Devices
 
-| Device | Thing Type | Auto tolken | Device Model  | Remark |
-| ----------- | --------- |:---:| ---------- | -----------| 
-| [Xiaomi Robot Vacuum](doc/vacuum.md) | miio:vacuum | No | rockrobo.vacuum.v1 |
+| Device | Thing Type | Auto tolken | Device Model  | Supported | Remark |
+| ----------- | --------- |:---:| ---------- | ------ | -----------| 
+| [Xiaomi Robot Vacuum](doc/vacuum.md) | miio:vacuum | No | rockrobo.vacuum.v1 | Yes |
+| [Xiaomi Robot Vacuum 2](doc/vacuum.md) | miio:vacuum | No | roborock-vacuum-s5 | Yes |
+
 
 # Discovery
 

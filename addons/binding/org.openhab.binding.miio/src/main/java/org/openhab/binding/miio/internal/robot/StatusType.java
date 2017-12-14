@@ -19,10 +19,10 @@ public enum StatusType {
     INITIATING(1, "Initiating"),
     SLEEPING(2, "Sleeping"),
     IDLE(3, "Idle"),
-    UNKNOWN4(4, "Unknown Status 4"),
+    UNKNOWN4(4, "Remote Control"),
     CLEANING(5, "Cleaning"),
     RETURNING(6, "Returning Dock"),
-    UNKNOWN7(7, "Unknown Status 7"),
+    UNKNOWN7(7, "Manual Mode"),
     CHARGING(8, "Charging"),
     CHARGING_ERROR(9, "Charging Error"),
     PAUSED(10, "Paused"),
@@ -31,6 +31,7 @@ public enum StatusType {
     SHUTTING_DOWN(13, "Shutting Down"),
     UPDATING(14, "Updating"),
     DOCKING(15, "Docking"),
+    ZONE(17, "Zone Clean"),
     FULL(100, "Full");
 
     private final int id;
