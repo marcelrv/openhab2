@@ -1,14 +1,7 @@
 {
 	"deviceMapping": {
 		"id": [
-			"yeelink.light.lamp1",
-			"yeelink.light.bslamp1",
-			"yeelink.light.ceiling1",
-			"yeelink.light.ceiling2",
-			"yeelink.light.ceiling3",
-			"yeelink.light.mono1",
-			"yeelink.light.mono2",
-			"yeelink.light.strip1"
+			"yeelink.light.color1"
 		],
 		"channels": [
 			{
@@ -71,16 +64,30 @@
 				"property": "color_mode",
 				"friendlyName": "colorMode",
 				"channel": "colorMode",
-				"type": "Number",
+				"type": "String",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
 					{
-						"command": "set_scene",
-						"parameterType": "NUMBER"
+						"command": "switch_the_scene",
+						"parameterType": "EMPTY"
 					}
 				]
 			},
+			{
+                "property": "rgb",
+                "friendlyName": "color",
+                "channel": "color",
+                "type": "Color",
+                "refresh": true,
+                "ChannelGroup": "actions",
+                "actions": [
+                    {
+                        "command": "set_rgb",
+                        "parameterType": "COLOR"
+                    }
+                ]
+            },
 			{
 				"property": "name",
 				"friendlyName": "Name",

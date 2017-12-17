@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -126,6 +127,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     cmd = cmd + "[\"" + command.toString() + "\"]";
                 } else if (command instanceof DecimalType) {
                     cmd = cmd + "[" + command.toString().toLowerCase() + "]";
+                } else if (command instanceof HSBType) {
+                    cmd = cmd + "[" + ((HSBType) command).getRGB() + "]";
                 }
                 logger.debug("Sending command {}", cmd);
                 sendCommand(cmd);
@@ -370,6 +373,12 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     if (basicChannel.getType().equals("Switch")) {
                         updateState(basicChannel.getChannel(),
                                 val.getAsString().toLowerCase().equals("on") ? OnOffType.ON : OnOffType.OFF);
+                    }
+                    if (basicChannel.getType().equals("Color")) {
+                        // TODO: very experimental
+                        HSBType color = HSBType.fromRGB((val.getAsInt() >> 16) & 0xFF, (val.getAsInt() >> 8) & 0xFF,
+                                val.getAsInt() & 0xFF);
+                        updateState(basicChannel.getChannel(), color);
                     }
                 } catch (Exception e) {
                     logger.debug("Error updating propery {} with '{}' : {}", basicChannel.getChannel(),

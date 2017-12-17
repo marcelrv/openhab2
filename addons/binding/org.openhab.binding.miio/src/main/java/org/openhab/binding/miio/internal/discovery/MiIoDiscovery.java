@@ -24,9 +24,11 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
+import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
 import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.miio.internal.Message;
@@ -101,6 +103,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService implements ExtendedD
     protected void startScan() {
         logger.debug("Start Xiaomi Mi IO discovery");
         getSocket();
+        logger.debug("Using socket on port {}", clientSocket.getLocalPort());
         discover();
         logger.debug("Xiaomi Mi IO discovery done");
     }
@@ -118,45 +121,52 @@ public class MiIoDiscovery extends AbstractDiscoveryService implements ExtendedD
         Message msg = new Message(response);
         String token = Utils.getHex(msg.getChecksum());
         String id = Utils.getHex(msg.getDeviceId());
+        String label = "Discovered Xiaomi Mi IO Device";
 
         ThingUID uid = new ThingUID(THING_TYPE_MIIO, id);
+        logger.debug("Discovered Mi IO Device {} ('{}') at {} as {}", id, Integer.parseInt(id, 32), ip, uid);
+
         // Test if the device is already known by specific ThingTypes. In that case don't use the generic thingType
         for (ThingTypeUID typeU : NONGENERIC_THING_TYPES_UIDS) {
             ThingUID thingUID = new ThingUID(typeU, id);
-            if (discoveryServiceCallback.getExistingThing(thingUID) != null) {
-                logger.trace("Mi IO device {} already exist as thing {}.", id, thingUID.toString());
+            Thing existingThing = discoveryServiceCallback.getExistingThing(thingUID);
+            if (existingThing != null) {
+                logger.trace("Mi IO device {} already exist as thing {}: {}.", id, thingUID.toString(),
+                        existingThing.getLabel());
                 uid = thingUID;
                 break;
             }
-            // TODO Double check why ExistingDiscoveryResult not working. This seems to be a bug.
-            logger.debug("Test {} Existing result {}", thingUID,
-                    discoveryServiceCallback.getExistingDiscoveryResult(thingUID));
-            // if (discoveryServiceCallback.getExistingDiscoveryResult(thingUID).getThingTypeUID().equals(typeU)) {
-            // logger.debug("Mi IO device {} was already discovered as {}.", id, thingUID.toString());
-            // uid = thingUID;
-            // }
+            DiscoveryResult dr = discoveryServiceCallback.getExistingDiscoveryResult(thingUID);
+            if (dr != null) {
+                logger.debug("Mi IO device {} already discovered as type '{}': {}", id, dr.getThingTypeUID(),
+                        dr.getLabel());
+                uid = thingUID;
+                label = dr.getLabel();
+                break;
+            }
         }
-        logger.debug("Discovered Mi IO Device {} at {} as {}", id, ip, uid);
+        logger.debug("Discovered Mi IO Device {} ('{}') at {} as {}", id, Integer.parseInt(id, 32), ip, uid);
         if (IGNORED_TOLKENS.contains(token)) {
             logger.debug(
                     "No token discovered for device {}. To discover token reset your device & connect to it's wireless network and re-run discovery. Read readme for other options.",
                     id);
-            thingDiscovered(
-                    DiscoveryResultBuilder.create(uid).withProperty(PROPERTY_HOST_IP, ip).withProperty(PROPERTY_DID, id)
-                            .withRepresentationProperty(id).withLabel("Discovered Xiaomi Mi IO Device").build());
+            thingDiscovered(DiscoveryResultBuilder.create(uid).withProperty(PROPERTY_HOST_IP, ip)
+                    .withProperty(PROPERTY_DID, id).withRepresentationProperty(id).withLabel(label).build());
         } else {
-            logger.debug("Discovered token for device {}: {} ('{}')", id, token, new String(msg.getChecksum()));
+            logger.debug("Discovered token for device {}: {}", id, token);
             thingDiscovered(DiscoveryResultBuilder.create(uid).withProperty(PROPERTY_HOST_IP, ip)
                     .withProperty(PROPERTY_DID, id).withProperty(PROPERTY_TOKEN, token).withRepresentationProperty(id)
-                    .withLabel("Discovered Xiaomi Mi IO Device with token").build());
+                    .withLabel(label + " with token").build());
         }
     }
 
     synchronized DatagramSocket getSocket() {
-        if (clientSocket != null) {
+        if (clientSocket != null && clientSocket.isBound()) {
             return clientSocket;
         }
         try {
+            logger.debug(" getting new socket for discovery: {}");
+
             DatagramSocket clientSocket = new DatagramSocket();
             clientSocket.setReuseAddress(true);
             clientSocket.setBroadcast(true);
@@ -217,9 +227,11 @@ public class MiIoDiscovery extends AbstractDiscoveryService implements ExtendedD
      */
     private synchronized void startReceiverThreat() {
         if (socketReceiveThread == null) {
+            logger.debug("starting new socketReceiveThread");
             socketReceiveThread = new ReceiverThread();
         }
         if (!socketReceiveThread.isAlive()) {
+            logger.debug("socketReceiveThread isdead");
             socketReceiveThread.start();
         }
     }
@@ -231,7 +243,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService implements ExtendedD
     private class ReceiverThread extends Thread {
         @Override
         public void run() {
-            logger.debug("Staring discovery receiver thread for socket on port {}", getSocket().getLocalPort());
+            logger.debug("Starting discovery receiver thread for socket on port {}", getSocket().getLocalPort());
             receiveData(getSocket());
         }
 

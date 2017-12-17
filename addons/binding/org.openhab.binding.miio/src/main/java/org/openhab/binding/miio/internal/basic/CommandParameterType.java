@@ -19,6 +19,7 @@ public enum CommandParameterType {
     ONOFF("onoff"),
     STRING("string"),
     NUMBER("number"),
+    COLOR("color"),
     UNKNOWN("unknown");
 
     private String text;
