@@ -6,17 +6,16 @@ Bundle-Name: Nest Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.nest;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.3.0.qualifier
 Export-Package: 
  org.openhab.binding.nest,
  org.openhab.binding.nest.handler
 Import-Package: 
  com.google.gson,
  com.google.gson.annotations,
- org.apache.commons.io,
+ javax.ws.rs.client,
+ javax.ws.rs.core,
  org.apache.commons.lang,
- org.apache.commons.lang.builder,
- org.apache.commons.logging,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.jetty.client,
  org.eclipse.jetty.client.api,
@@ -34,9 +33,11 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.net.http,
+ org.glassfish.jersey,
+ org.glassfish.jersey.client,
+ org.glassfish.jersey.media.sse,
  org.openhab.binding.nest,
  org.openhab.binding.nest.handler,
  org.osgi.framework,
- org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

@@ -50,6 +50,26 @@ public class GsonParsingTest {
     }
 
     @Test
+    public void verifyCompleteStreamingInput() throws UnsupportedEncodingException {
+        TopLevelStreamingData topLevelStreamingData = fromJson("top-level-streaming-data.json",
+                TopLevelStreamingData.class);
+
+        assertEquals("/", topLevelStreamingData.getPath());
+
+        TopLevelData data = topLevelStreamingData.getData();
+        assertEquals(data.getDevices().getThermostats().size(), 1);
+        assertNotNull(data.getDevices().getThermostats().get("therm1"));
+        assertEquals(data.getDevices().getCameras().size(), 2);
+        assertNotNull(data.getDevices().getCameras().get("camera1"));
+        assertNotNull(data.getDevices().getCameras().get("camera2"));
+        assertEquals(data.getDevices().getSmokeDetectors().size(), 4);
+        assertNotNull(data.getDevices().getSmokeDetectors().get("smoke1"));
+        assertNotNull(data.getDevices().getSmokeDetectors().get("smoke2"));
+        assertNotNull(data.getDevices().getSmokeDetectors().get("smoke3"));
+        assertNotNull(data.getDevices().getSmokeDetectors().get("smoke4"));
+    }
+
+    @Test
     public void verifyThermostat() throws UnsupportedEncodingException {
         Thermostat thermostat = fromJson("thermostat-data.json", Thermostat.class);
 
@@ -85,6 +105,21 @@ public class GsonParsingTest {
         assertEquals(Integer.valueOf(0), thermostat.getTimeToTarget());
         assertEquals("z8fK075vJJPPWnXxLx1m3GskRSZQ64iQydB59k-UPsKQrCrjN0yXiw", thermostat.getWhereId());
         assertEquals("Living Room", thermostat.getWhereName());
+    }
+
+    @Test
+    public void thermostatTimeToTargetSupportedValueParsing() {
+        assertEquals((Integer) 0, Thermostat.parseTimeToTarget("~0"));
+        assertEquals((Integer) 5, Thermostat.parseTimeToTarget("<5"));
+        assertEquals((Integer) 10, Thermostat.parseTimeToTarget("<10"));
+        assertEquals((Integer) 15, Thermostat.parseTimeToTarget("~15"));
+        assertEquals((Integer) 90, Thermostat.parseTimeToTarget("~90"));
+        assertEquals((Integer) 120, Thermostat.parseTimeToTarget(">120"));
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void thermostatTimeToTargetUnsupportedValueParsing() {
+        Thermostat.parseTimeToTarget("#5");
     }
 
     @Test

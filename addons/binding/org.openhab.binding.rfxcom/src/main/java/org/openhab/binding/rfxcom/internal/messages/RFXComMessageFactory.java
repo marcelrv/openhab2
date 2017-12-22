@@ -63,7 +63,7 @@ public class RFXComMessageFactory {
                     put(PacketType.WIND, RFXComWindMessage.class);
                     put(PacketType.UV, RFXComUVMessage.class);
                     put(PacketType.DATE_TIME, RFXComDateTimeMessage.class);
-                    // put(PacketType.CURRENT, RFXComCurrentMessage.class);
+                    put(PacketType.CURRENT, RFXComCurrentMessage.class);
                     put(PacketType.ENERGY, RFXComEnergyMessage.class);
                     put(PacketType.CURRENT_ENERGY, RFXComCurrentEnergyMessage.class);
                     // put(PacketType.POWER, RFXComPowerMessage.class);
@@ -119,7 +119,7 @@ public class RFXComMessageFactory {
     }
 
     public static RFXComMessage createMessage(byte[] packet) throws RFXComException {
-        PacketType packetType = PacketType.fromByte(packet[1]);
+        PacketType packetType = ByteEnumUtil.fromByte(PacketType.class, (int) packet[1]);
 
         try {
             Class<? extends RFXComMessage> cl = MESSAGE_CLASSES.get(packetType);
