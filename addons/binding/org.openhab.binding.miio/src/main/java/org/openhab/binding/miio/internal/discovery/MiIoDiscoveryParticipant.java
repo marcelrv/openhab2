@@ -17,11 +17,12 @@ import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant;
 import org.openhab.binding.miio.internal.MiIoDevices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,27 +48,24 @@ public class MiIoDiscoveryParticipant implements MDNSDiscoveryParticipant {
     }
 
     @Override
-    public ThingUID getThingUID(ServiceInfo service) {
-        if (service != null) {
-            logger.trace("ServiceInfo: {}", service);
-            String id[] = service.getName().split("_miio");
-            if (id.length != 2) {
-                logger.trace("mDNS Could not identify Type / Device Id from '{}'", service.getName());
-                return null;
-            }
-            int did;
-            try {
-                did = Integer.parseUnsignedInt(id[1]);
-            } catch (Exception e) {
-                logger.trace("mDNS Could not identify Device ID from '{}'", id[1]);
-                return null;
-            }
-            ThingTypeUID thingType = MiIoDevices.getType(id[0].replaceAll("-", ".")).getThingType();
-            String uidName = String.format("%08X", did);
-            logger.debug("mDNS {} identified as thingtype {} with did {}", id[0], thingType, uidName);
-            return new ThingUID(thingType, uidName);
+    public ThingUID getThingUID(@NonNull ServiceInfo service) {
+        logger.trace("ServiceInfo: {}", service);
+        String id[] = service.getName().split("_miio");
+        if (id.length != 2) {
+            logger.trace("mDNS Could not identify Type / Device Id from '{}'", service.getName());
+            return null;
         }
-        return null;
+        int did;
+        try {
+            did = Integer.parseUnsignedInt(id[1]);
+        } catch (Exception e) {
+            logger.trace("mDNS Could not identify Device ID from '{}'", id[1]);
+            return null;
+        }
+        ThingTypeUID thingType = MiIoDevices.getType(id[0].replaceAll("-", ".")).getThingType();
+        String uidName = String.format("%08X", did);
+        logger.debug("mDNS {} identified as thingtype {} with did {}", id[0], thingType, uidName);
+        return new ThingUID(thingType, uidName);
     }
 
     private InetAddress getIpAddress(ServiceInfo service) {

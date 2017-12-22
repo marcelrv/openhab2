@@ -32,3 +32,4 @@ Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.miio,
  org.openhab.binding.miio.handler
 Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.smarthome.config.discovery.mdns

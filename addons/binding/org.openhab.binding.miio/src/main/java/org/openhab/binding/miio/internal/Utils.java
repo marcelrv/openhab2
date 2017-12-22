@@ -36,8 +36,8 @@ public final class Utils {
      * @param s
      * @return byte array equivalent to hex string
      **/
-    public static byte[] hexStringToByteArray(String s) {
-        s = s.replace(" ", "");
+    public static byte[] hexStringToByteArray(String hex) {
+        String s = hex.replace(" ", "");
         int len = s.length();
         byte[] data = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {

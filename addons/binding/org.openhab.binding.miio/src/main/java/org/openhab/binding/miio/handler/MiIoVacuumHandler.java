@@ -13,7 +13,6 @@ import static org.openhab.binding.miio.MiIoBindingConstants.*;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -252,8 +251,8 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         historyRecord.addProperty("area", area);
         historyRecord.addProperty("error", error);
         historyRecord.addProperty("finished", finished);
-        updateState(CHANNEL_HISTORY_START_TIME, new DateTimeType(GregorianCalendar.from(startTime)));
-        updateState(CHANNEL_HISTORY_END_TIME, new DateTimeType(GregorianCalendar.from(endTime)));
+        updateState(CHANNEL_HISTORY_START_TIME, new DateTimeType(startTime));
+        updateState(CHANNEL_HISTORY_END_TIME, new DateTimeType(endTime));
         updateState(CHANNEL_HISTORY_DURATION, new DecimalType(duration));
         updateState(CHANNEL_HISTORY_AREA, new DecimalType(area));
         updateState(CHANNEL_HISTORY_ERROR, new DecimalType(error));

@@ -174,12 +174,12 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
      * @param command to be executed
      * @return vacuum response
      */
-    protected int sendCommand(String command) {
+    protected int sendCommand(String commandString) {
         if (!hasConnection()) {
             return 0;
         }
         try {
-            command = command.trim();
+            String command = commandString.trim();
             String param = "[]";
             int loc = command.indexOf("[");
             loc = (loc > 0 ? loc : command.indexOf("{"));
