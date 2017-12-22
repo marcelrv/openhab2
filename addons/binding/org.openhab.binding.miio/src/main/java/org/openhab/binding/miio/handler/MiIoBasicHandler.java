@@ -43,8 +43,6 @@ import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
 import org.openhab.binding.miio.internal.basic.MiIoDeviceAction;
 import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.service.component.annotations.Activate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +64,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     private static final int MAX_PROPERTIES = 5;
     private final Logger logger = LoggerFactory.getLogger(MiIoBasicHandler.class);
     private boolean hasChannelStructure;
-    private BundleContext bundleContext;
+    // private BundleContext bundleContext;
 
     List<MiIoBasicChannel> refreshList = new ArrayList<MiIoBasicChannel>();
 
@@ -78,10 +76,10 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         super(thing);
     }
 
-    @Activate
-    protected void activate(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
-    }
+    // @Activate
+    // protected void activate(BundleContext bundleContext) {
+    // this.bundleContext = bundleContext;
+    // }
 
     @Override
     public void initialize() {

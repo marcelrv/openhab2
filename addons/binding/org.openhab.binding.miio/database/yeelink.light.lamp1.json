@@ -43,7 +43,7 @@
 				"property": "delayoff",
 				"friendlyName": "delayoff",
 				"channel": "delayoff",
-				"type": "String",
+				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [

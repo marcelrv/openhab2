@@ -48,6 +48,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService implements ExtendedD
     /** The refresh interval for background discovery */
     private static final long SEARCH_INTERVAL = 600;
     private static final int BUFFER_LENGTH = 1024;
+    private static final int DISCOVERY_TIME = 10;
     private DiscoveryServiceCallback discoveryServiceCallback;
 
     private ScheduledFuture<?> miIoDiscoveryJob;
@@ -58,7 +59,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService implements ExtendedD
     private final Logger logger = LoggerFactory.getLogger(MiIoDiscovery.class);
 
     public MiIoDiscovery() throws IllegalArgumentException {
-        super(15);
+        super(DISCOVERY_TIME);
     }
 
     @Override
@@ -90,11 +91,10 @@ public class MiIoDiscovery extends AbstractDiscoveryService implements ExtendedD
 
     @Override
     protected void deactivate() {
-        if (socketReceiveThread != null) {
-            socketReceiveThread.interrupt();
-        }
+        stopReceiverThreat();
         if (clientSocket != null) {
             clientSocket.close();
+            clientSocket = null;
         }
         super.deactivate();
     }
@@ -103,9 +103,8 @@ public class MiIoDiscovery extends AbstractDiscoveryService implements ExtendedD
     protected void startScan() {
         logger.debug("Start Xiaomi Mi IO discovery");
         getSocket();
-        logger.debug("Using socket on port {}", clientSocket.getLocalPort());
+        logger.debug("Discovery using socket on port {}", clientSocket.getLocalPort());
         discover();
-        logger.debug("Xiaomi Mi IO discovery done");
     }
 
     private void discover() {
@@ -118,45 +117,47 @@ public class MiIoDiscovery extends AbstractDiscoveryService implements ExtendedD
 
     private void discovered(String ip, byte[] response) {
         logger.trace("Discovery responses from : {}:{}", ip, Utils.getSpacedHex(response));
-        Message msg = new Message(response);
-        String token = Utils.getHex(msg.getChecksum());
-        String id = Utils.getHex(msg.getDeviceId());
-        String label = "Discovered Xiaomi Mi IO Device";
+        try {
+            Message msg = new Message(response);
+            String token = Utils.getHex(msg.getChecksum());
+            String id = Utils.getHex(msg.getDeviceId());
+            String label = "Discovered Xiaomi Mi IO Device";
 
-        ThingUID uid = new ThingUID(THING_TYPE_MIIO, id);
-        logger.debug("Discovered Mi IO Device {} ('{}') at {} as {}", id, Integer.parseInt(id, 32), ip, uid);
-
-        // Test if the device is already known by specific ThingTypes. In that case don't use the generic thingType
-        for (ThingTypeUID typeU : NONGENERIC_THING_TYPES_UIDS) {
-            ThingUID thingUID = new ThingUID(typeU, id);
-            Thing existingThing = discoveryServiceCallback.getExistingThing(thingUID);
-            if (existingThing != null) {
-                logger.trace("Mi IO device {} already exist as thing {}: {}.", id, thingUID.toString(),
-                        existingThing.getLabel());
-                uid = thingUID;
-                break;
+            ThingUID uid = new ThingUID(THING_TYPE_MIIO, id);
+            // Test if the device is already known by specific ThingTypes. In that case don't use the generic thingType
+            for (ThingTypeUID typeU : NONGENERIC_THING_TYPES_UIDS) {
+                ThingUID thingUID = new ThingUID(typeU, id);
+                Thing existingThing = discoveryServiceCallback.getExistingThing(thingUID);
+                if (existingThing != null) {
+                    logger.trace("Mi IO device {} already exist as thing {}: {}.", id, thingUID.toString(),
+                            existingThing.getLabel());
+                    uid = thingUID;
+                    break;
+                }
+                DiscoveryResult dr = discoveryServiceCallback.getExistingDiscoveryResult(thingUID);
+                if (dr != null) {
+                    logger.debug("Mi IO device {} already discovered as type '{}': {}", id, dr.getThingTypeUID(),
+                            dr.getLabel());
+                    uid = thingUID;
+                    label = dr.getLabel();
+                    break;
+                }
             }
-            DiscoveryResult dr = discoveryServiceCallback.getExistingDiscoveryResult(thingUID);
-            if (dr != null) {
-                logger.debug("Mi IO device {} already discovered as type '{}': {}", id, dr.getThingTypeUID(),
-                        dr.getLabel());
-                uid = thingUID;
-                label = dr.getLabel();
-                break;
+            logger.debug("Discovered Mi IO Device {} ({}) at {} as {}", id, Long.parseUnsignedLong(id, 32), ip, uid);
+            if (IGNORED_TOLKENS.contains(token)) {
+                logger.debug(
+                        "No token discovered for device {}. For options how to get the token, check the binding readme.",
+                        id);
+                thingDiscovered(DiscoveryResultBuilder.create(uid).withProperty(PROPERTY_HOST_IP, ip)
+                        .withProperty(PROPERTY_DID, id).withRepresentationProperty(id).withLabel(label).build());
+            } else {
+                logger.debug("Discovered token for device {}: {}", id, token);
+                thingDiscovered(DiscoveryResultBuilder.create(uid).withProperty(PROPERTY_HOST_IP, ip)
+                        .withProperty(PROPERTY_DID, id).withProperty(PROPERTY_TOKEN, token)
+                        .withRepresentationProperty(id).withLabel(label + " with token").build());
             }
-        }
-        logger.debug("Discovered Mi IO Device {} ('{}') at {} as {}", id, Integer.parseInt(id, 32), ip, uid);
-        if (IGNORED_TOLKENS.contains(token)) {
-            logger.debug(
-                    "No token discovered for device {}. To discover token reset your device & connect to it's wireless network and re-run discovery. Read readme for other options.",
-                    id);
-            thingDiscovered(DiscoveryResultBuilder.create(uid).withProperty(PROPERTY_HOST_IP, ip)
-                    .withProperty(PROPERTY_DID, id).withRepresentationProperty(id).withLabel(label).build());
-        } else {
-            logger.debug("Discovered token for device {}: {}", id, token);
-            thingDiscovered(DiscoveryResultBuilder.create(uid).withProperty(PROPERTY_HOST_IP, ip)
-                    .withProperty(PROPERTY_DID, id).withProperty(PROPERTY_TOKEN, token).withRepresentationProperty(id)
-                    .withLabel(label + " with token").build());
+        } catch (Exception e) {
+            logger.debug("issue", e);
         }
     }
 
@@ -165,8 +166,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService implements ExtendedD
             return clientSocket;
         }
         try {
-            logger.debug(" getting new socket for discovery: {}");
-
+            logger.debug("Getting new socket for discovery");
             DatagramSocket clientSocket = new DatagramSocket();
             clientSocket.setReuseAddress(true);
             clientSocket.setBroadcast(true);
@@ -212,9 +212,11 @@ public class MiIoDiscovery extends AbstractDiscoveryService implements ExtendedD
     private void sendDiscoveryRequest(String ipAddress) {
         try {
             byte[] sendData = DISCOVER_STRING;
+            logger.trace("Discovery sending ping to {} from {}:{}", ipAddress, getSocket().getLocalAddress(),
+                    getSocket().getLocalPort());
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName(ipAddress),
                     PORT);
-            for (int i = 1; i <= 5; i++) {
+            for (int i = 1; i <= 1; i++) {
                 getSocket().send(sendPacket);
             }
         } catch (Exception e) {
@@ -226,13 +228,23 @@ public class MiIoDiscovery extends AbstractDiscoveryService implements ExtendedD
      * starts the {@link ReceiverThread} thread
      */
     private synchronized void startReceiverThreat() {
-        if (socketReceiveThread == null) {
-            logger.debug("starting new socketReceiveThread");
-            socketReceiveThread = new ReceiverThread();
-        }
-        if (!socketReceiveThread.isAlive()) {
-            logger.debug("socketReceiveThread isdead");
-            socketReceiveThread.start();
+        stopReceiverThreat();
+        socketReceiveThread = new ReceiverThread();
+        socketReceiveThread.start();
+    }
+
+    /**
+     * Stops the {@link ReceiverThread} thread
+     */
+    private synchronized void stopReceiverThreat() {
+        if (socketReceiveThread != null) {
+            try {
+                socketReceiveThread.interrupt();
+                socketReceiveThread.join(1000);
+            } catch (InterruptedException e) {
+                logger.debug("Waiting socketReceiveThread", e);
+            }
+            socketReceiveThread = null;
         }
     }
 
@@ -266,7 +278,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService implements ExtendedD
                             receivePacket.getOffset() + receivePacket.getLength());
                     if (logger.isTraceEnabled()) {
                         Message miIoResponse = new Message(messageBuf);
-                        logger.debug("Discovery response received from {} DeviceID: {}\r\n{}", hostAddress,
+                        logger.trace("Discovery response received from {} DeviceID: {}\r\n{}", hostAddress,
                                 Utils.getHex(miIoResponse.getDeviceId()), miIoResponse.toSting());
                     }
                     if (!responseIps.contains(hostAddress)) {

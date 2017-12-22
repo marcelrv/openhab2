@@ -67,6 +67,31 @@
 		<item-type>Switch</item-type>
 		<label>Led</label>
 	</channel-type>
+    <channel-type id="colorMode">
+        <item-type>Number</item-type>
+        <label>Color Mode</label>
+    </channel-type>
+    <channel-type id="colorTemperature">
+        <item-type>Number</item-type>
+        <label>Color Temperature</label>
+    </channel-type>
+    <channel-type id="cct">
+        <item-type>Number</item-type>
+        <label>Correlated Color Temperature</label>
+    </channel-type>
+    <channel-type id="scene">
+        <item-type>Number</item-type>
+        <label>Scene</label>
+    </channel-type>
+    <channel-type id="dv">
+        <item-type>Number</item-type>
+        <label>DV</label>
+    </channel-type>
+
+    <channel-type id="delayoff">
+        <item-type>Number</item-type>
+        <label>Delay off</label>
+    </channel-type>
 	<channel-type id="act_det">
 		<item-type>Switch</item-type>
 		<label>AirAutoDetect</label>
