@@ -279,7 +279,11 @@ public class MiIoDiscovery extends AbstractDiscoveryService implements ExtendedD
                     }
                     if (!responseIps.contains(hostAddress)) {
                         scheduler.schedule(() -> {
-                            discovered(hostAddress, messageBuf);
+                            try {
+                                discovered(hostAddress, messageBuf);
+                            } catch (Exception e) {
+                                logger.debug("Error submitting discovered Mi Io device at {}", hostAddress, e);
+                            }
                         }, 0, TimeUnit.SECONDS);
                     }
                     responseIps.add(hostAddress);
