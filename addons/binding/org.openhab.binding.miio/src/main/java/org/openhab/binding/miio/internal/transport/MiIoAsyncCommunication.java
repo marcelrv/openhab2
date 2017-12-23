@@ -160,7 +160,7 @@ public class MiIoAsyncCommunication {
                 return miIoSendCommand;
             } else {
                 errorMsg = "Received message is invalid JSON";
-                logger.info("{}: {}", errorMsg, decryptedResponse);
+                logger.debug("{}: {}", errorMsg, decryptedResponse);
             }
         } catch (MiIoCryptoException | IOException e) {
             logger.warn("Send command '{}'  -> {} (Device: {}) gave error {}", miIoSendCommand.getCommandString(), ip,

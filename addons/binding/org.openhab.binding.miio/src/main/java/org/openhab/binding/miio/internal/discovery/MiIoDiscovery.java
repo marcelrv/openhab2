@@ -117,47 +117,43 @@ public class MiIoDiscovery extends AbstractDiscoveryService implements ExtendedD
 
     private void discovered(String ip, byte[] response) {
         logger.trace("Discovery responses from : {}:{}", ip, Utils.getSpacedHex(response));
-        try {
-            Message msg = new Message(response);
-            String token = Utils.getHex(msg.getChecksum());
-            String id = Utils.getHex(msg.getDeviceId());
-            String label = "Discovered Xiaomi Mi IO Device";
+        Message msg = new Message(response);
+        String token = Utils.getHex(msg.getChecksum());
+        String id = Utils.getHex(msg.getDeviceId());
+        String label = "Discovered Xiaomi Mi IO Device";
 
-            ThingUID uid = new ThingUID(THING_TYPE_MIIO, id);
-            // Test if the device is already known by specific ThingTypes. In that case don't use the generic thingType
-            for (ThingTypeUID typeU : NONGENERIC_THING_TYPES_UIDS) {
-                ThingUID thingUID = new ThingUID(typeU, id);
-                Thing existingThing = discoveryServiceCallback.getExistingThing(thingUID);
-                if (existingThing != null) {
-                    logger.trace("Mi IO device {} already exist as thing {}: {}.", id, thingUID.toString(),
-                            existingThing.getLabel());
-                    uid = thingUID;
-                    break;
-                }
-                DiscoveryResult dr = discoveryServiceCallback.getExistingDiscoveryResult(thingUID);
-                if (dr != null) {
-                    logger.debug("Mi IO device {} already discovered as type '{}': {}", id, dr.getThingTypeUID(),
-                            dr.getLabel());
-                    uid = thingUID;
-                    label = dr.getLabel();
-                    break;
-                }
+        ThingUID uid = new ThingUID(THING_TYPE_MIIO, id);
+        // Test if the device is already known by specific ThingTypes. In that case don't use the generic thingType
+        for (ThingTypeUID typeU : NONGENERIC_THING_TYPES_UIDS) {
+            ThingUID thingUID = new ThingUID(typeU, id);
+            Thing existingThing = discoveryServiceCallback.getExistingThing(thingUID);
+            if (existingThing != null) {
+                logger.trace("Mi IO device {} already exist as thing {}: {}.", id, thingUID.toString(),
+                        existingThing.getLabel());
+                uid = thingUID;
+                break;
             }
-            logger.debug("Discovered Mi IO Device {} ({}) at {} as {}", id, Long.parseUnsignedLong(id, 32), ip, uid);
-            if (IGNORED_TOLKENS.contains(token)) {
-                logger.debug(
-                        "No token discovered for device {}. For options how to get the token, check the binding readme.",
-                        id);
-                thingDiscovered(DiscoveryResultBuilder.create(uid).withProperty(PROPERTY_HOST_IP, ip)
-                        .withProperty(PROPERTY_DID, id).withRepresentationProperty(id).withLabel(label).build());
-            } else {
-                logger.debug("Discovered token for device {}: {}", id, token);
-                thingDiscovered(DiscoveryResultBuilder.create(uid).withProperty(PROPERTY_HOST_IP, ip)
-                        .withProperty(PROPERTY_DID, id).withProperty(PROPERTY_TOKEN, token)
-                        .withRepresentationProperty(id).withLabel(label + " with token").build());
+            DiscoveryResult dr = discoveryServiceCallback.getExistingDiscoveryResult(thingUID);
+            if (dr != null) {
+                logger.debug("Mi IO device {} already discovered as type '{}': {}", id, dr.getThingTypeUID(),
+                        dr.getLabel());
+                uid = thingUID;
+                label = dr.getLabel();
+                break;
             }
-        } catch (Exception e) {
-            logger.debug("issue", e);
+        }
+        logger.debug("Discovered Mi IO Device {} ({}) at {} as {}", id, Long.parseUnsignedLong(id, 32), ip, uid);
+        if (IGNORED_TOLKENS.contains(token)) {
+            logger.debug(
+                    "No token discovered for device {}. For options how to get the token, check the binding readme.",
+                    id);
+            thingDiscovered(DiscoveryResultBuilder.create(uid).withProperty(PROPERTY_HOST_IP, ip)
+                    .withProperty(PROPERTY_DID, id).withRepresentationProperty(id).withLabel(label).build());
+        } else {
+            logger.debug("Discovered token for device {}: {}", id, token);
+            thingDiscovered(DiscoveryResultBuilder.create(uid).withProperty(PROPERTY_HOST_IP, ip)
+                    .withProperty(PROPERTY_DID, id).withProperty(PROPERTY_TOKEN, token).withRepresentationProperty(id)
+                    .withLabel(label + " with token").build());
         }
     }
 
