@@ -17,12 +17,12 @@ import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant;
 import org.openhab.binding.miio.internal.MiIoDevices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +48,10 @@ public class MiIoDiscoveryParticipant implements MDNSDiscoveryParticipant {
     }
 
     @Override
-    public ThingUID getThingUID(@NonNull ServiceInfo service) {
+    public ThingUID getThingUID(@Nullable ServiceInfo service) {
+        if (service == null) {
+            return null;
+        }
         logger.trace("ServiceInfo: {}", service);
         String id[] = service.getName().split("_miio");
         if (id.length != 2) {
@@ -64,7 +67,7 @@ public class MiIoDiscoveryParticipant implements MDNSDiscoveryParticipant {
         }
         ThingTypeUID thingType = MiIoDevices.getType(id[0].replaceAll("-", ".")).getThingType();
         String uidName = String.format("%08X", did);
-        logger.debug("mDNS {} identified as thingtype {} with did {}", id[0], thingType, uidName);
+        logger.debug("mDNS {} identified as thingtype {} with did {} ({})", id[0], thingType, uidName, did);
         return new ThingUID(thingType, uidName);
     }
 
