@@ -29,6 +29,25 @@ public class Conversions {
         return new JsonPrimitive(hours);
     }
 
+    public static JsonElement yeelightSceneConversion(JsonElement intValue) {
+        switch (intValue.getAsInt()) {
+            case 1:
+                return new JsonPrimitive("color");
+            case 2:
+                return new JsonPrimitive("hsv");
+            case 3:
+                return new JsonPrimitive("ct");
+            case 4:
+                return new JsonPrimitive("nightlight");
+            case 5: // don't know the number for colorflow...
+                return new JsonPrimitive("cf");
+            case 6: // don't know the number for auto_delay_off, or if it is even in the properties visible...
+                return new JsonPrimitive("auto_delay_off");
+            default:
+                return new JsonPrimitive("unknown");
+        }
+    }
+
     public static JsonElement divideTen(JsonElement value10) {
         double value = value10.getAsDouble() / 10;
         return new JsonPrimitive(value);
@@ -36,6 +55,8 @@ public class Conversions {
 
     public static JsonElement execute(String transfortmation, JsonElement value) {
         switch (transfortmation.toUpperCase()) {
+            case "YEELIGHTSCENEID":
+                return yeelightSceneConversion(value);
             case "SECONDSTOHOURS":
                 return secondsToHours(value);
             case "/10":
