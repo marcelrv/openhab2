@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -236,7 +236,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             Bundle bundle = FrameworkUtil.getBundle(getClass());
             fn = bundle.getEntry(MiIoBindingConstants.DATABASE_PATH + deviceName + ".json");
             if (fn != null) {
-                logger.trace("bundle: {}, {}, {}", bundle, fn.getFile());
+                logger.trace("bundle: {}, {}", bundle, fn.getFile());
                 return fn;
             }
             for (URL db : Collections.list(bundle.findEntries(MiIoBindingConstants.DATABASE_PATH, "*.json", false))) {
@@ -314,7 +314,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     private boolean addChannel(ThingBuilder thingBuilder, String channel, String channelType, String datatype,
             String friendlyName) {
         if (channel == null || channel.isEmpty() || datatype == null || datatype.isEmpty()) {
-            logger.info("Channel '{}' cannot be added incorrectly configured database. ", channel, getThing().getUID());
+            logger.info("Channel '{}', UID '{}' cannot be added incorrectly configured database. ", channel,
+                    getThing().getUID());
             return false;
         }
         ChannelUID channelUID = new ChannelUID(getThing().getUID(), channel);
