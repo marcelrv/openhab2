@@ -1,0 +1,121 @@
+{
+	"deviceMapping": {
+		"id": [
+			"yeelink.light.ceiling4"
+		],
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "bright",
+				"friendlyName": "Brightness",
+				"channel": "brightness",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_bright",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "delayoff",
+				"friendlyName": "delayoff",
+				"channel": "delayoff",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_ct",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "ct",
+				"friendlyName": "Color Temperature ",
+				"channel": "colorTemperature",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_ct_abx",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "color_mode",
+				"friendlyName": "colorMode",
+				"channel": "colorMode",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_scene",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "name",
+				"friendlyName": "Name",
+				"channel": "name",
+				"type": "String",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_name",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+                "property": "bg_rgb",
+                "friendlyName": "Ambient Color",
+                "channel": "ambientColor",
+                "type": "Color",
+                "refresh": true,
+                "ChannelGroup": "actions",
+                "actions": [
+                    {
+                        "command": "bg_set_rgb",
+                        "parameterType": "COLOR"
+                    }
+                ]
+            },
+            {
+                "property": "bg_ct",
+                "friendlyName": "Ambient Color Temperature ",
+                "channel": "ambientColorTemperature",
+                "type": "Number",
+                "refresh": true,
+                "ChannelGroup": "actions",
+                "actions": [
+                    {
+                        "command": "bg_set_ct_abx",
+                        "parameterType": "NUMBER"
+                    }
+                ]
+            }
+		]
+	}
+}

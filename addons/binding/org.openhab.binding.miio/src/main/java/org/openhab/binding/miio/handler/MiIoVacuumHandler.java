@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -267,7 +267,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             return true;
         }
         if (ThingStatusDetail.CONFIGURATION_ERROR.equals(getThing().getStatusInfo().getStatusDetail())) {
-            logger.debug("Skipping periodic update for '{}'. Thing Status", getThing().getUID().toString(),
+            logger.debug("Skipping periodic update for '{}' UID '{}'. Thing Status", getThing().getUID().toString(),
                     getThing().getStatusInfo().getStatusDetail());
             refreshNetwork();
             return true;
@@ -293,7 +293,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             refreshNetwork();
             consumables.getValue();
         } catch (Exception e) {
-            logger.debug("Error while updating '{}': ", getThing().getUID().toString(), e.getLocalizedMessage(), e);
+            logger.debug("Error while updating '{}': '{}", getThing().getUID().toString(), e.getLocalizedMessage());
         }
     }
 

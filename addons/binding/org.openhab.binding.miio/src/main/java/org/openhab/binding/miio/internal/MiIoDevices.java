@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -66,6 +66,8 @@ public enum MiIoDevices {
     YEELIGHT_CEIL1("yeelink.light.ceiling1", "Yeelight LED Ceiling Lamp", MiIoBindingConstants.THING_TYPE_BASIC),
     YEELIGHT_CEIL2("yeelink.light.ceiling2", "Yeelight LED Ceiling Lamp v2", MiIoBindingConstants.THING_TYPE_BASIC),
     YEELIGHT_CEIL3("yeelink.light.ceiling3", "Yeelight LED Ceiling Lamp v3", MiIoBindingConstants.THING_TYPE_BASIC),
+    YEELIGHT_CEIL4("yeelink.light.ceiling4", "Yeelight LED Ceiling Lamp v4 (JIAOYUE 650 RGB)",
+            MiIoBindingConstants.THING_TYPE_BASIC),
     YEELIGHT_L1("yeelink.light.lamp1", "Yeelight", MiIoBindingConstants.THING_TYPE_BASIC),
     YEELIGHT_M1("yeelink.light.mono1", "Yeelight White Bulb", MiIoBindingConstants.THING_TYPE_BASIC),
     YEELIGHT_M2("yeelink.light.mono2", "Yeelight White Bulb v2", MiIoBindingConstants.THING_TYPE_BASIC),

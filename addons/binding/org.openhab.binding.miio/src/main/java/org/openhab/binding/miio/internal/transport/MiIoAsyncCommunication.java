@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -204,7 +204,7 @@ public class MiIoAsyncCommunication {
                     MiIoSendCommand queuedMessage = concurrentLinkedQueue.remove();
                     MiIoSendCommand miIoSendCommand = sendMiIoSendCommand(queuedMessage);
                     for (MiIoMessageListener listener : listeners) {
-                        logger.trace("inform listener {}, data {} from {}", listener);
+                        logger.trace("inform listener {}, data {} from {}", listener, queuedMessage, miIoSendCommand);
                         try {
                             listener.onMessageReceived(miIoSendCommand);
                         } catch (Exception e) {
@@ -299,7 +299,7 @@ public class MiIoAsyncCommunication {
 
     private void updateStatus(ThingStatus status, ThingStatusDetail statusDetail) {
         for (MiIoMessageListener listener : listeners) {
-            logger.trace("inform listener {}, data {} from {}", listener);
+            logger.trace("inform listener {}, data {} from {}", listener, status, statusDetail);
             try {
                 listener.onStatusUpdated(status, statusDetail);
             } catch (Exception e) {

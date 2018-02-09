@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,6 +10,7 @@ package org.openhab.binding.miio.handler;
 
 import static org.openhab.binding.miio.MiIoBindingConstants.CHANNEL_COMMAND;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -126,10 +127,13 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     }
                 } else if (command instanceof StringType) {
                     cmd = cmd + "[\"" + command.toString() + "\"]";
+                } else if (command instanceof HSBType) {
+                    HSBType hsb = (HSBType) command;
+                    Color color = Color.getHSBColor(hsb.getHue().floatValue() / 360,
+                            hsb.getSaturation().floatValue() / 100, hsb.getBrightness().floatValue() / 100);
+                    cmd = cmd + "[" + ((color.getRed() * 65536) + (color.getGreen() * 256) + color.getBlue()) + "]";
                 } else if (command instanceof DecimalType) {
                     cmd = cmd + "[" + command.toString().toLowerCase() + "]";
-                } else if (command instanceof HSBType) {
-                    cmd = cmd + "[" + ((HSBType) command).getRGB() + "]";
                 }
                 logger.debug("Sending command {}", cmd);
                 sendCommand(cmd);
@@ -236,7 +240,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             Bundle bundle = FrameworkUtil.getBundle(getClass());
             fn = bundle.getEntry(MiIoBindingConstants.DATABASE_PATH + deviceName + ".json");
             if (fn != null) {
-                logger.trace("bundle: {}, {}, {}", bundle, fn.getFile());
+                logger.trace("bundle: {}, {}", bundle, fn.getFile());
                 return fn;
             }
             for (URL db : Collections.list(bundle.findEntries(MiIoBindingConstants.DATABASE_PATH, "*.json", false))) {
@@ -314,7 +318,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     private boolean addChannel(ThingBuilder thingBuilder, String channel, String channelType, String datatype,
             String friendlyName) {
         if (channel == null || channel.isEmpty() || datatype == null || datatype.isEmpty()) {
-            logger.info("Channel '{}' cannot be added incorrectly configured database. ", channel, getThing().getUID());
+            logger.info("Channel '{}', UID '{}' cannot be added incorrectly configured database. ", channel,
+                    getThing().getUID());
             return false;
         }
         ChannelUID channelUID = new ChannelUID(getThing().getUID(), channel);
@@ -376,10 +381,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                                 val.getAsString().toLowerCase().equals("on") ? OnOffType.ON : OnOffType.OFF);
                     }
                     if (basicChannel.getType().equals("Color")) {
-                        // TODO: very experimental
-                        HSBType color = HSBType.fromRGB((val.getAsInt() >> 16) & 0xFF, (val.getAsInt() >> 8) & 0xFF,
-                                val.getAsInt() & 0xFF);
-                        updateState(basicChannel.getChannel(), color);
+                        Color rgb = new Color(val.getAsInt());
+                        HSBType hsb = HSBType.fromRGB(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
+                        updateState(basicChannel.getChannel(), hsb);
                     }
                 } catch (Exception e) {
                     logger.debug("Error updating propery {} with '{}' : {}", basicChannel.getChannel(),
