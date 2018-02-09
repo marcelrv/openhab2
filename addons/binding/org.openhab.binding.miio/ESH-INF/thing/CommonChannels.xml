@@ -66,34 +66,34 @@
 		<item-type>Switch</item-type>
 		<label>Led</label>
 	</channel-type>
-    <channel-type id="colorMode">
-        <item-type>Number</item-type>
-        <label>Color Mode</label>
-    </channel-type>
-    <channel-type id="colorTemperature">
-        <item-type>Number</item-type>
-        <label>Color Temperature</label>
-    </channel-type>
-    <channel-type id="ambientColorTemperature">
-        <item-type>Number</item-type>
-        <label>Ambient Color Temperature</label>
-    </channel-type>
-    <channel-type id="cct">
-        <item-type>Number</item-type>
-        <label>Correlated Color Temperature</label>
-    </channel-type>
-    <channel-type id="scene">
-        <item-type>Number</item-type>
-        <label>Scene</label>
-    </channel-type>
-    <channel-type id="dv">
-        <item-type>Number</item-type>
-        <label>DV</label>
-    </channel-type>
-    <channel-type id="delayoff">
-        <item-type>Number</item-type>
-        <label>Delay off</label>
-    </channel-type>
+	<channel-type id="colorMode">
+		<item-type>Number</item-type>
+		<label>Color Mode</label>
+	</channel-type>
+	<channel-type id="colorTemperature">
+		<item-type>Number</item-type>
+		<label>Color Temperature</label>
+	</channel-type>
+	<channel-type id="ambientColorTemperature">
+		<item-type>Number</item-type>
+		<label>Ambient Color Temperature</label>
+	</channel-type>
+	<channel-type id="cct">
+		<item-type>Number</item-type>
+		<label>Correlated Color Temperature</label>
+	</channel-type>
+	<channel-type id="scene">
+		<item-type>Number</item-type>
+		<label>Scene</label>
+	</channel-type>
+	<channel-type id="dv">
+		<item-type>Number</item-type>
+		<label>DV</label>
+	</channel-type>
+	<channel-type id="delayoff">
+		<item-type>Number</item-type>
+		<label>Delay off</label>
+	</channel-type>
 	<channel-type id="act_det">
 		<item-type>Switch</item-type>
 		<label>AirAutoDetect</label>
@@ -111,9 +111,13 @@
 		<label>Color</label>
 	</channel-type>
 	<channel-type id="ambientColor">
-        <item-type>Color</item-type>
-        <label>Ambient Color</label>
-    </channel-type>
+		<item-type>Color</item-type>
+		<label>Ambient Color</label>
+	</channel-type>
+	<channel-type id="setHumidity">
+		<item-type>Number</item-type>
+		<label>Humidity Set</label>
+	</channel-type>
 
 	<!-- Common Properties channels -->
 	<channel-type id="temperature">
@@ -185,5 +189,13 @@
 		<item-type>Number</item-type>
 		<label>Power Price</label>
 		<state pattern="%.0f kW/h" />
+	</channel-type>
+	<channel-type id="translevel">
+		<item-type>Number</item-type>
+		<label>Trans Level</label>
+	</channel-type>
+	<channel-type id="dept">
+		<item-type>Number</item-type>
+		<label>Dept</label>
 	</channel-type>
 </thing:thing-descriptions>

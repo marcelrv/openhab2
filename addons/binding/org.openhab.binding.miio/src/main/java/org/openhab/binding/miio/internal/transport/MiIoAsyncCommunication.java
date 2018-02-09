@@ -152,6 +152,7 @@ public class MiIoAsyncCommunication {
         String decryptedResponse = "";
         try {
             decryptedResponse = sendCommand(miIoSendCommand.getCommandString(), token, ip, deviceId);
+            decryptedResponse.replace(",,", ","); // hack due to avoid invalid json errors from some devices
             JsonElement response;
             response = parser.parse(decryptedResponse);
             if (response.isJsonObject()) {

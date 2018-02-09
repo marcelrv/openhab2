@@ -39,12 +39,7 @@
 				"type": "String",
 				"refresh": true,
 				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "set_ct",
-						"parameterType": "NUMBER"
-					}
-				]
+				"actions": []
 			},
 			{
 				"property": "ct",
@@ -67,27 +62,36 @@
 				"type": "String",
 				"refresh": true,
 				"ChannelGroup": "actions",
+				"actions": []
+			},
+			{
+				"property": "toggle",
+				"friendlyName": "toggle",
+				"channel": "toggle",
+				"type": "Switch",
+				"refresh": false,
+				"ChannelGroup": "actions",
 				"actions": [
 					{
-						"command": "switch_the_scene",
+						"command": "toggle",
 						"parameterType": "EMPTY"
 					}
 				]
 			},
 			{
-                "property": "rgb",
-                "friendlyName": "color",
-                "channel": "color",
-                "type": "Color",
-                "refresh": true,
-                "ChannelGroup": "actions",
-                "actions": [
-                    {
-                        "command": "set_rgb",
-                        "parameterType": "COLOR"
-                    }
-                ]
-            },
+				"property": "rgb",
+				"friendlyName": "color",
+				"channel": "color",
+				"type": "Color",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_rgb",
+						"parameterType": "COLOR"
+					}
+				]
+			},
 			{
 				"property": "name",
 				"friendlyName": "Name",
