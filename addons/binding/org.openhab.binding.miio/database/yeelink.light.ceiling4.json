@@ -1,7 +1,7 @@
 {
 	"deviceMapping": {
 		"id": [
-			"yeelink.light.color1"
+			"yeelink.light.ceiling4"
 		],
 		"channels": [
 			{
@@ -36,7 +36,7 @@
 				"property": "delayoff",
 				"friendlyName": "delayoff",
 				"channel": "delayoff",
-				"type": "String",
+				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
@@ -64,30 +64,16 @@
 				"property": "color_mode",
 				"friendlyName": "colorMode",
 				"channel": "colorMode",
-				"type": "String",
+				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
 					{
-						"command": "switch_the_scene",
-						"parameterType": "EMPTY"
+						"command": "set_scene",
+						"parameterType": "NUMBER"
 					}
 				]
 			},
-			{
-                "property": "rgb",
-                "friendlyName": "color",
-                "channel": "color",
-                "type": "Color",
-                "refresh": true,
-                "ChannelGroup": "actions",
-                "actions": [
-                    {
-                        "command": "set_rgb",
-                        "parameterType": "COLOR"
-                    }
-                ]
-            },
 			{
 				"property": "name",
 				"friendlyName": "Name",
@@ -101,7 +87,35 @@
 						"parameterType": "STRING"
 					}
 				]
-			}
+			},
+			{
+                "property": "bg_rgb",
+                "friendlyName": "Ambient Color",
+                "channel": "ambientColor",
+                "type": "Color",
+                "refresh": true,
+                "ChannelGroup": "actions",
+                "actions": [
+                    {
+                        "command": "bg_set_rgb",
+                        "parameterType": "COLOR"
+                    }
+                ]
+            },
+            {
+                "property": "bg_ct",
+                "friendlyName": "Ambient Color Temperature ",
+                "channel": "ambientColorTemperature",
+                "type": "Number",
+                "refresh": true,
+                "ChannelGroup": "actions",
+                "actions": [
+                    {
+                        "command": "bg_set_ct_abx",
+                        "parameterType": "NUMBER"
+                    }
+                ]
+            }
 		]
 	}
 }

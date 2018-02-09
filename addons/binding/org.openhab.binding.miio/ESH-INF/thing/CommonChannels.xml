@@ -40,7 +40,6 @@
 		<item-type>String</item-type>
 		<label>Execute Command</label>
 	</channel-type>
-
 	<channel-type id="power">
 		<item-type>Switch</item-type>
 		<label>Power On/Off</label>
@@ -75,6 +74,10 @@
         <item-type>Number</item-type>
         <label>Color Temperature</label>
     </channel-type>
+    <channel-type id="ambientColorTemperature">
+        <item-type>Number</item-type>
+        <label>Ambient Color Temperature</label>
+    </channel-type>
     <channel-type id="cct">
         <item-type>Number</item-type>
         <label>Correlated Color Temperature</label>
@@ -87,7 +90,6 @@
         <item-type>Number</item-type>
         <label>DV</label>
     </channel-type>
-
     <channel-type id="delayoff">
         <item-type>Number</item-type>
         <label>Delay off</label>
@@ -108,6 +110,10 @@
 		<item-type>Color</item-type>
 		<label>Color</label>
 	</channel-type>
+	<channel-type id="ambientColor">
+        <item-type>Color</item-type>
+        <label>Ambient Color</label>
+    </channel-type>
 
 	<!-- Common Properties channels -->
 	<channel-type id="temperature">
