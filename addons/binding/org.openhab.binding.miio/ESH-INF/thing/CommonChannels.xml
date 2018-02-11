@@ -194,6 +194,10 @@
 		<item-type>Number</item-type>
 		<label>Trans Level</label>
 	</channel-type>
+    <channel-type id="dry">
+        <item-type>Switch</item-type>
+        <label>Dry</label>
+    </channel-type>
 	<channel-type id="dept">
 		<item-type>Number</item-type>
 		<label>Dept</label>

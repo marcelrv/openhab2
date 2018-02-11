@@ -113,7 +113,7 @@
 			{
 				"property": "dry",
 				"friendlyName": "Dry",
-				"channel": "dept",
+				"channel": "dry",
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "Status",
