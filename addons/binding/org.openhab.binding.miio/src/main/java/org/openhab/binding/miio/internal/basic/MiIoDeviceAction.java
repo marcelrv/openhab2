@@ -24,6 +24,15 @@ public class MiIoDeviceAction {
     @SerializedName("parameterType")
     @Expose
     private CommandParameterType CommandParameterType;
+    @SerializedName("parameter1")
+    @Expose
+    private String parameter1;
+    @SerializedName("parameter2")
+    @Expose
+    private String parameter2;
+    @SerializedName("parameter3")
+    @Expose
+    private String parameter3;
 
     public String getCommand() {
         return command;
@@ -44,4 +53,29 @@ public class MiIoDeviceAction {
     public void setparameterType(String type) {
         this.CommandParameterType = org.openhab.binding.miio.internal.basic.CommandParameterType.fromString(type);
     }
+
+    public String getParameter1() {
+        return parameter1;
+    }
+
+    public void setParameter1(String parameter1) {
+        this.parameter1 = parameter1;
+    }
+
+    public String getParameter2() {
+        return parameter2;
+    }
+
+    public void setParameter2(String parameter2) {
+        this.parameter1 = parameter2;
+    }
+
+    public String getParameter3() {
+        return parameter3;
+    }
+
+    public void setParameter3(String parameter3) {
+        this.parameter1 = parameter3;
+    }
+
 }

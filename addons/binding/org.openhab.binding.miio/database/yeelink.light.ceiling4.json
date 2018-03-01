@@ -56,7 +56,9 @@
 				"actions": [
 					{
 						"command": "set_ct_abx",
-						"parameterType": "NUMBER"
+						"parameterType": "NUMBER",
+						"parameter1": "\"smooth\"",
+						"parameter2": "500"
 					}
 				]
 			},
@@ -89,33 +91,33 @@
 				]
 			},
 			{
-                "property": "bg_rgb",
-                "friendlyName": "Ambient Color",
-                "channel": "ambientColor",
-                "type": "Color",
-                "refresh": true,
-                "ChannelGroup": "actions",
-                "actions": [
-                    {
-                        "command": "bg_set_rgb",
-                        "parameterType": "COLOR"
-                    }
-                ]
-            },
-            {
-                "property": "bg_ct",
-                "friendlyName": "Ambient Color Temperature ",
-                "channel": "ambientColorTemperature",
-                "type": "Number",
-                "refresh": true,
-                "ChannelGroup": "actions",
-                "actions": [
-                    {
-                        "command": "bg_set_ct_abx",
-                        "parameterType": "NUMBER"
-                    }
-                ]
-            }
+				"property": "bg_rgb",
+				"friendlyName": "Ambient Color",
+				"channel": "ambientColor",
+				"type": "Color",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "bg_set_rgb",
+						"parameterType": "COLOR"
+					}
+				]
+			},
+			{
+				"property": "bg_ct",
+				"friendlyName": "Ambient Color Temperature ",
+				"channel": "ambientColorTemperature",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "bg_set_ct_abx",
+						"parameterType": "NUMBER"
+					}
+				]
+			}
 		]
 	}
 }

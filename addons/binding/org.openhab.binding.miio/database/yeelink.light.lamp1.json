@@ -63,7 +63,9 @@
 				"actions": [
 					{
 						"command": "set_ct_abx",
-						"parameterType": "NUMBER"
+						"parameterType": "NUMBER",
+						"parameter1": "\"smooth\"",
+						"parameter2": "500"
 					}
 				]
 			},

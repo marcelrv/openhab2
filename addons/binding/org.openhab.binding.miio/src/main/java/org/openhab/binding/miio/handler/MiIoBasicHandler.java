@@ -109,31 +109,46 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         if (channelUID.getId().equals(CHANNEL_COMMAND)) {
             cmds.put(sendCommand(command.toString()), command.toString());
         }
-        // TODO cleanup debug stuff & add handling types
-        logger.debug("Locating action for channel {}:{}", channelUID.getId(), command);
+        logger.debug("Locating action for channel {}: {}", channelUID.getId(), command);
         if (actions != null) {
             if (actions.containsKey(channelUID.getId())) {
+                String para1 = actions.get(channelUID.getId()).getParameter1();
+                String para2 = actions.get(channelUID.getId()).getParameter2();
+                String para3 = actions.get(channelUID.getId()).getParameter3();
+                String para = "";
+                para += para1 != null ? "," + para1 : "";
+                para += para2 != null ? "," + para2 : "";
+                para += para3 != null ? "," + para3 : "";
                 String cmd = actions.get(channelUID.getId()).getCommand();
                 CommandParameterType paramType = actions.get(channelUID.getId()).getparameterType();
                 if (paramType == CommandParameterType.EMPTY) {
                     cmd = cmd + "[]";
                 } else if (paramType == CommandParameterType.NONE) {
                     // ignore other
+                } else if (paramType == CommandParameterType.COLOR) {
+                    if (command instanceof HSBType) {
+                        HSBType hsb = (HSBType) command;
+                        Color color = Color.getHSBColor(hsb.getHue().floatValue() / 360,
+                                hsb.getSaturation().floatValue() / 100, hsb.getBrightness().floatValue() / 100);
+                        cmd = cmd + "[" + ((color.getRed() * 65536) + (color.getGreen() * 256) + color.getBlue()) + para
+                                + "]";
+                    } else if (command instanceof DecimalType) {
+                        // actually brightness is being set instead of a color
+                        cmd = "set_bright" + "[" + command.toString().toLowerCase() + "]";
+                    } else {
+                        logger.debug("Unsupported command for COLOR: ", command);
+                    }
+
                 } else if (command instanceof OnOffType) {
                     if (paramType == CommandParameterType.ONOFF) {
-                        cmd = cmd + "[\"" + command.toString().toLowerCase() + "\"]";
+                        cmd = cmd + "[\"" + command.toString().toLowerCase() + "\"" + para + "]";
                     } else {
                         cmd = cmd + "[]";
                     }
                 } else if (command instanceof StringType) {
-                    cmd = cmd + "[\"" + command.toString() + "\"]";
-                } else if (command instanceof HSBType) {
-                    HSBType hsb = (HSBType) command;
-                    Color color = Color.getHSBColor(hsb.getHue().floatValue() / 360,
-                            hsb.getSaturation().floatValue() / 100, hsb.getBrightness().floatValue() / 100);
-                    cmd = cmd + "[" + ((color.getRed() * 65536) + (color.getGreen() * 256) + color.getBlue()) + "]";
+                    cmd = cmd + "[\"" + command.toString() + "\"" + para + "]";
                 } else if (command instanceof DecimalType) {
-                    cmd = cmd + "[" + command.toString().toLowerCase() + "]";
+                    cmd = cmd + "[" + command.toString().toLowerCase() + para + "]";
                 }
                 logger.debug("Sending command {}", cmd);
                 sendCommand(cmd);
@@ -265,7 +280,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     }
 
     private boolean buildChannelStructure(String deviceName) {
-        // TODO This still needs significant cleanup but should be functional.
+        // TODO This still needs cleanup but should be functional.
         logger.debug("Building Channel Structure for {} - Model: {}", getThing().getUID().toString(), deviceName);
         URL fn = findDatabaseEntry(deviceName);
         if (fn == null) {
