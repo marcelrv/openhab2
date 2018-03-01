@@ -50,7 +50,7 @@
 				"ChannelGroup": "Status",
 				"actions": [
 					{
-						"command": "set_led_b",
+						"command": "set_limit_hum",
 						"parameterType": "NUMBER"
 					}
 				]

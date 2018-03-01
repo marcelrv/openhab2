@@ -1,7 +1,7 @@
 {
 	"deviceMapping": {
 		"id": [
-			"zimi.powerstrip.v1",
+			"qmi.powerstrip.v1",
 			"zimi.powerstrip.v2"
 		],
 		"channels": [
