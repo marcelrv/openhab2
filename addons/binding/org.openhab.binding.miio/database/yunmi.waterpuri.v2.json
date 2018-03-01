@@ -1,0 +1,23 @@
+{
+	"deviceMapping": {
+		"id": [
+			"yunmi.waterpuri.v2"
+		],
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"channelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF"
+					}
+				]
+			}
+		]
+	}
+}
