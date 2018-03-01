@@ -115,10 +115,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 String para1 = actions.get(channelUID.getId()).getParameter1();
                 String para2 = actions.get(channelUID.getId()).getParameter2();
                 String para3 = actions.get(channelUID.getId()).getParameter3();
-                String para = "";
-                para += para1 != null ? "," + para1 : "";
-                para += para2 != null ? "," + para2 : "";
-                para += para3 != null ? "," + para3 : "";
+                String para = "" + (para1 != null ? "," + para1 : "") + (para2 != null ? "," + para2 : "")
+                        + (para3 != null ? "," + para3 : "");
                 String cmd = actions.get(channelUID.getId()).getCommand();
                 CommandParameterType paramType = actions.get(channelUID.getId()).getparameterType();
                 if (paramType == CommandParameterType.EMPTY) {
@@ -136,7 +134,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         // actually brightness is being set instead of a color
                         cmd = "set_bright" + "[" + command.toString().toLowerCase() + "]";
                     } else {
-                        logger.debug("Unsupported command for COLOR: ", command);
+                        logger.debug("Unsupported command for COLOR: {}", command);
                     }
 
                 } else if (command instanceof OnOffType) {

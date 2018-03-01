@@ -21,7 +21,7 @@ The following things are available:
 
 ## Mi IO Devices
 
-| Device | Thing Type | Auto tolken | Device Model  | Supported | Remark |
+| Device | Thing Type | Auto token | Device Model  | Supported | Remark |
 | ----------- | --------- |:---:| ---------- | ------ | -----------| 
 | [Xiaomi Robot Vacuum](doc/vacuum.md) | miio:vacuum | No | rockrobo.vacuum.v1 | Yes |
 | [Xiaomi Robot Vacuum 2](doc/vacuum.md) | miio:vacuum | No | roborock-vacuum-s5 | Yes |
