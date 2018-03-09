@@ -198,8 +198,8 @@
         <item-type>Switch</item-type>
         <label>Dry</label>
     </channel-type>
-	<channel-type id="dept">
+	<channel-type id="depth">
 		<item-type>Number</item-type>
-		<label>Dept</label>
+		<label>Depth</label>
 	</channel-type>
 </thing:thing-descriptions>

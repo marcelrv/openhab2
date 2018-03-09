@@ -102,9 +102,9 @@
 				]
 			},
 			{
-				"property": "dept",
-				"friendlyName": "Dept",
-				"channel": "dept",
+				"property": "depth",
+				"friendlyName": "Depth",
+				"channel": "depth",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
