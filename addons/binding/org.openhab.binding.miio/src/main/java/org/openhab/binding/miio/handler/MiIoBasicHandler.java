@@ -144,7 +144,11 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         cmd = cmd + "[]";
                     }
                 } else if (command instanceof StringType) {
-                    cmd = cmd + "[\"" + command.toString() + "\"" + para + "]";
+                    if (paramType == CommandParameterType.STRING) {
+                        cmd = cmd + "[\"" + command.toString() + "\"" + para + "]";
+                    } else if (paramType == CommandParameterType.CUSTOMSTRING) {
+                        cmd = cmd + "[" + command.toString() + para + "]";
+                    }
                 } else if (command instanceof DecimalType) {
                     cmd = cmd + "[" + command.toString().toLowerCase() + para + "]";
                 }

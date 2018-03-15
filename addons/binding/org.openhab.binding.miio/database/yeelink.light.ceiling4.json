@@ -33,6 +33,20 @@
 				]
 			},
 			{
+				"property": "bg_bright",
+				"friendlyName": "Ambient Brightness",
+				"channel": "ambientBrightness",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "bg_set_bright",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
 				"property": "delayoff",
 				"friendlyName": "delayoff",
 				"channel": "delayoff",
@@ -64,17 +78,12 @@
 			},
 			{
 				"property": "color_mode",
-				"friendlyName": "colorMode",
+				"friendlyName": "Color Mode",
 				"channel": "colorMode",
 				"type": "Number",
 				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "set_scene",
-						"parameterType": "NUMBER"
-					}
-				]
+				"ChannelGroup": "",
+				"actions": []
 			},
 			{
 				"property": "name",
@@ -87,6 +96,20 @@
 					{
 						"command": "set_name",
 						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "bg_power",
+				"friendlyName": "Ambient Power",
+				"channel": "ambientPower",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "bg_set_power",
+						"parameterType": "ONOFF"
 					}
 				]
 			},
@@ -114,9 +137,43 @@
 				"actions": [
 					{
 						"command": "bg_set_ct_abx",
-						"parameterType": "NUMBER"
+						"parameterType": "NUMBER",
+						"parameter1": "\"smooth\"",
+						"parameter2": "500"
 					}
 				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Set Scene",
+				"channel": "customScene",
+				"type": "String",
+				"refresh": false,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_scene",
+						"parameterType": "CUSTOMSTRING"
+					}
+				]
+			},
+			{
+				"property": "bg_lmode",
+				"friendlyName": "Ambient Color Mode",
+				"channel": "ambientColorMode",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": []
+			},
+			{
+				"property": "nl_br",
+				"friendlyName": "Nightlight Brightness",
+				"channel": "nightlightBrightness",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": []
 			}
 		]
 	}

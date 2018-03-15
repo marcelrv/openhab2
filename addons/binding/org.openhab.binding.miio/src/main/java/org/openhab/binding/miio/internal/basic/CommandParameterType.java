@@ -18,6 +18,7 @@ public enum CommandParameterType {
     EMPTY("empty"),
     ONOFF("onoff"),
     STRING("string"),
+    CUSTOMSTRING("customstring"),
     NUMBER("number"),
     COLOR("color"),
     UNKNOWN("unknown");

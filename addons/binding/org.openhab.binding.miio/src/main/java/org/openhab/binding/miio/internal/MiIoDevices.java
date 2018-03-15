@@ -48,7 +48,7 @@ public enum MiIoDevices {
     LUMI_C11("lumi.ctrl_neutral1.v1", "Light Control (Wall Switch)", MiIoBindingConstants.THING_TYPE_UNSUPPORTED),
     LUMI_C12("lumi.ctrl_neutral2.v1", "Light Control (Wall Switch)", MiIoBindingConstants.THING_TYPE_UNSUPPORTED),
     PHILIPS_R1("philips.light.sread1", "Xiaomi Philips Eyecare Smart Lamp 2",
-            MiIoBindingConstants.THING_TYPE_UNSUPPORTED),
+            MiIoBindingConstants.THING_TYPE_BASIC),
     PHILIPS_C("philips.light.ceiling", "Xiaomi Philips LED Ceiling Lamp", MiIoBindingConstants.THING_TYPE_BASIC),
     PHILIPS_C2("philips.light.zyceiling", "Xiaomi Philips LED Ceiling Lamp", MiIoBindingConstants.THING_TYPE_BASIC),
     PHILIPS_BULB("philips.light.bulb", "Xiaomi Philips Bulb", MiIoBindingConstants.THING_TYPE_BASIC),
