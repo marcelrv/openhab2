@@ -41,15 +41,16 @@
 			},
 			{
 				"property": "delayoff",
-				"friendlyName": "delayoff",
+				"friendlyName": "Shutdowm Timer",
 				"channel": "delayoff",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
 					{
-						"command": "set_ct",
-						"parameterType": "NUMBER"
+						"command": "cron_add",
+						"parameterType": "NUMBER",
+						"preCommandParameter1": "0"
 					}
 				]
 			},
@@ -71,7 +72,7 @@
 			},
 			{
 				"property": "color_mode",
-				"friendlyName": "colorMode",
+				"friendlyName": "Color Mode",
 				"channel": "colorMode",
 				"type": "Number",
 				"refresh": true,
@@ -96,7 +97,23 @@
 						"parameterType": "STRING"
 					}
 				]
-			}
+			},
+            {
+                "property": "rgb",
+                "friendlyName": "RGB Color",
+                "channel": "rgbColor",
+                "type": "Color",
+                "refresh": true,
+                "ChannelGroup": "actions",
+                "actions": [
+                    {
+                        "command": "set_rgb",
+                        "parameterType": "COLOR",
+                        "parameter1": "\"smooth\"",
+                        "parameter2": "500"
+                    }
+                ]
+            }
 		]
 	}
 }

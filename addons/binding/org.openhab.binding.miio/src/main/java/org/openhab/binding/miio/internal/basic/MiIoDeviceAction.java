@@ -24,6 +24,9 @@ public class MiIoDeviceAction {
     @SerializedName("parameterType")
     @Expose
     private CommandParameterType commandParameterType;
+    @SerializedName("preCommandParameter1")
+    @Expose
+    private String preCommandParameter1;
     @SerializedName("parameter1")
     @Expose
     private String parameter1;
@@ -54,6 +57,14 @@ public class MiIoDeviceAction {
         this.commandParameterType = org.openhab.binding.miio.internal.basic.CommandParameterType.fromString(type);
     }
 
+    public String getPreCommandParameter1() {
+        return preCommandParameter1;
+    }
+
+    public void setPreCommandParameter1(String preCommandParameter1) {
+        this.preCommandParameter1 = preCommandParameter1;
+    }
+
     public String getParameter1() {
         return parameter1;
     }
@@ -78,4 +89,10 @@ public class MiIoDeviceAction {
         this.parameter1 = parameter3;
     }
 
+    @Override
+    public String toString() {
+        return "MiIoDeviceAction [command=" + command + ", commandParameterType=" + commandParameterType
+                + ", preCommandParameter1=" + preCommandParameter1 + ", parameter1=" + parameter1 + ", parameter2="
+                + parameter2 + ", parameter3=" + parameter3 + "]";
+    }
 }
