@@ -112,6 +112,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         logger.debug("Locating action for channel {}: {}", channelUID.getId(), command);
         if (actions != null) {
             if (actions.containsKey(channelUID.getId())) {
+                String preCommandPara1 = actions.get(channelUID.getId()).getPreCommandParameter1();
+                preCommandPara1 = (preCommandPara1 != null ? preCommandPara1 + "," : "");
                 String para1 = actions.get(channelUID.getId()).getParameter1();
                 String para2 = actions.get(channelUID.getId()).getParameter2();
                 String para3 = actions.get(channelUID.getId()).getParameter3();
@@ -128,8 +130,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         HSBType hsb = (HSBType) command;
                         Color color = Color.getHSBColor(hsb.getHue().floatValue() / 360,
                                 hsb.getSaturation().floatValue() / 100, hsb.getBrightness().floatValue() / 100);
-                        cmd = cmd + "[" + ((color.getRed() * 65536) + (color.getGreen() * 256) + color.getBlue()) + para
-                                + "]";
+                        cmd = cmd + "[" + preCommandPara1
+                                + ((color.getRed() * 65536) + (color.getGreen() * 256) + color.getBlue()) + para + "]";
                     } else if (command instanceof DecimalType) {
                         // actually brightness is being set instead of a color
                         cmd = "set_bright" + "[" + command.toString().toLowerCase() + "]";
@@ -139,18 +141,18 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
 
                 } else if (command instanceof OnOffType) {
                     if (paramType == CommandParameterType.ONOFF) {
-                        cmd = cmd + "[\"" + command.toString().toLowerCase() + "\"" + para + "]";
+                        cmd = cmd + "[" + preCommandPara1 + "\"" + command.toString().toLowerCase() + "\"" + para + "]";
                     } else {
                         cmd = cmd + "[]";
                     }
                 } else if (command instanceof StringType) {
                     if (paramType == CommandParameterType.STRING) {
-                        cmd = cmd + "[\"" + command.toString() + "\"" + para + "]";
+                        cmd = cmd + "[" + preCommandPara1 + "\"" + command.toString() + "\"" + para + "]";
                     } else if (paramType == CommandParameterType.CUSTOMSTRING) {
-                        cmd = cmd + "[" + command.toString() + para + "]";
+                        cmd = cmd + "[" + preCommandPara1 + command.toString() + para + "]";
                     }
                 } else if (command instanceof DecimalType) {
-                    cmd = cmd + "[" + command.toString().toLowerCase() + para + "]";
+                    cmd = cmd + "[" + preCommandPara1 + command.toString().toLowerCase() + para + "]";
                 }
                 logger.debug("Sending command {}", cmd);
                 sendCommand(cmd);
