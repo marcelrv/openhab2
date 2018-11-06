@@ -11,6 +11,7 @@
 		<channels>
 			<channel id="free_mem" typeId="free_mem" />
 			<channel id="duty_cycle" typeId="duty_cycle" />
+			 <channel id="cmds" typeId="cmds" />
 		</channels>
 
 		<representation-property>serialNumber</representation-property>
@@ -129,6 +130,14 @@
 		<label>Duty Cycle</label>
 		<description>Duty Cycle for sending commands to the devices</description>
 		<state pattern="%d %%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="cmds" advanced="true">
+		<item-type>String</item-type>
+		<label>Commands</label>
+		<description>Command channel for Cube</description>
+		<state pattern="%s" readOnly="false" />
+
 	</channel-type>
 
 </thing:thing-descriptions>

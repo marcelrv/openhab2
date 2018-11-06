@@ -169,6 +169,11 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         if (command instanceof RefreshType) {
             logger.debug("Refresh command received.");
             refreshData();
+        } else if (command instanceof StringType) {
+            if (command.toString().trim().toUpperCase().equals("REBOOT")) {
+                cubeReboot();
+                updateState(new ChannelUID(getThing().getUID(), CHANNEL_CMDS), new StringType("Rebooting Cube"));
+            }
         } else {
             logger.warn("No bridge commands defined. Cannot process '{}'.", command);
         }
@@ -208,6 +213,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         logger.debug("Max Requests    {}.", maxRequestsPerConnection);
 
         previousOnline = true; // To trigger offline in case no connection @ startup
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_CMDS), new StringType(""));
 
         startAutomaticRefresh();
     }
@@ -618,6 +624,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                 } catch (UnprocessableMessageException e) {
                     if (raw.contentEquals("M:")) {
                         logger.info("No Rooms information found. Configure your MAX! Cube: {}", ipAddress);
+                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_CMDS),
+                                new StringType("No Rooms information found. Configure your MAX! Cube"));
                         this.messageProcessor.reset();
                     } else {
                         logger.info("Message could not be processed: '{}' from MAX! Cube lan gateway: {}:", raw,

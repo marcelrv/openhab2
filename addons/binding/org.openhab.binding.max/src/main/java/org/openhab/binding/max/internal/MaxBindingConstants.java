@@ -54,6 +54,7 @@ public class MaxBindingConstants {
     public static final String CHANNEL_CONTACT_STATE = "contact_state";
     public static final String CHANNEL_FREE_MEMORY = "free_mem";
     public static final String CHANNEL_DUTY_CYCLE = "duty_cycle";
+    public static final String CHANNEL_CMDS = "cmds";
 
     // Custom Properties
     public static final String PROPERTY_IP_ADDRESS = "ipAddress";
