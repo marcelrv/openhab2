@@ -31,6 +31,8 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -47,6 +49,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.max")
 public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
 
@@ -59,7 +62,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
 
     /** The refresh interval for discovery of MAX! Cubes */
     private static final long SEARCH_INTERVAL = 600;
-    private ScheduledFuture<?> cubeDiscoveryJob;
+    private @Nullable ScheduledFuture<?> cubeDiscoveryJob;
 
     public MaxCubeBridgeDiscovery() {
         super(SEARCH_TIME);
@@ -154,7 +157,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
         }
     }
 
-    private void discoveryResultSubmission(String IpAddress, String cubeSerialNumber, String rfAddress) {
+    private void discoveryResultSubmission(String IpAddress, @Nullable String cubeSerialNumber, String rfAddress) {
         if (cubeSerialNumber != null) {
             logger.trace("Adding new MAX! Cube Lan Gateway on {} with id '{}' to Smarthome inbox", IpAddress,
                     cubeSerialNumber);

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.max.internal.device;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 
 /**
@@ -19,9 +20,10 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class EcoSwitch extends ShutterContact {
 
-    private OnOffType ecoMode;
+    private OnOffType ecoMode = OnOffType.OFF;
 
     public EcoSwitch(DeviceConfiguration c) {
         super(c);

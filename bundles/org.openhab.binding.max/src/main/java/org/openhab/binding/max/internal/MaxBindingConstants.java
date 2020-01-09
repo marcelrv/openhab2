@@ -102,4 +102,6 @@ public class MaxBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
             Stream.concat(SUPPORTED_DEVICE_THING_TYPES_UIDS.stream(), SUPPORTED_BRIDGE_THING_TYPES_UIDS.stream())
                     .collect(Collectors.toSet()));
+
+    public static final String NO_RESPONSE = "NORESPONSE";
 }

@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.max.internal.exceptions;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Will be thrown when there is an attempt to put a new message line into the message processor,
  * the processor detects a known message indicator, but the message could not be parsed correctly.
  *
  * @author Christian Rockrohr <christian@rockrohr.de> - Initial contribution
  */
+@NonNullByDefault
 public class UnprocessableMessageException extends Exception {
 
     /**

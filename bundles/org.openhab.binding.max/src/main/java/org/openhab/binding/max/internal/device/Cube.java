@@ -12,17 +12,20 @@
  */
 package org.openhab.binding.max.internal.device;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Cube Lan Gateway.
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class Cube extends Device {
 
     private boolean portalEnabled;
-    private String portalUrl;
-    private String timeZoneWinter;
-    private String timeZoneDaylightSaving;
+    private String portalUrl = "";
+    private String timeZoneWinter = "";
+    private String timeZoneDaylightSaving = "";
 
     public Cube(DeviceConfiguration c) {
         super(c);

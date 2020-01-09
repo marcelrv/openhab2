@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.max.internal.device;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Device information provided by the M message meta information.
  *
  * @author Andreas Heil (info@aheil.de) - Initial contribution
+ * @author Marcel Verpaalen - OH2 update
  */
+@NonNullByDefault
 public class DeviceInformation {
 
     private final DeviceType deviceType;

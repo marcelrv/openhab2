@@ -12,29 +12,32 @@
  */
 package org.openhab.binding.max.internal.config;
 
-import org.openhab.binding.max.internal.MaxBindingConstants;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Configuration class for {@link MaxBindingConstants} bridge used to connect to the
- * maxCube device.
+ * Configuration class for MAX! Cube bridge
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class MaxCubeBridgeConfiguration {
 
     /** The IP address of the MAX! Cube LAN gateway */
-    public String ipAddress;
+    public String ipAddress = "";
 
     /**
      * The port of the MAX! Cube LAN gateway as provided at
      * http://www.elv.de/controller.aspx?cid=824&detail=10&detail2=3484
      */
+    @Nullable
     public Integer port;
 
     /** The refresh interval in seconds which is used to poll given MAX! Cube */
-    public Integer refreshInterval;
+    public Integer refreshInterval = 30;
 
     /** The unique serial number for a device */
+    @Nullable
     public String serialNumber;
 
     /**
@@ -50,13 +53,17 @@ public class MaxCubeBridgeConfiguration {
      * in exclusive mode, how many requests are allowed until connection is
      * closed and reopened
      */
+    @Nullable
     public Integer maxRequestsPerConnection;
 
+    @Nullable
     public Integer cubeReboot;
 
     /** NTP Server 1 hostname */
+    @Nullable
     public String ntpServer1;
 
     /** NTP Server 2 hostname */
+    @Nullable
     public String ntpServer2;
 }

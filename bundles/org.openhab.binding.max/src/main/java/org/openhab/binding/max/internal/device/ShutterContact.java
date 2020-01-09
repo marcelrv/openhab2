@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.max.internal.device;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 
 /**
@@ -20,9 +21,10 @@ import org.eclipse.smarthome.core.library.types.OpenClosedType;
  * @author Andreas Heil (info@aheil.de) - Initial contribution
  * @author Marcel Verpaalen - OH2 update
  */
+@NonNullByDefault
 public class ShutterContact extends Device {
 
-    private OpenClosedType shutterState;
+    private OpenClosedType shutterState = OpenClosedType.CLOSED;
 
     public ShutterContact(DeviceConfiguration c) {
         super(c);

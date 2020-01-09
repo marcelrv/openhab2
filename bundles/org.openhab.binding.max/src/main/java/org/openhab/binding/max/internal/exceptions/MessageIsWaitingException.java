@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.max.internal.exceptions;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Will be thrown when there is an attempt to put a new message line into the message processor,
  * but the processor is not yet ready to handle new lines because there is already a message that
@@ -19,6 +21,7 @@ package org.openhab.binding.max.internal.exceptions;
  *
  * @author Christian Rockrohr <christian@rockrohr.de> - Initial contribution
  */
+@NonNullByDefault
 public class MessageIsWaitingException extends Exception {
 
     /**

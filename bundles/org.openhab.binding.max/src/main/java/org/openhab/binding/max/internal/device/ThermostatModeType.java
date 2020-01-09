@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.max.internal.device;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.PrimitiveType;
 import org.eclipse.smarthome.core.types.State;
@@ -22,6 +23,7 @@ import org.eclipse.smarthome.core.types.State;
  * @author Andreas Heil (info@aheil.de) - Initial contribution
  * @author Marcel Verpaalen - OH2 update
  */
+@NonNullByDefault
 public enum ThermostatModeType implements PrimitiveType, State, Command {
     AUTOMATIC,
     MANUAL,

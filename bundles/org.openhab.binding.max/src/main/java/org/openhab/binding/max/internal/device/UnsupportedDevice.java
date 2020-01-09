@@ -12,13 +12,15 @@
  */
 package org.openhab.binding.max.internal.device;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Unsupported devices.
  *
  * @author Andreas Heil (info@aheil.de) - Initial contribution
  * @author Marcel Verpaalen - OH2 update
  */
-
+@NonNullByDefault
 public class UnsupportedDevice extends Device {
 
     public UnsupportedDevice(DeviceConfiguration c) {

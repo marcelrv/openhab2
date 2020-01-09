@@ -573,7 +573,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                 writer.write(command.getCommandString());
                 logger.trace("Write string to Max! Cube {}: {}", ipAddress, command.getCommandString());
                 writer.flush();
-                if (command.getReturnStrings() != null) {
+                if (!command.getReturnStrings().contentEquals(NO_RESPONSE)) {
                     readLines(command.getReturnStrings());
                 } else {
                     socketClose();

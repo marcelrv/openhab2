@@ -17,14 +17,18 @@ import java.math.RoundingMode;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * MAX! Heating thermostat & Heating thermostat+ .
  *
  * @author Andreas Heil (info@aheil.de) - Initial contribution
  * @author Marcel Verpaalen - OH2 update
  */
+@NonNullByDefault
 public class HeatingThermostat extends Device {
-    private ThermostatModeType mode;
+    private ThermostatModeType mode = ThermostatModeType.AUTOMATIC;
 
     /** Valve position in % */
     private int valvePosition;
@@ -36,12 +40,13 @@ public class HeatingThermostat extends Device {
     private double temperatureActual;
 
     /** Date setpoint until the temperature setpoint is valid */
-    private Date dateSetpoint;
+    private Date dateSetpoint = new Date();
 
     /** Device type for this thermostat **/
     private DeviceType deviceType = DeviceType.HeatingThermostat;
 
     /** Date/Time the actual temperature was last updated */
+    @Nullable
     private Date actualTempLastUpdated;
 
     public HeatingThermostat(DeviceConfiguration c) {
@@ -163,7 +168,7 @@ public class HeatingThermostat extends Device {
     /**
      * @return the Date the actual Temperature was last Updated
      */
-    public Date getActualTempLastUpdated() {
+    public @Nullable Date getActualTempLastUpdated() {
         return actualTempLastUpdated;
     }
 

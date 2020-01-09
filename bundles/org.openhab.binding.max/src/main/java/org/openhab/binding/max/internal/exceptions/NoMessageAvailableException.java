@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.max.internal.exceptions;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Will be thrown when there is an attempt to pull a message from the message processor,
  * but the processor does not yet have a complete message.
  *
  * @author Christian Rockrohr <christian@rockrohr.de> - Initial contribution
  */
+@NonNullByDefault
 public class NoMessageAvailableException extends Exception {
 
     /**

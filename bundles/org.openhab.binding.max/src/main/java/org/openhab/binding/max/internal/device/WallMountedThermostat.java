@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.max.internal.device;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * MAX! wall mounted thermostat.
  *
  * @author Andreas Heil (info@aheil.de) - Initial contribution
  */
+@NonNullByDefault
 public class WallMountedThermostat extends HeatingThermostat {
 
     public WallMountedThermostat(DeviceConfiguration c) {

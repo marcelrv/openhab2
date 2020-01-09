@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.max.internal.device;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Room information provided by the M message meta information.
  *
  * @author Andreas Heil (info@aheil.de) - Initial contribution
  * @author Marcel Verpaalen (marcel@verpaalen.com) - OH2 update
  */
+@NonNullByDefault
 public class RoomInformation {
     private int position;
     private String name;

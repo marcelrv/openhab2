@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.openhab.binding.max.internal.Utils;
@@ -29,6 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author Andreas Heil (info@aheil.de) - Initial contribution
  * @author Marcel Verpaalen - OH2 update + enhancements
  */
+@NonNullByDefault
 public abstract class Device {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Device.class);
@@ -71,6 +74,7 @@ public abstract class Device {
         this.name = name;
     }
 
+    @Nullable
     public static Device create(String rfAddress, List<DeviceConfiguration> configurations) {
         Device returnValue = null;
         for (DeviceConfiguration c : configurations) {
@@ -109,6 +113,7 @@ public abstract class Device {
         }
     }
 
+    @Nullable
     public static Device create(byte[] raw, List<DeviceConfiguration> configurations) {
         if (raw.length == 0) {
             return null;

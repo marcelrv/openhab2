@@ -15,6 +15,7 @@ package org.openhab.binding.max.internal.device;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.max.internal.message.CMessage;
 import org.openhab.binding.max.internal.message.Message;
 
@@ -22,15 +23,17 @@ import org.openhab.binding.max.internal.message.Message;
  * Base class for configuration provided by the MAX! Cube C Message.
  *
  * @author Andreas Heil (info@aheil.de) - Initial contribution
+ * @author Marcel Verpaalen - OH2 update
  */
+@NonNullByDefault
 public final class DeviceConfiguration {
 
-    private DeviceType deviceType;
-    private String rfAddress;
-    private String serialNumber;
-    private String name;
+    private DeviceType deviceType = DeviceType.Invalid;
+    private String rfAddress = "";
+    private String serialNumber = "";
+    private String name = "";
     private int roomId = -1;
-    private String roomName;
+    private String roomName = "";
 
     /** Extended configuration properties **/
     private Map<String, Object> properties = new HashMap<>();
@@ -82,11 +85,7 @@ public final class DeviceConfiguration {
     }
 
     public String getName() {
-        if (name == null) {
-            return "";
-        } else {
-            return name;
-        }
+        return name;
     }
 
     public void setName(String name) {
@@ -102,11 +101,7 @@ public final class DeviceConfiguration {
     }
 
     public String getRoomName() {
-        if (roomName == null) {
-            return "";
-        } else {
-            return roomName;
-        }
+        return roomName;
     }
 
     public void setRoomName(String roomName) {

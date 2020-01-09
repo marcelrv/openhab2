@@ -19,6 +19,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -37,11 +39,13 @@ import org.osgi.service.component.annotations.Reference;
  * @author Marcel Verpaalen - Initial contribution
  */
 @Component(service = ConsoleCommandExtension.class)
+@NonNullByDefault
 public class MaxConsoleCommandExtension extends AbstractConsoleCommandExtension {
 
     private static final String SUBCMD_BACKUP = "backup";
     private static final String SUBCMD_REBOOT = "reboot";
 
+    @Nullable
     private ThingRegistry thingRegistry;
 
     public MaxConsoleCommandExtension() {
@@ -96,23 +100,26 @@ public class MaxConsoleCommandExtension extends AbstractConsoleCommandExtension 
 
     private List<Thing> findDevices(Set<ThingTypeUID> deviceTypes) {
         List<Thing> devs = new ArrayList<>();
-        for (Thing thing : thingRegistry.getAll()) {
-            if (deviceTypes.contains(thing.getThingTypeUID())) {
-                devs.add(thing);
+        if (thingRegistry != null) {
+            for (Thing thing : thingRegistry.getAll()) {
+                if (deviceTypes.contains(thing.getThingTypeUID())) {
+                    devs.add(thing);
+                }
             }
         }
         return devs;
     }
 
+    @Nullable
     private MaxCubeBridgeHandler getHandler(String thingId) {
         MaxCubeBridgeHandler handler = null;
         try {
             ThingUID bridgeUID = new ThingUID(thingId);
-            Thing thing = thingRegistry.get(bridgeUID);
-            if (thing != null) {
-                ThingHandler thingHandler = thing.getHandler();
-                if (thingHandler instanceof MaxCubeBridgeHandler) {
-                    handler = (MaxCubeBridgeHandler) thingHandler;
+            if (thingRegistry != null) {
+                Thing thing = thingRegistry.get(bridgeUID);
+                if ((thing != null) && (thing.getHandler() != null)
+                        && (thing.getHandler() instanceof MaxCubeBridgeHandler)) {
+                    handler = (MaxCubeBridgeHandler) thing.getHandler();
                 }
             }
         } catch (Exception e) {

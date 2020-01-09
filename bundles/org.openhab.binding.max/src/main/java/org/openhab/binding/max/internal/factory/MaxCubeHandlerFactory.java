@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -41,20 +43,21 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.max")
 public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(MaxCubeHandlerFactory.class);
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Override
-    public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
-            ThingUID bridgeUID) {
+    public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
+            @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
         if (CUBEBRIDGE_THING_TYPE.equals(thingTypeUID)) {
             ThingUID cubeBridgeUID = getBridgeThingUID(thingTypeUID, thingUID, configuration);
             return super.createThing(thingTypeUID, configuration, cubeBridgeUID, null);
         }
-        if (supportsThingType(thingTypeUID)) {
+        if (supportsThingType(thingTypeUID) && bridgeUID != null) {
             ThingUID deviceUID = getMaxCubeDeviceUID(thingTypeUID, thingUID, configuration, bridgeUID);
             return super.createThing(thingTypeUID, configuration, deviceUID, bridgeUID);
         }
@@ -66,7 +69,8 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
-    private ThingUID getBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration) {
+    private ThingUID getBridgeThingUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID,
+            Configuration configuration) {
         if (thingUID == null) {
             String serialNumber = (String) configuration.get(Thing.PROPERTY_SERIAL_NUMBER);
             return new ThingUID(thingTypeUID, serialNumber);
@@ -74,8 +78,8 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
         return thingUID;
     }
 
-    private ThingUID getMaxCubeDeviceUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration,
-            ThingUID bridgeUID) {
+    private ThingUID getMaxCubeDeviceUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID,
+            Configuration configuration, ThingUID bridgeUID) {
         String serialNumber = (String) configuration.get(Thing.PROPERTY_SERIAL_NUMBER);
 
         if (thingUID == null) {
@@ -109,6 +113,7 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
+    @Nullable
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (CUBEBRIDGE_THING_TYPE.equals(thingTypeUID)) {
