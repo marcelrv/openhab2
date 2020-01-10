@@ -25,6 +25,8 @@ import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
@@ -61,13 +63,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusListener {
 
     private final Logger logger = LoggerFactory.getLogger(MaxDevicesHandler.class);
-    private MaxCubeBridgeHandler bridgeHandler;
+    private @Nullable MaxCubeBridgeHandler bridgeHandler;
 
-    private String maxDeviceSerial;
-    private String rfAddress;
+    private @Nullable String maxDeviceSerial;
+    private String rfAddress = "";
     private boolean propertiesSet;
     private boolean configSet;
 
@@ -77,9 +80,9 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
     private static final long COMMUNICATION_DELAY_TIME = 120;
     private int refreshActualRate;
     private boolean refreshingActuals;
-    private ScheduledFuture<?> refreshActualsJob;
+    private @Nullable ScheduledFuture<?> refreshActualsJob;
     private double originalSetTemp;
-    private ThermostatModeType originalMode;
+    private ThermostatModeType originalMode = ThermostatModeType.AUTOMATIC;
 
     public MaxDevicesHandler(Thing thing) {
         super(thing);
@@ -254,7 +257,12 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
      */
     private void updateDeviceName(Entry<String, Object> configurationParameter) {
         try {
-            final Device device = getMaxCubeBridgeHandler().getDevice(maxDeviceSerial);
+            MaxCubeBridgeHandler bh = getMaxCubeBridgeHandler();
+            if (bh == null) {
+                logger.debug("MAX! Cube LAN gateway bridge handler not found. Cannot handle update without bridge.");
+                return;
+            }
+            final Device device = bh.getDevice(maxDeviceSerial);
             if (device == null) {
                 logger.debug("MAX! Cube LAN gateway bridge handler not found. Cannot handle update without bridge.");
                 return;
@@ -299,7 +307,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
         }
     }
 
-    private synchronized MaxCubeBridgeHandler getMaxCubeBridgeHandler() {
+    private synchronized @Nullable MaxCubeBridgeHandler getMaxCubeBridgeHandler() {
         if (this.bridgeHandler == null) {
             final Bridge bridge = getBridge();
             if (bridge == null) {
@@ -485,7 +493,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
 
     @Override
     public void onDeviceRemoved(MaxCubeBridgeHandler bridge, Device device) {
-        if (device.getSerialNumber().equals(maxDeviceSerial)) {
+        if (device.getSerialNumber().equals(maxDeviceSerial) && bridgeHandler != null) {
             bridgeHandler.unregisterDeviceStatusListener(this);
             bridgeHandler = null;
             updateStatus(ThingStatus.OFFLINE);
@@ -527,30 +535,30 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
      */
     private void setDeviceConfiguration(Device device) {
         try {
-            boolean config_changed = false;
+            boolean configChanged = false;
             logger.debug("MAX! {} {} configuration update", device.getType(), device.getSerialNumber());
             Configuration configuration = editConfiguration();
             if (!device.getRoomName().equalsIgnoreCase((String) getConfig().get(PROPERTY_ROOMNAME))) {
                 configuration.put(PROPERTY_ROOMNAME, device.getRoomName());
-                config_changed = true;
+                configChanged = true;
             }
             if (getConfig().get(PROPERTY_ROOMID) == null || !(new BigDecimal(device.getRoomId())
                     .compareTo((BigDecimal) getConfig().get(PROPERTY_ROOMID)) == 0)) {
                 configuration.put(PROPERTY_ROOMID, new BigDecimal(device.getRoomId()));
-                config_changed = true;
+                configChanged = true;
             }
             if (!device.getName().equalsIgnoreCase((String) getConfig().get(PROPERTY_DEVICENAME))) {
                 configuration.put(PROPERTY_DEVICENAME, device.getName());
-                config_changed = true;
+                configChanged = true;
             }
             if (!device.getRFAddress().equalsIgnoreCase((String) getConfig().get(PROPERTY_RFADDRESS))) {
                 configuration.put(PROPERTY_RFADDRESS, device.getRFAddress());
-                config_changed = true;
+                configChanged = true;
             }
             for (Map.Entry<String, Object> entry : device.getProperties().entrySet()) {
                 configuration.put(entry.getKey(), entry.getValue());
             }
-            if (config_changed) {
+            if (configChanged) {
                 updateConfiguration(configuration);
                 logger.debug("Config updated: {}", configuration.getProperties());
             } else {

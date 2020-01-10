@@ -45,8 +45,7 @@ public class MaxConsoleCommandExtension extends AbstractConsoleCommandExtension 
     private static final String SUBCMD_BACKUP = "backup";
     private static final String SUBCMD_REBOOT = "reboot";
 
-    @Nullable
-    private ThingRegistry thingRegistry;
+    private @Nullable ThingRegistry thingRegistry;
 
     public MaxConsoleCommandExtension() {
         super("max", "Additional EQ3 MAX! commands.");
@@ -110,8 +109,7 @@ public class MaxConsoleCommandExtension extends AbstractConsoleCommandExtension 
         return devs;
     }
 
-    @Nullable
-    private MaxCubeBridgeHandler getHandler(String thingId) {
+    private @Nullable MaxCubeBridgeHandler getHandler(String thingId) {
         MaxCubeBridgeHandler handler = null;
         try {
             ThingUID bridgeUID = new ThingUID(thingId);
