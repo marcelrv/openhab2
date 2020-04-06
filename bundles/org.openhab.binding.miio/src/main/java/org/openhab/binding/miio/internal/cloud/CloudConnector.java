@@ -15,7 +15,9 @@ package org.openhab.binding.miio.internal.cloud;
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.BINDING_ID;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -211,5 +213,21 @@ public class CloudConnector {
                     devicedata.get(0).getName());
         }
         return devicedata.get(0);
+    }
+
+    public String sendRequest(String uri, String data) {
+        final MiCloudConnector cl = cloudConnector;
+        if (cl == null) {
+            return "Cloud Unavailable";
+        }
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("data", data);
+        String resp;
+        try {
+            resp = cl.request(uri, map);
+            return resp;
+        } catch (MiCloudException e) {
+            return "Error sending " + e.getMessage();
+        }
     }
 }
