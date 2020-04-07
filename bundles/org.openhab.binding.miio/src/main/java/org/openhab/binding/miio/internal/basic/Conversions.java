@@ -19,6 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 /**
@@ -54,6 +56,16 @@ public class Conversions {
         }
     }
 
+    public static JsonElement MiOtConversion(JsonElement miotResponse) {
+        if (miotResponse.isJsonObject()) {
+            JsonObject miotValue = miotResponse.getAsJsonObject();
+            if (miotValue.has("value")) {
+                return miotValue.get("value");
+            }
+        }
+        return JsonNull.INSTANCE;
+    }
+
     public static JsonElement divideTen(JsonElement value10) {
         double value = value10.getAsDouble() / 10;
         return new JsonPrimitive(value);
@@ -61,6 +73,8 @@ public class Conversions {
 
     public static JsonElement execute(String transfortmation, JsonElement value) {
         switch (transfortmation.toUpperCase()) {
+            case "MIOT":
+                return MiOtConversion(value);
             case "YEELIGHTSCENEID":
                 return yeelightSceneConversion(value);
             case "SECONDSTOHOURS":

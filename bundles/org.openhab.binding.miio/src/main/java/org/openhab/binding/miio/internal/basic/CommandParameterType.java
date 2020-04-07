@@ -30,6 +30,7 @@ public enum CommandParameterType {
     CUSTOMSTRING("customstring"),
     NUMBER("number"),
     COLOR("color"),
+    MIOT("miot"),
     UNKNOWN("unknown");
 
     private String text;

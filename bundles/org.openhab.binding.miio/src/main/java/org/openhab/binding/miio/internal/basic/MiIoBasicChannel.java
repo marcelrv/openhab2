@@ -35,6 +35,12 @@ public class MiIoBasicChannel {
     @SerializedName("property")
     @Expose
     private @Nullable String property;
+    @SerializedName("siid")
+    @Expose
+    private int siid = 0;
+    @SerializedName("piid")
+    @Expose
+    private int piid = 0;
     @SerializedName("friendlyName")
     @Expose
     private @Nullable String friendlyName;
@@ -63,6 +69,22 @@ public class MiIoBasicChannel {
     public String getProperty() {
         final String property = this.property;
         return (property != null) ? property : "";
+    }
+
+    public int getSiid() {
+        return siid;
+    }
+
+    public int getPiid() {
+        return piid;
+    }
+
+    public boolean isMiOt() {
+        if (getPiid() == 0 || getSiid() == 0) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public void setProperty(String property) {

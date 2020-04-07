@@ -60,6 +60,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -130,8 +131,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         if (!actions.isEmpty()) {
             if (actions.containsKey(channelUID.getId())) {
                 String preCommandPara1 = actions.get(channelUID.getId()).getPreCommandParameter1();
-                preCommandPara1 = ((preCommandPara1 != null && !preCommandPara1.isEmpty()) ? preCommandPara1 + ","
-                        : "");
+                preCommandPara1 = ((preCommandPara1 != null && !preCommandPara1.isEmpty()) ? preCommandPara1 + "," : "")
+                        .replace("\"", "");
+                ;
                 String para1 = actions.get(channelUID.getId()).getParameter1();
                 String para2 = actions.get(channelUID.getId()).getParameter2();
                 String para3 = actions.get(channelUID.getId()).getParameter3();
@@ -139,7 +141,33 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         + (para3 != null ? "," + para3 : "");
                 String cmd = actions.get(channelUID.getId()).getCommand();
                 CommandParameterType paramType = actions.get(channelUID.getId()).getparameterType();
-                if (paramType == CommandParameterType.EMPTY) {
+                if (cmd.contentEquals("set_miot")) {
+                    logger.debug("Execute MIOT COMMAND");
+                    MiIoBasicChannel c = getChannel(channelUID.getId());
+                    if (c == null) {
+                        logger.debug("Channel not found for miot channel {}", channelUID.getId());
+                        return;
+                    }
+                    JsonObject json = new JsonObject();
+                    json.addProperty("did", c.getChannel());
+                    json.addProperty("siid", c.getSiid());
+                    json.addProperty("piid", c.getPiid());
+                    switch (paramType) {
+                        case NUMBER:
+                            json.addProperty("value", Double.valueOf(command.toFullString()));
+                            break;
+                        case STRING:
+                            json.addProperty("value", command.toString());
+                            break;
+                        case ONOFFBOOL:
+                            boolean boolCommand = command == OnOffType.ON;
+                            json.addProperty("value", boolCommand);
+                            break;
+                        default:
+                            json.addProperty("value", command.toFullString());
+                    }
+                    cmd = "set_properties [" + json.toString() + "]";
+                } else if (paramType == CommandParameterType.EMPTY) {
                     cmd = cmd + "[]";
                 } else if (paramType == CommandParameterType.NONE) {
                     logger.trace("NONE command type");
@@ -219,7 +247,19 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         int maxProperties = device.getDevice().getMaxProperties();
         JsonArray getPropString = new JsonArray();
         for (MiIoBasicChannel miChannel : refreshList) {
-            getPropString.add(miChannel.getProperty());
+            JsonElement property;
+            if (miChannel.isMiOt()) {
+                JsonObject json = new JsonObject();
+                json.addProperty("did", miChannel.getChannel());
+                json.addProperty("siid", miChannel.getSiid());
+                json.addProperty("piid", miChannel.getPiid());
+                property = json;
+                // property = "{ \"did\":\"" + miChannel.getProperty() + "\",\"siid\":" + miChannel.getSiid()
+                // + ",\"piid\":" + miChannel.getPiid() + " }";
+            } else {
+                property = new JsonPrimitive(miChannel.getProperty());
+            }
+            getPropString.add(property);
             if (getPropString.size() >= maxProperties) {
                 sendRefreshProperties(command, getPropString);
                 getPropString = new JsonArray();
