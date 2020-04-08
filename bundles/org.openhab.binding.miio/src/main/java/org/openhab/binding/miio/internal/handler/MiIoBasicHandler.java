@@ -254,8 +254,6 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 json.addProperty("siid", miChannel.getSiid());
                 json.addProperty("piid", miChannel.getPiid());
                 property = json;
-                // property = "{ \"did\":\"" + miChannel.getProperty() + "\",\"siid\":" + miChannel.getSiid()
-                // + ",\"piid\":" + miChannel.getPiid() + " }";
             } else {
                 property = new JsonPrimitive(miChannel.getProperty());
             }
@@ -401,11 +399,21 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     para.size(), res.size(), para, res);
         }
         for (int i = 0; i < para.size(); i++) {
-            String param = para.get(i).getAsString();
+            // hack for MIOT
+            String param;
+            if (para.get(i).isJsonObject()) {
+                param = para.get(i).getAsJsonObject().get("did").getAsString();
+            } else {
+                param = para.get(i).getAsString();
+            }
             JsonElement val = res.get(i);
             if (val.isJsonNull()) {
                 logger.debug("Property '{}' returned null (is it supported?).", param);
                 continue;
+            } else if (val.isJsonObject()) {
+                logger.debug("Expecting MIOT value: in response {}", val);
+                val = val.getAsJsonObject().get("value");
+
             }
             MiIoBasicChannel basicChannel = getChannel(param);
             updateChannel(basicChannel, param, val);
@@ -477,6 +485,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 case MIIO_INFO:
                     break;
                 case GET_VALUE:
+                case GET_PROPERTIES:
                 case GET_PROPERTY:
                     if (response.getResult().isJsonArray()) {
                         updatePropsFromJsonArray(response);

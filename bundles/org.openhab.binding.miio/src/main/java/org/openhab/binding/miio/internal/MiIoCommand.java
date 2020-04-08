@@ -33,6 +33,8 @@ public enum MiIoCommand {
     SET_MODE_BASIC("set_mode"),
     SET_POWER("set_power"),
     SET_BRIGHT("set_bright"),
+    GET_PROPERTIES("get_properties"),
+    SET_PROPERTIES("set_properties"),
 
     // vacuum commands
     START_VACUUM("app_start"),
