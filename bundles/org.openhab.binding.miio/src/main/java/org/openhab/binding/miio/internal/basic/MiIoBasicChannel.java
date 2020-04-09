@@ -37,10 +37,10 @@ public class MiIoBasicChannel {
     private @Nullable String property;
     @SerializedName("siid")
     @Expose
-    private int siid = 0;
+    private @Nullable Integer siid;
     @SerializedName("piid")
     @Expose
-    private int piid = 0;
+    private @Nullable Integer piid;
     @SerializedName("friendlyName")
     @Expose
     private @Nullable String friendlyName;
@@ -72,15 +72,23 @@ public class MiIoBasicChannel {
     }
 
     public int getSiid() {
-        return siid;
+        if (siid != null) {
+            return siid;
+        } else {
+            return 0;
+        }
     }
 
     public int getPiid() {
-        return piid;
+        if (piid != null) {
+            return piid;
+        } else {
+            return 0;
+        }
     }
 
     public boolean isMiOt() {
-        if (getPiid() == 0 || getSiid() == 0) {
+        if (piid != null && siid != null && (getPiid() == 0 || getSiid() == 0)) {
             return false;
         } else {
             return true;

@@ -13,7 +13,9 @@
 package org.openhab.binding.miio.internal.basic;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.miio.internal.MiIoCommand;
@@ -32,15 +34,21 @@ public class DeviceMapping {
     @SerializedName("id")
     @Expose
     private List<String> id = new ArrayList<>();
-    @SerializedName("channels")
+    @SerializedName("ids")
     @Expose
-    private List<MiIoBasicChannel> miIoBasicChannels = new ArrayList<>();
+    private List<MiIoIDsDTO> ids = new ArrayList<>();
     @SerializedName("propertyMethod")
     @Expose
     private String propertyMethod = MiIoCommand.GET_PROPERTY.getCommand();
     @SerializedName("maxProperties")
     @Expose
     private int maxProperties = 5;
+    @SerializedName("deviceParameters")
+    @Expose
+    private Map<String, Object> deviceParameters = Collections.emptyMap();
+    @SerializedName("channels")
+    @Expose
+    private List<MiIoBasicChannel> miIoBasicChannels = new ArrayList<MiIoBasicChannel>();
 
     public List<String> getId() {
         return id;
@@ -48,6 +56,14 @@ public class DeviceMapping {
 
     public void setId(List<String> id) {
         this.id = id;
+    }
+
+    public List<MiIoIDsDTO> getIds() {
+        return ids;
+    }
+
+    public void setIds(List<MiIoIDsDTO> ids) {
+        this.ids = ids;
     }
 
     public String getPropertyMethod() {
@@ -66,6 +82,14 @@ public class DeviceMapping {
         this.maxProperties = maxProperties;
     }
 
+    public Map<String, Object> getDeviceParameters() {
+        return deviceParameters;
+    }
+
+    public void setDeviceParameters(Map<String, Object> deviceParameters) {
+        this.deviceParameters = deviceParameters;
+    }
+
     public List<MiIoBasicChannel> getChannels() {
         return miIoBasicChannels;
     }
@@ -73,4 +97,5 @@ public class DeviceMapping {
     public void setChannels(List<MiIoBasicChannel> miIoBasicChannels) {
         this.miIoBasicChannels = miIoBasicChannels;
     }
+
 }

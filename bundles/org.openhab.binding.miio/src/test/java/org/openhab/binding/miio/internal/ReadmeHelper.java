@@ -195,9 +195,12 @@ public class ReadmeHelper {
                     MiIoBasicDevice devdb = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
                     if (devdb != null) {
                         arrayList.add(devdb);
-                        String usersJson = gson.toJson(devdb);
-                        try (PrintWriter out = new PrintWriter(path + "test_" + file.getName())) {
-                            out.println(usersJson);
+
+                        if (!file.getName().startsWith("test")) {
+                            String usersJson = gson.toJson(devdb);
+                            try (PrintWriter out = new PrintWriter(path + "test_" + file.getName())) {
+                                out.println(usersJson);
+                            }
                         }
                     }
                 } catch (Exception e) {

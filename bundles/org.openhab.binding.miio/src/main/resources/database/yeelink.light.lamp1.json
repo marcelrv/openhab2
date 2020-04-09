@@ -9,6 +9,11 @@
 			"yeelink.light.mono2",
 			"yeelink.light.virtual"
 		],
+		"deviceParameters":  
+			{
+				"smooth": 500
+			}
+		,
 		"channels": [
 			{
 				"property": "power",
