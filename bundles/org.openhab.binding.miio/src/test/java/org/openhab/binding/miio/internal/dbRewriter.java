@@ -28,7 +28,6 @@ import org.junit.Ignore;
 import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
 import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
 import org.openhab.binding.miio.internal.basic.MiIoDeviceAction;
-import org.openhab.binding.miio.internal.basic.MiIoIDsDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,11 +77,11 @@ public class dbRewriter {
                     if (devdb != null) {
                         arrayList.add(devdb);
                         Map<String, String> idd = new HashMap<>();
-                        List<MiIoIDsDTO> i = devdb.getDevice().getIds();
+                        // List<MiIoIDsDTO> i = devdb.getDevice().getIds();
                         for (String id : devdb.getDevice().getId()) {
-                            MiIoIDsDTO newId = new MiIoIDsDTO();
-                            newId.setId(id);
-                            newId.setDescription(MiIoDevices.getType(id).getDescription());
+                            // MiIoIDsDTO newId = new MiIoIDsDTO();
+                            // newId.setId(id);
+                            // newId.setDescription(MiIoDevices.getType(id).getDescription());
                             // i.add(newId);
                             idd.put(id, MiIoDevices.getType(id).getDescription());
                         }

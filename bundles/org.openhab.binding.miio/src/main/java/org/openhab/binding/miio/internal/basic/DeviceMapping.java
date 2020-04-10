@@ -13,6 +13,7 @@
 package org.openhab.binding.miio.internal.basic;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -36,17 +37,13 @@ public class DeviceMapping {
     private List<String> id = new ArrayList<>();
     @SerializedName("dids")
     @Expose
-    private @Nullable Map<String, String> dids;
-
-    @SerializedName("ids")
-    @Expose
-    private List<MiIoIDsDTO> ids = new ArrayList<>();
+    private Map<String, String> dids = Collections.emptyMap();
     @SerializedName("propertyMethod")
     @Expose
-    private String propertyMethod = MiIoCommand.GET_PROPERTY.getCommand();
+    private @Nullable String propertyMethod;
     @SerializedName("maxProperties")
     @Expose
-    private int maxProperties = 5;
+    private @Nullable Integer maxProperties;
     @SerializedName("deviceParameters")
     @Expose
     private @Nullable Map<String, Object> deviceParameters;
@@ -70,16 +67,8 @@ public class DeviceMapping {
         this.id = id;
     }
 
-    public List<MiIoIDsDTO> getIds() {
-        return ids;
-    }
-
-    public void setIds(List<MiIoIDsDTO> ids) {
-        this.ids = ids;
-    }
-
     public String getPropertyMethod() {
-        return propertyMethod;
+        return propertyMethod != null ? propertyMethod : MiIoCommand.GET_PROPERTY.getCommand();
     }
 
     public void setPropertyMethod(String propertyMethod) {
@@ -87,7 +76,7 @@ public class DeviceMapping {
     }
 
     public int getMaxProperties() {
-        return maxProperties;
+        return maxProperties != null ? maxProperties : 5;
     }
 
     public void setMaxProperties(int maxProperties) {
