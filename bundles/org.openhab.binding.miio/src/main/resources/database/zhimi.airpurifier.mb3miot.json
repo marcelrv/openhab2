@@ -1,116 +1,118 @@
 {
-	"deviceMapping": {
-		"id": [
-			"zhimi.airpurifier.mb3",
-			"zhimi.airpurifier.ma4"
-		],
-		"propertyMethod": "get_properties",
-		"maxProperties":2,
-		"channels": [
-			{
-				"property": "power",
-				"siid": 2,
-				"piid": 2,
-				"friendlyName": "Power",
-				"channel": "power",
-				"type": "Switch",
-				"refresh": true,
-			
-				"channelGroup": "actions",
-				"actions": [
-					{
-						"command": "set_miot",
-						"parameterType": "ONOFFBOOL"
-					}
-				]
-			},
-			{
-				"property": "mode",
-				"siid": 2,
-				"piid": 5,
-				"friendlyName": "Mode",
-				"channel": "mode",
-				"type": "String",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "set_miot",
-						"parameterType": "STRING"
-					}
-				]
-			},
-			{
-				"property": "humidity",
-				"siid": 3,
-				"piid": 7,
-				"friendlyName": "Humidity",
-				"channel": "humidity",
-				"type": "Number",
-				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
-			},
-			{
-				"property": "aqi",
-				"siid": 3,
-				"piid": 6,
-				"friendlyName": "Air Quality Index",
-				"channel": "aqi",
-				"type": "Number",
-				"refresh": true,
-				"transformation": "miot",
-				"ChannelGroup": "Status",
-				"actions": []
-			},
-			{
-				"property": "led_brightness",
-				"siid": 6,
-				"piid": 1,
-				"friendlyName": "Led Brightness",
-				"channel": "led_brightness",
-				"type": "Number",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "set_miot",
-						"parameterType": "NUMBER"
-					}
-				]
-			},
-			{
-				"property": "led",
-				"siid": 6,
-				"piid": 6,
-				"friendlyName": "LED Status",
-				"channel": "led",
-				"type": "Switch",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "set_miot",
-						"parameterType": "ONOFF"
-					}
-				]
-			},
-			{
-				"property": "buzzer",
-				"siid": 5,
-				"piid": 1,
-				"friendlyName": "Buzzer Status",
-				"channel": "buzzer",
-				"type": "Switch",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "set_miot",
-						"parameterType": "ONOFF"
-					}
-				]
-			}
-		]
-	}
+  "deviceMapping": {
+    "id": [
+      "zhimi.airpurifier.mb3",
+      "zhimi.airpurifier.ma4"
+    ],
+    "dids": {
+      "zhimi.airpurifier.mb3": "Mi Air Purifier 3",
+      "zhimi.airpurifier.ma4": "Mi Air Purifier 3"
+    },
+    "propertyMethod": "get_properties",
+    "maxProperties": 2,
+    "channels": [
+      {
+        "property": "power",
+        "siid": 2,
+        "piid": 2,
+        "friendlyName": "Power",
+        "channel": "power",
+        "type": "Switch",
+        "refresh": true,
+        "actions": [
+          {
+            "command": "set_miot",
+            "parameterType": "ONOFFBOOL"
+          }
+        ]
+      },
+      {
+        "property": "mode",
+        "siid": 2,
+        "piid": 5,
+        "friendlyName": "Mode",
+        "channel": "mode",
+        "type": "String",
+        "refresh": true,
+        "ChannelGroup": "actions",
+        "actions": [
+          {
+            "command": "set_miot",
+            "parameterType": "STRING"
+          }
+        ]
+      },
+      {
+        "property": "humidity",
+        "siid": 3,
+        "piid": 7,
+        "friendlyName": "Humidity",
+        "channel": "humidity",
+        "type": "Number",
+        "refresh": true,
+        "ChannelGroup": "Status",
+        "actions": []
+      },
+      {
+        "property": "aqi",
+        "siid": 3,
+        "piid": 6,
+        "friendlyName": "Air Quality Index",
+        "channel": "aqi",
+        "type": "Number",
+        "refresh": true,
+        "transformation": "miot",
+        "ChannelGroup": "Status",
+        "actions": []
+      },
+      {
+        "property": "led_brightness",
+        "siid": 6,
+        "piid": 1,
+        "friendlyName": "Led Brightness",
+        "channel": "led_brightness",
+        "type": "Number",
+        "refresh": true,
+        "ChannelGroup": "actions",
+        "actions": [
+          {
+            "command": "set_miot",
+            "parameterType": "NUMBER"
+          }
+        ]
+      },
+      {
+        "property": "led",
+        "siid": 6,
+        "piid": 6,
+        "friendlyName": "LED Status",
+        "channel": "led",
+        "type": "Switch",
+        "refresh": true,
+        "ChannelGroup": "actions",
+        "actions": [
+          {
+            "command": "set_miot",
+            "parameterType": "ONOFF"
+          }
+        ]
+      },
+      {
+        "property": "buzzer",
+        "siid": 5,
+        "piid": 1,
+        "friendlyName": "Buzzer Status",
+        "channel": "buzzer",
+        "type": "Switch",
+        "refresh": true,
+        "ChannelGroup": "actions",
+        "actions": [
+          {
+            "command": "set_miot",
+            "parameterType": "ONOFF"
+          }
+        ]
+      }
+    ]
+  }
 }

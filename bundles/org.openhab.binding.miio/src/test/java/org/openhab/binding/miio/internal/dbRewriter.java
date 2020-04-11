@@ -64,7 +64,7 @@ public class dbRewriter {
 
     private void updateDatabase() {
         List<MiIoBasicDevice> arrayList = new ArrayList<>();
-        String path = "./src/main/resources/database/";
+        String path = "./src/main/resources/databaseOld/";
         File dir = new File(path);
         File[] filesList = dir.listFiles();
         for (File file : filesList) {
@@ -83,10 +83,10 @@ public class dbRewriter {
                             // newId.setId(id);
                             // newId.setDescription(MiIoDevices.getType(id).getDescription());
                             // i.add(newId);
-                            idd.put(id, MiIoDevices.getType(id).getDescription());
+                            // TODO: idd.put(id, MiIoDevices.getType(id).getDescription());
                         }
                         // devdb.getDevice().setIds(i);
-                        devdb.getDevice().setIdd(idd);
+                        devdb.getDevice().setDid(idd);
 
                         for (MiIoBasicChannel ch : devdb.getDevice().getChannels()) {
 
@@ -114,7 +114,7 @@ public class dbRewriter {
 
                         String usersJson = gson.toJson(devdb);
 
-                        try (PrintWriter out = new PrintWriter(path + "../dbNew/" + file.getName())) {
+                        try (PrintWriter out = new PrintWriter(path + "../database/" + file.getName())) {
                             out.println(usersJson);
                         }
                     }

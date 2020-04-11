@@ -88,10 +88,10 @@ public class MiIoBasicChannel {
     }
 
     public boolean isMiOt() {
-        if (piid != null && siid != null && (getPiid() == 0 || getSiid() == 0)) {
-            return false;
-        } else {
+        if (piid != null && siid != null && (getPiid() != 0 || getSiid() != 0)) {
             return true;
+        } else {
+            return false;
         }
     }
 

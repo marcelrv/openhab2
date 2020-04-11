@@ -3,6 +3,9 @@
     "id": [
       "cgllc.airmonitor.s1"
     ],
+    "dids": {
+      "cgllc.airmonitor.s1": "Mi Air Quality Monitor S1"
+    },
     "propertyMethod": "get_value",
     "maxProperties": 6,
     "channels": [

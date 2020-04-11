@@ -249,6 +249,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         for (MiIoBasicChannel miChannel : refreshList) {
             JsonElement property;
             if (miChannel.isMiOt()) {
+                logger.debug("I'm a MIOT REFRESH {}", getThing().getUID());
                 JsonObject json = new JsonObject();
                 json.addProperty("did", miChannel.getChannel());
                 json.addProperty("siid", miChannel.getSiid());

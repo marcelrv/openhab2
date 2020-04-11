@@ -3,6 +3,9 @@
     "id": [
       "dmaker.airfresh.a1"
     ],
+    "dids": {
+      "dmaker.airfresh.a1": "Mi Fresh Air Ventilator A1"
+    },
     "channels": [
       {
         "property": "power",
@@ -10,7 +13,6 @@
         "channel": "power",
         "type": "Switch",
         "refresh": true,
-        "channelGroup": "actions",
         "actions": [
           {
             "command": "set_power",
@@ -24,7 +26,6 @@
         "channel": "airFreshMode",
         "type": "String",
         "refresh": true,
-        "channelGroup": "actions",
         "actions": [
           {
             "command": "set_mode",
@@ -38,7 +39,6 @@
         "channel": "airFreshPTCPower",
         "type": "Switch",
         "refresh": true,
-        "channelGroup": "actions",
         "actions": [
           {
             "command": "set_ptc_on",
@@ -61,7 +61,6 @@
         "channel": "airFreshDisplay",
         "type": "Switch",
         "refresh": true,
-        "channelGroup": "actions",
         "actions": [
           {
             "command": "set_display",
@@ -75,7 +74,6 @@
         "channel": "airFreshChildLock",
         "type": "Switch",
         "refresh": true,
-        "channelGroup": "actions",
         "actions": [
           {
             "command": "set_child_lock",
@@ -89,7 +87,6 @@
         "channel": "airFreshSound",
         "type": "Switch",
         "refresh": true,
-        "channelGroup": "actions",
         "actions": [
           {
             "command": "set_sound",
@@ -130,7 +127,6 @@
         "channel": "airFreshFavoriteSpeed",
         "type": "Number",
         "refresh": true,
-        "channelGroup": "actions",
         "actions": [
           {
             "command": "set_favourite_speed",

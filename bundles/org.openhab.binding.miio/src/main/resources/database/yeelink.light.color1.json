@@ -1,128 +1,152 @@
 {
-	"deviceMapping": {
-		"id": [
-			"yeelink.light.color1",
-			"yeelink.light.color2",
-			"yeelink.light.color3",
-			"yeelink.light.color4",
-			"yeelink.light.strip1",
-			"yeelink.light.strip2",
-			"yeelink.light.bslamp1",
-			"yeelink.light.bslamp2"
-		],
-		"channels": [
-			{
-				"property": "power",
-				"friendlyName": "Power",
-				"channel": "power",
-				"type": "Switch",
-				"refresh": true,
-				"ChannelGroup": "",
-				"actions": [
-					{
-						"command": "set_power",
-						"parameterType": "ONOFF"
-					}
-				]
-			},
-			{
-				"property": "bright",
-				"friendlyName": "Brightness",
-				"channel": "brightness",
-				"type": "Number",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "set_bright",
-						"parameterType": "NUMBER"
-					}
-				]
-			},
-			{
-				"property": "delayoff",
-				"friendlyName": "Shutdown Timer",
-				"channel": "delayoff",
-				"type": "String",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "cron_add",
-						"parameterType": "NUMBER",
-						"preCommandParameter1": "0"
-					}
-				]
-			},
-			{
-				"property": "ct",
-				"friendlyName": "Color Temperature",
-				"channel": "colorTemperature",
-				"type": "Number",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "set_ct_abx",
-						"parameterType": "NUMBER",
-						"parameter1": "\"smooth\"",
-						"parameter2": "500"
-					}
-				]
-			},
-			{
-				"property": "color_mode",
-				"friendlyName": "Color Mode",
-				"channel": "colorMode",
-				"type": "String",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": []
-			},
-			{
-				"property": "toggle",
-				"friendlyName": "toggle",
-				"channel": "toggle",
-				"type": "Switch",
-				"refresh": false,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "toggle",
-						"parameterType": "EMPTY"
-					}
-				]
-			},
-			{
-				"property": "rgb",
-				"friendlyName": "RGB Color",
-				"channel": "rgbColor",
-				"type": "Color",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "set_rgb",
-						"parameterType": "COLOR",
-						"parameter1": "\"smooth\"",
-						"parameter2": "500"
-					}
-				]
-			},
-			{
-				"property": "name",
-				"friendlyName": "Name",
-				"channel": "name",
-				"type": "String",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "set_name",
-						"parameterType": "STRING"
-					}
-				]
-			}
-		]
-	}
+  "deviceMapping": {
+    "id": [
+      "yeelink.light.color1",
+      "yeelink.light.color2",
+      "yeelink.light.color3",
+      "yeelink.light.color4",
+      "yeelink.light.strip1",
+      "yeelink.light.strip2",
+      "yeelink.light.bslamp1",
+      "yeelink.light.bslamp2"
+    ],
+    "dids": {
+      "yeelink.light.strip2": "Yeelight Strip",
+      "yeelink.light.strip1": "Yeelight Strip",
+      "yeelink.light.color4": "Yeelight Bulb YLDP13YL (8,5W)",
+      "yeelink.light.color3": "Yeelight Color Bulb YLDP02YL 9W",
+      "yeelink.light.color2": "Yeelight Color Bulb YLDP06YL 10W",
+      "yeelink.light.color1": "Yeelight Color Bulb",
+      "yeelink.light.bslamp1": "Yeelight Lamp",
+      "yeelink.light.bslamp2": "Yeelight Lamp"
+    },
+    "channels": [
+      {
+        "property": "power",
+        "friendlyName": "Power",
+        "channel": "power",
+        "type": "Switch",
+        "refresh": true,
+        "ChannelGroup": "",
+        "actions": [
+          {
+            "command": "set_power",
+            "parameterType": "ONOFF"
+          }
+        ]
+      },
+      {
+        "property": "bright",
+        "friendlyName": "Brightness",
+        "channel": "brightness",
+        "type": "Number",
+        "refresh": true,
+        "ChannelGroup": "actions",
+        "actions": [
+          {
+            "command": "set_bright",
+            "parameterType": "NUMBER"
+          }
+        ]
+      },
+      {
+        "property": "delayoff",
+        "friendlyName": "Shutdown Timer",
+        "channel": "delayoff",
+        "type": "String",
+        "refresh": true,
+        "ChannelGroup": "actions",
+        "actions": [
+          {
+            "command": "cron_add",
+            "parameterType": "NUMBER",
+            "preCommandParameter1": "0",
+            "parameters": [
+              0,
+              "$value$"
+            ]
+          }
+        ]
+      },
+      {
+        "property": "ct",
+        "friendlyName": "Color Temperature",
+        "channel": "colorTemperature",
+        "type": "Number",
+        "refresh": true,
+        "ChannelGroup": "actions",
+        "actions": [
+          {
+            "command": "set_ct_abx",
+            "parameterType": "NUMBER",
+            "parameter1": "\"smooth\"",
+            "parameter2": "500",
+            "parameters": [
+              "$value$",
+              "smooth",
+              500
+            ]
+          }
+        ]
+      },
+      {
+        "property": "color_mode",
+        "friendlyName": "Color Mode",
+        "channel": "colorMode",
+        "type": "String",
+        "refresh": true,
+        "ChannelGroup": "actions",
+        "actions": []
+      },
+      {
+        "property": "toggle",
+        "friendlyName": "toggle",
+        "channel": "toggle",
+        "type": "Switch",
+        "refresh": false,
+        "ChannelGroup": "actions",
+        "actions": [
+          {
+            "command": "toggle",
+            "parameterType": "EMPTY"
+          }
+        ]
+      },
+      {
+        "property": "rgb",
+        "friendlyName": "RGB Color",
+        "channel": "rgbColor",
+        "type": "Color",
+        "refresh": true,
+        "ChannelGroup": "actions",
+        "actions": [
+          {
+            "command": "set_rgb",
+            "parameterType": "COLOR",
+            "parameter1": "\"smooth\"",
+            "parameter2": "500",
+            "parameters": [
+              "$value$",
+              "smooth",
+              500
+            ]
+          }
+        ]
+      },
+      {
+        "property": "name",
+        "friendlyName": "Name",
+        "channel": "name",
+        "type": "String",
+        "refresh": true,
+        "ChannelGroup": "actions",
+        "actions": [
+          {
+            "command": "set_name",
+            "parameterType": "STRING"
+          }
+        ]
+      }
+    ]
+  }
 }

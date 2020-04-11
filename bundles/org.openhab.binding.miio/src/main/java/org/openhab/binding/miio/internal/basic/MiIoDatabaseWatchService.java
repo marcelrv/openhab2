@@ -63,6 +63,7 @@ public class MiIoDatabaseWatchService extends AbstractWatchService {
 
     private final Logger logger = LoggerFactory.getLogger(MiIoDatabaseWatchService.class);
     private Map<String, URL> databaseList = new HashMap<>();
+    private Map<String, String> miIoDeviceDescriptions = new HashMap<>();
 
     @Activate
     public MiIoDatabaseWatchService() {
@@ -107,6 +108,16 @@ public class MiIoDatabaseWatchService extends AbstractWatchService {
         return databaseList.get(modelId);
     }
 
+    /**
+     * Return the model name for a given modelId
+     *
+     * @param modelId the model
+     * @return device description
+     */
+    public @Nullable String getDescription(String modelId) {
+        return miIoDeviceDescriptions.get(modelId);
+    }
+
     private void populateDatabase() {
         Map<String, URL> workingDatabaseList = new HashMap<>();
         List<URL> urlEntries = findDatabaseFiles();
@@ -115,8 +126,10 @@ public class MiIoDatabaseWatchService extends AbstractWatchService {
             try {
                 JsonObject deviceMapping = Utils.convertFileToJSON(db);
                 MiIoBasicDevice devdb = GSON.fromJson(deviceMapping, MiIoBasicDevice.class);
-                for (String id : devdb.getDevice().getId()) {
+                Map<String, String> dids = devdb.getDevice().getDid();
+                for (String id : dids.keySet()) {
                     workingDatabaseList.put(id, db);
+                    miIoDeviceDescriptions.put(id, dids.get(id));
                 }
             } catch (JsonIOException | JsonSyntaxException | IOException e) {
                 logger.debug("Error while processing database '{}': {}", db, e.getMessage());

@@ -162,9 +162,9 @@ public class ReadmeHelper {
     private void checkDatabaseEntrys() {
         for (MiIoBasicDevice entry : findDatabaseEntrys()) {
             for (String id : entry.getDevice().getId()) {
-                if (!MiIoDevices.getType(id).getThingType().equals(MiIoBindingConstants.THING_TYPE_BASIC)) {
-                    LOGGER.info("id :" + id + " not found");
-                }
+                // if (!MiIoDevices.getType(id).getThingType().equals(MiIoBindingConstants.THING_TYPE_BASIC)) {
+                // LOGGER.info("id :" + id + " not found");
+                // }
             }
         }
     }

@@ -51,12 +51,12 @@ public class DeviceMapping {
     @Expose
     private List<MiIoBasicChannel> miIoBasicChannels = new ArrayList<MiIoBasicChannel>();
 
-    public @Nullable Map<String, String> getIdd() {
+    public Map<String, String> getDid() {
         return dids;
     }
 
-    public void setIdd(Map<String, String> idd) {
-        this.dids = idd;
+    public void setDid(Map<String, String> did) {
+        this.dids = did;
     }
 
     public List<String> getId() {
