@@ -118,7 +118,7 @@ public class MiIoDatabaseWatchService extends AbstractWatchService {
         return miIoDeviceDescriptions.get(modelId);
     }
 
-    private void populateDatabase() {
+    private synchronized void populateDatabase() {
         Map<String, URL> workingDatabaseList = new HashMap<>();
         List<URL> urlEntries = findDatabaseFiles();
         for (URL db : urlEntries) {

@@ -30,9 +30,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.miio.internal.MiIoDevices;
 import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,18 +41,19 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-@Component(service = MDNSDiscoveryParticipant.class, immediate = true)
+@Component(service = MDNSDiscoveryParticipant.class, immediate = true, configurationPid = "discoveryMDNS.miio")
 public class MiIoDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private @Nullable MiIoDatabaseWatchService miIoDatabaseWatchService;
     private Logger logger = LoggerFactory.getLogger(MiIoDiscoveryParticipant.class);
 
-    @Activate
-    private void activateM(@Reference MiIoDatabaseWatchService miIoDatabaseWatchService) {
-        this.miIoDatabaseWatchService = miIoDatabaseWatchService;
-        logger.warn("IM ACTIVATED");
-    }
-
+    /*
+     * @Activate
+     * public void activate(@Reference MiIoDatabaseWatchService miIoDatabaseWatchService) {
+     * this.miIoDatabaseWatchService = miIoDatabaseWatchService;
+     * logger.warn("IM ACTIVATED");
+     * }
+     */
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
         return (NONGENERIC_THING_TYPES_UIDS);

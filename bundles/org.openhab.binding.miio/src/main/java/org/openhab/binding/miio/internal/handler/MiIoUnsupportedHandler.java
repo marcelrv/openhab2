@@ -79,8 +79,8 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         switch (miDevice) {
             case POWERPLUG:
             case POWERPLUG2:
-            case POWERSTRIP:
-            case POWERSTRIP2:
+                // case POWERSTRIP:
+                // case POWERSTRIP2:
             case YEELIGHT_C1:
                 break;
             case VACUUM:
