@@ -29,6 +29,7 @@ public enum CommandParameterType {
     STRING("string"),
     CUSTOMSTRING("customstring"),
     NUMBER("number"),
+    PERCENT("percent"),
     COLOR("color"),
     MIOT("miot"),
     UNKNOWN("unknown");
