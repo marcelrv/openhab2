@@ -171,6 +171,7 @@ However, for devices that are unsupported, you may override the value and try to
 | Roborock Vacuum T7 v3        | miio:vacuum      | [roborock.vacuum.t7pv3](#roborock-vacuum-t7pv3) | Yes       |            |
 | Roborock Vacuum S5 Max       | miio:vacuum      | [roborock.vacuum.s5e](#roborock-vacuum-s5e) | Yes       |            |
 | Roborock Vacuum S6           | miio:vacuum      | [rockrobo.vacuum.s6](#rockrobo-vacuum-s6) | Yes       |            |
+| Roborock Vacuum S6           | miio:vacuum      | [roborock.vacuum.s6](#roborock-vacuum-s6) | Yes       |            |
 | Rockrobo Xiaowa Vacuum v2    | miio:unsupported | roborock.vacuum.e2     | No        |            |
 | Xiaomi Mijia vacuum V-RVCLM21B | miio:unsupported | viomi.vacuum.v6        | No        |            |
 | Xiaomi Mijia vacuum STYJ02YM | miio:unsupported | viomi.vacuum.v7        | No        |            |
@@ -835,7 +836,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | ambientPower     | Switch  | Ambient Power                       |
 | ambientBrightness | Number  | Ambient Brightness                  |
 | illumination     | Number  | Ambient Illumination                |
@@ -846,8 +847,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
-| cct              | Number  | Correlated Color Temperature        |
+| brightness       | Dimmer  | Brightness                          |
+| cct              | Dimmer  | Correlated Color Temperature        |
 | scene            | Number  | Scene                               |
 | switchscene      | Switch  | Switch Scene                        |
 | toggle           | Switch  | Toggle                              |
@@ -857,8 +858,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
-| cct              | Number  | Correlated Color Temperature        |
+| brightness       | Dimmer  | Brightness                          |
+| cct              | Dimmer  | Correlated Color Temperature        |
 | scene            | Number  | Scene                               |
 | switchscene      | Switch  | Switch Scene                        |
 | toggle           | Switch  | Toggle                              |
@@ -868,21 +869,20 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
-| cct              | Number  | Correlated Color Temperature        |
+| brightness       | Dimmer  | Brightness                          |
+| cct              | Dimmer  | Correlated Color Temperature        |
 | scene            | Number  | Scene                               |
 | dv               | Number  | DV                                  |
 | switchscene      | Switch  | Switch Scene                        |
 | delayoff         | Switch  | Delay Off                           |
-| toggle           | Switch  | Toggle                              |
 
 ### PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp (<a name="philips-light-candle">philips.light.candle</a>) Channels
 
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
-| cct              | Number  | Correlated Color Temperature        |
+| brightness       | Dimmer  | Brightness                          |
+| cct              | Dimmer  | Correlated Color Temperature        |
 | scene            | Number  | Scene                               |
 | delayoff         | Switch  | Delay Off                           |
 | toggle           | Switch  | Toggle                              |
@@ -892,21 +892,20 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
-| cct              | Number  | Correlated Color Temperature        |
+| brightness       | Dimmer  | Brightness                          |
+| cct              | Dimmer  | Correlated Color Temperature        |
 | scene            | Number  | Scene                               |
 | dv               | Number  | DV                                  |
 | switchscene      | Switch  | Switch Scene                        |
 | delayoff         | Switch  | Delay Off                           |
-| toggle           | Switch  | Toggle                              |
 
 ### Xiaomi Philips ZhiRui bedside lamp (<a name="philips-light-moonlight">philips.light.moonlight</a>) Channels
 
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
-| cct              | Number  | Correlated Color Temperature        |
+| brightness       | Dimmer  | Brightness                          |
+| cct              | Dimmer  | Correlated Color Temperature        |
 | scene            | Number  | Scene                               |
 | dv               | Number  | DV                                  |
 | gonight          | Switch  | Go Night                            |
@@ -918,8 +917,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
-| cct              | Number  | Correlated Color Temperature        |
+| brightness       | Dimmer  | Brightness                          |
+| cct              | Dimmer  | Correlated Color Temperature        |
 | scene            | Number  | Scene                               |
 | delayoff         | Switch  | Delay Off                           |
 | toggle           | Switch  | Toggle                              |
@@ -929,52 +928,44 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
-| cct              | Number  | Correlated Color Temperature        |
+| brightness       | Dimmer  | Brightness                          |
 | scene            | Number  | Scene                               |
-| dv               | Number  | DV                                  |
-| switchscene      | Switch  | Switch Scene                        |
-| delayoff         | Switch  | Delay Off                           |
-| toggle           | Switch  | Toggle                              |
 
 ### philips.light.virtual (<a name="philips-light-virtual">philips.light.virtual</a>) Channels
 
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
-| cct              | Number  | Correlated Color Temperature        |
+| brightness       | Dimmer  | Brightness                          |
+| cct              | Dimmer  | Correlated Color Temperature        |
 | scene            | Number  | Scene                               |
 | dv               | Number  | DV                                  |
 | switchscene      | Switch  | Switch Scene                        |
 | delayoff         | Switch  | Delay Off                           |
-| toggle           | Switch  | Toggle                              |
 
 ### philips.light.zysread (<a name="philips-light-zysread">philips.light.zysread</a>) Channels
 
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
-| cct              | Number  | Correlated Color Temperature        |
+| brightness       | Dimmer  | Brightness                          |
+| cct              | Dimmer  | Correlated Color Temperature        |
 | scene            | Number  | Scene                               |
 | dv               | Number  | DV                                  |
 | switchscene      | Switch  | Switch Scene                        |
 | delayoff         | Switch  | Delay Off                           |
-| toggle           | Switch  | Toggle                              |
 
 ### philips.light.zystrip (<a name="philips-light-zystrip">philips.light.zystrip</a>) Channels
 
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
-| cct              | Number  | Correlated Color Temperature        |
+| brightness       | Dimmer  | Brightness                          |
+| cct              | Dimmer  | Correlated Color Temperature        |
 | scene            | Number  | Scene                               |
 | dv               | Number  | DV                                  |
 | switchscene      | Switch  | Switch Scene                        |
 | delayoff         | Switch  | Delay Off                           |
-| toggle           | Switch  | Toggle                              |
 
 ### Mi Power-plug (<a name="chuangmi-plug-m1">chuangmi.plug.m1</a>) Channels
 
@@ -2213,7 +2204,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Xiaomi Philips Eyecare Smart Lamp 2" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
 Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
 Number illumination "Ambient Illumination" (G_light) {channel="miio:basic:light:illumination"}
@@ -2227,8 +2218,8 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Xiaomi Philips LED Ceiling Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
 Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
@@ -2241,8 +2232,8 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Xiaomi Philips LED Ceiling Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
 Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
@@ -2255,13 +2246,12 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Xiaomi Philips Bulb" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
 Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
 Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
-Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 ```
 
 ### PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp (philips.light.candle) item file lines
@@ -2271,8 +2261,8 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
@@ -2285,13 +2275,12 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Xiaomi Philips Downlight" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
 Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
 Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
-Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 ```
 
 ### Xiaomi Philips ZhiRui bedside lamp (philips.light.moonlight) item file lines
@@ -2301,8 +2290,8 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Xiaomi Philips ZhiRui bedside lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
 Switch gonight "Go Night" (G_light) {channel="miio:basic:light:gonight"}
@@ -2317,8 +2306,8 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Xiaomi PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp White Crystal" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
@@ -2331,13 +2320,8 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "philips.light.mono1" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
-Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
-Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
-Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
-Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 ```
 
 ### philips.light.virtual (philips.light.virtual) item file lines
@@ -2347,13 +2331,12 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "philips.light.virtual" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
 Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
 Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
-Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 ```
 
 ### philips.light.zysread (philips.light.zysread) item file lines
@@ -2363,13 +2346,12 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "philips.light.zysread" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
 Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
 Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
-Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 ```
 
 ### philips.light.zystrip (philips.light.zystrip) item file lines
@@ -2379,13 +2361,12 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "philips.light.zystrip" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
 Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
 Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
-Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 ```
 
 ### Mi Power-plug (chuangmi.plug.m1) item file lines
