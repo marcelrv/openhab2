@@ -13,7 +13,9 @@
 package org.openhab.binding.miio.internal.basic;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,15 +35,29 @@ public class DeviceMapping {
     @SerializedName("id")
     @Expose
     private List<String> id = new ArrayList<>();
+    @SerializedName("dids")
+    @Expose
+    private Map<String, String> dids = Collections.emptyMap();
     @SerializedName("propertyMethod")
     @Expose
     private @Nullable String propertyMethod;
     @SerializedName("maxProperties")
     @Expose
     private @Nullable Integer maxProperties;
+    @SerializedName("deviceParameters")
+    @Expose
+    private @Nullable Map<String, Object> deviceParameters;
     @SerializedName("channels")
     @Expose
-    private List<MiIoBasicChannel> miIoBasicChannels = new ArrayList<>();
+    private List<MiIoBasicChannel> miIoBasicChannels = new ArrayList<MiIoBasicChannel>();
+
+    public Map<String, String> getDid() {
+        return dids;
+    }
+
+    public void setDid(Map<String, String> did) {
+        this.dids = did;
+    }
 
     public List<String> getId() {
         return id;
@@ -67,6 +83,14 @@ public class DeviceMapping {
 
     public void setMaxProperties(int maxProperties) {
         this.maxProperties = maxProperties;
+    }
+
+    public @Nullable Map<String, Object> getDeviceParameters() {
+        return deviceParameters;
+    }
+
+    public void setDeviceParameters(Map<String, Object> deviceParameters) {
+        this.deviceParameters = deviceParameters;
     }
 
     public List<MiIoBasicChannel> getChannels() {

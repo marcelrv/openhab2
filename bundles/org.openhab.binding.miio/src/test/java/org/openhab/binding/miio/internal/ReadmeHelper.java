@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -161,9 +162,9 @@ public class ReadmeHelper {
     private void checkDatabaseEntrys() {
         for (MiIoBasicDevice entry : findDatabaseEntrys()) {
             for (String id : entry.getDevice().getId()) {
-                if (!MiIoDevices.getType(id).getThingType().equals(MiIoBindingConstants.THING_TYPE_BASIC)) {
-                    LOGGER.info("id :" + id + " not found");
-                }
+                // if (!MiIoDevices.getType(id).getThingType().equals(MiIoBindingConstants.THING_TYPE_BASIC)) {
+                // LOGGER.info("id :" + id + " not found");
+                // }
             }
         }
     }
@@ -189,11 +190,18 @@ public class ReadmeHelper {
             if (file.isFile()) {
                 try {
                     JsonObject deviceMapping = convertFileToJSON(path + file.getName());
-                    Gson gson = new GsonBuilder().serializeNulls().create();
+                    Gson gson = new GsonBuilder().setPrettyPrinting().create();
                     @Nullable
                     MiIoBasicDevice devdb = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
                     if (devdb != null) {
                         arrayList.add(devdb);
+
+                        if (!file.getName().startsWith("test")) {
+                            String usersJson = gson.toJson(devdb);
+                            try (PrintWriter out = new PrintWriter(path + "test_" + file.getName())) {
+                                out.println(usersJson);
+                            }
+                        }
                     }
                 } catch (Exception e) {
                     LOGGER.debug("Error while searching  in database '{}': {}", file.getName(), e.getMessage());

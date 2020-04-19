@@ -379,7 +379,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     protected boolean updateThingType(JsonObject miioInfo) {
         MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
         String model = miioInfo.get("model").getAsString();
-        miDevice = MiIoDevices.getType(model);
+        miDevice = MiIoDevices.getType(model, miIoDatabaseWatchService);
         if (configuration.model == null || configuration.model.isEmpty()) {
             Configuration config = editConfiguration();
             config.put(PROPERTY_MODEL, model);
@@ -425,12 +425,20 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         }
         scheduler.schedule(() -> {
             ThingBuilder thingBuilder = editThing();
-            thingBuilder.withLabel(miDevice.getDescription());
+            MiIoDevices type = MiIoDevices.getType(modelId, miIoDatabaseWatchService);
+            String label;
+            if (type.equals(MiIoDevices.BASIC)) {
+                final String description = miIoDatabaseWatchService.getDescription(modelId);
+                label = description != null ? description : miDevice.getDescription();
+            } else {
+                label = miDevice.getDescription();
+            }
+            thingBuilder.withLabel(label);
             updateThing(thingBuilder.build());
             logger.info("Mi Device model {} identified as: {}. Does not match thingtype {}. Changing thingtype to {}",
                     modelId, miDevice.toString(), getThing().getThingTypeUID().toString(),
                     miDevice.getThingType().toString());
-            ThingTypeUID thingTypeUID = MiIoDevices.getType(modelId).getThingType();
+            ThingTypeUID thingTypeUID = type.getThingType();
             if (thingTypeUID.equals(THING_TYPE_UNSUPPORTED)
                     && miIoDatabaseWatchService.getDatabaseUrl(modelId) != null) {
                 thingTypeUID = THING_TYPE_BASIC;

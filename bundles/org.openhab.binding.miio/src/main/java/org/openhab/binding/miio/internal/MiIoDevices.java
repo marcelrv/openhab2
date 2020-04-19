@@ -15,7 +15,9 @@ package org.openhab.binding.miio.internal;
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 
 /**
  * Mi IO Devices
@@ -170,11 +172,18 @@ public enum MiIoDevices {
     YEELIGHT_C2("yeelink.light.color2", "Yeelight Color Bulb YLDP06YL 10W", THING_TYPE_BASIC),
     YEELIGHT_C3("yeelink.light.color3", "Yeelight Color Bulb YLDP02YL 9W", THING_TYPE_BASIC),
     YEELIGHT_C4("yeelink.light.color4", "Yeelight Bulb YLDP13YL (8,5W)", THING_TYPE_BASIC),
+    BASIC("miio", "Mi IO Basic Device", THING_TYPE_BASIC),
     UNKNOWN("unknown", "Unknown Mi IO Device", THING_TYPE_UNSUPPORTED);
 
-    public static MiIoDevices getType(String modelString) {
+    public static MiIoDevices getType(String modelString, @Nullable MiIoDatabaseWatchService miIoDatabaseWatchService) {
         for (MiIoDevices mioDev : MiIoDevices.values()) {
             if (mioDev.getModel().equals(modelString)) {
+                if (mioDev.getThingType() == THING_TYPE_UNSUPPORTED) {
+                    if (miIoDatabaseWatchService != null
+                            && miIoDatabaseWatchService.getDescription(modelString) != null) {
+                        return BASIC;
+                    }
+                }
                 return mioDev;
             }
         }
@@ -183,7 +192,6 @@ public enum MiIoDevices {
 
     private final String model;
     private final String description;
-
     private final ThingTypeUID thingType;
 
     MiIoDevices(String model, String description, ThingTypeUID thingType) {

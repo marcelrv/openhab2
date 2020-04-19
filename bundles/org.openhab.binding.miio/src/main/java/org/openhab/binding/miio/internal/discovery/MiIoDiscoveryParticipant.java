@@ -29,6 +29,7 @@ import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.miio.internal.MiIoDevices;
+import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,11 +41,19 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-@Component(service = MDNSDiscoveryParticipant.class, immediate = true)
+@Component(service = MDNSDiscoveryParticipant.class, immediate = true, configurationPid = "discoveryMDNS.miio")
 public class MiIoDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
+    private @Nullable MiIoDatabaseWatchService miIoDatabaseWatchService;
     private Logger logger = LoggerFactory.getLogger(MiIoDiscoveryParticipant.class);
 
+    /*
+     * @Activate
+     * public void activate(@Reference MiIoDatabaseWatchService miIoDatabaseWatchService) {
+     * this.miIoDatabaseWatchService = miIoDatabaseWatchService;
+     * logger.warn("IM ACTIVATED");
+     * }
+     */
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
         return (NONGENERIC_THING_TYPES_UIDS);
@@ -73,7 +82,8 @@ public class MiIoDiscoveryParticipant implements MDNSDiscoveryParticipant {
             logger.trace("mDNS Could not identify Device ID from '{}'", id[1]);
             return null;
         }
-        ThingTypeUID thingType = MiIoDevices.getType(id[0].replaceAll("-", ".")).getThingType();
+        ThingTypeUID thingType = MiIoDevices.getType(id[0].replaceAll("-", "."), miIoDatabaseWatchService)
+                .getThingType();
         String uidName = String.format("%08X", did);
         logger.debug("mDNS {} identified as thingtype {} with did {} ({})", id[0], thingType, uidName, did);
         return new ThingUID(thingType, uidName);
