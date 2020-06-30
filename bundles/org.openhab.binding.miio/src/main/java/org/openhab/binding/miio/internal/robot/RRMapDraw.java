@@ -14,10 +14,7 @@ package org.openhab.binding.miio.internal.robot;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics2D;
-import java.awt.GraphicsEnvironment;
 import java.awt.Polygon;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
@@ -315,12 +312,10 @@ public class RRMapDraw {
     private void drawOpenHabRocks(Graphics2D g2d, int width, int height, float scale) {
         // easter egg gift
         int offset = 5;
-        int textPos = 55;
         URL image = getImageUrl("ohlogo.png");
         try {
             if (image != null) {
                 BufferedImage ohLogo = ImageIO.read(image);
-                textPos = (int) (ohLogo.getWidth() * scale / 2 + offset * scale);
                 AffineTransform at = new AffineTransform();
                 at.scale(scale / 2, scale / 2);
                 AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
@@ -332,43 +327,6 @@ public class RRMapDraw {
         } catch (IOException e) {
             logger.debug("Error loading image ohlogo.png:: {}", e.getMessage());
         }
-        String fontName = getAvailableFont("Helvetica,Arial,Roboto,Verdana,Times,Serif,Dialog".split(","));
-        if (fontName == null) {
-            return; // no available fonts to draw text
-        }
-        Font font = new Font(fontName, Font.BOLD, 14);
-        g2d.setFont(font);
-        String message = "Openhab rocks your Xiaomi vacuum!";
-        FontMetrics fontMetrics = g2d.getFontMetrics();
-        int stringWidth = fontMetrics.stringWidth(message);
-        if ((stringWidth + textPos) > rmfp.getImgWidth() * scale) {
-            font = new Font(fontName, Font.BOLD,
-                    (int) Math.floor(14 * (rmfp.getImgWidth() * scale - textPos - offset * scale) / stringWidth));
-            g2d.setFont(font);
-        }
-        int stringHeight = fontMetrics.getAscent();
-        g2d.setPaint(Color.white);
-        g2d.drawString(message, textPos, height - offset * scale - stringHeight / 2);
-    }
-
-    private @Nullable String getAvailableFont(String[] preferedFonts) {
-        final GraphicsEnvironment gEv = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        if (gEv == null) {
-            return null;
-        }
-        String[] fonts = gEv.getAvailableFontFamilyNames();
-        if (fonts.length == 0) {
-            return null;
-        }
-        for (int j = 0; j < preferedFonts.length; j++) {
-            for (int i = 0; i < fonts.length; i++) {
-                if (fonts[i].equalsIgnoreCase(preferedFonts[j])) {
-                    return preferedFonts[j];
-                }
-            }
-        }
-        // Preferred fonts not available... just go with the first one
-        return fonts[0];
     }
 
     private @Nullable URL getImageUrl(String image) {
