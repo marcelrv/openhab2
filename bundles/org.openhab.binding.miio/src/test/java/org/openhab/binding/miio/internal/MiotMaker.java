@@ -79,8 +79,8 @@ public class MiotMaker {
     @Ignore
     public static void main(String[] args) {
 
-        String model = "zhimi.airpurifier.ma4";
-        LOGGER.info("Processing :{}", model);
+        String model = "dmaker.fan.p9";
+        LOGGER.info("Processing: {}", model);
 
         MiotMaker miiotMaker;
         try {
@@ -200,6 +200,8 @@ public class MiotMaker {
                             miIoBasicChannel.setType("Switch");
                             break;
                         case "uint8":
+                        case "uint16":
+                        case "uint32":
                         case "int32":
                         case "float":
                             miIoBasicChannel.setType("Number");
