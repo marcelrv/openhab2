@@ -42,6 +42,9 @@ public class DeviceMapping {
     @SerializedName("channels")
     @Expose
     private List<MiIoBasicChannel> miIoBasicChannels = new ArrayList<>();
+    @SerializedName("enums")
+    @Expose
+    private List<MiIoBasicEnum> miIoBasicEnum = new ArrayList<>();
 
     public List<String> getId() {
         return id;
