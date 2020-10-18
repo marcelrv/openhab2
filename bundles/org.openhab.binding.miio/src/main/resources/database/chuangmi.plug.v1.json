@@ -30,6 +30,15 @@
 						"parameterType": "ONOFFPARA"
 					}
 				]
+			},
+			{
+				"property": "temperature",
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": []
 			}
 		]
 	}
