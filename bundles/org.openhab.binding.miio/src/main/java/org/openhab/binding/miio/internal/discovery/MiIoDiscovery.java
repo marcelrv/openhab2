@@ -20,7 +20,10 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -66,6 +69,8 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(MiIoDiscovery.class);
     private final CloudConnector cloudConnector;
+    private boolean cloudDiscoveryEnabled = true;
+    private Map<String, String> cloudDevices = new HashMap<>();
 
     @Activate
     public MiIoDiscovery(@Reference CloudConnector cloudConnector) throws IllegalArgumentException {
@@ -112,6 +117,9 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         logger.debug("Start Xiaomi Mi IO discovery");
+        if (cloudDiscoveryEnabled) {
+            cloudDiscovery();
+        }
         final DatagramSocket clientSocket = getSocket();
         if (clientSocket != null) {
             logger.debug("Discovery using socket on port {}", clientSocket.getLocalPort());
@@ -133,6 +141,27 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
         }
     }
 
+    private void cloudDiscovery() {
+        if (cloudConnector.isConnected()) {
+            List<CloudDeviceDTO> dv = cloudConnector.getDevicesList();
+            for (CloudDeviceDTO device : dv) {
+                String id = String.format("%08X", Long.parseUnsignedLong(device.getDid()));
+                if (device.getIsOnline()) {
+                    logger.debug("Discovered from cloud: {} {}", id, device);
+                    cloudDevices.put(id, device.getLocalip());
+                    String token = device.getToken();
+                    String label = device.getName() + " " + id + " (" + device.getDid() + ")";
+                    String country = device.getServer();
+                    Boolean isOnline = device.getIsOnline();
+                    String ip = device.getLocalip();
+                    submitDiscovery(ip, token, id, label, country, isOnline);
+                } else {
+                    logger.debug("Discovered from cloud, but ignored because not online: {} {}", id, device);
+                }
+            }
+        }
+    }
+
     private void discovered(String ip, byte[] response) {
         logger.trace("Discovery responses from : {}:{}", ip, Utils.getSpacedHex(response));
         Message msg = new Message(response);
@@ -141,6 +170,12 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
         String label = "Xiaomi Mi Device " + id + " (" + Long.parseUnsignedLong(id, 16) + ")";
         String country = "";
         boolean isOnline = false;
+        if (cloudDevices.containsKey(id)) {
+            if (cloudDevices.get(id).contains(ip)) {
+                logger.debug("Skipped adding {}. Already discovered by cloud", label);
+                return;
+            }
+        }
         if (cloudConnector.isConnected()) {
             cloudConnector.getDevicesList();
             CloudDeviceDTO cloudInfo = cloudConnector.getDeviceInfo(id);
@@ -152,6 +187,10 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
                 isOnline = cloudInfo.getIsOnline();
             }
         }
+        submitDiscovery(ip, token, id, label, country, isOnline);
+    }
+
+    private void submitDiscovery(String ip, String token, String id, String label, String country, boolean isOnline) {
         ThingUID uid = new ThingUID(THING_TYPE_MIIO, id);
         logger.debug("Discovered Mi Device {} ({}) at {} as {}", id, Long.parseUnsignedLong(id, 16), ip, uid);
         DiscoveryResultBuilder dr = DiscoveryResultBuilder.create(uid).withProperty(PROPERTY_HOST_IP, ip)
