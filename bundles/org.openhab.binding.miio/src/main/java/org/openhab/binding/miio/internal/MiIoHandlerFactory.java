@@ -59,13 +59,17 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
             Map<String, Object> properties) {
         this.miIoDatabaseWatchService = miIoDatabaseWatchService;
         this.cloudConnector = cloudConnector;
-        @Nullable
-        String username = (String) properties.get("username");
-        @Nullable
-        String password = (String) properties.get("password");
-        @Nullable
-        String country = (String) properties.get("country");
-        cloudConnector.setCredentials(username, password, country);
+        try {
+            @Nullable
+            String username = (String) properties.get("username");
+            @Nullable
+            String password = (String) properties.get("password");
+            @Nullable
+            String country = (String) properties.get("country");
+            cloudConnector.setCredentials(username, password, country);
+        } catch (NullPointerException | ClassCastException e) {
+            // swallow
+        }
         scheduler.submit(() -> cloudConnector.isConnected());
         this.channelTypeRegistry = channelTypeRegistry;
     }
