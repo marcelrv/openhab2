@@ -26,9 +26,9 @@
 				"friendlyName": "Temperature",
 				"channel": "temperature",
 				"channelType": "temperatureC",
-                "unit": "CELCIUS",
-                "type": "Number:Temperature",
-                				"refresh": true,
+				"unit": "CELCIUS",
+				"type": "Number:Temperature",
+				"refresh": true,
 				"ChannelGroup": "",
 				"actions": []
 			},
