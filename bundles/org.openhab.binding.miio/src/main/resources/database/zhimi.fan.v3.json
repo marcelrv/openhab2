@@ -39,8 +39,9 @@
 				"friendlyName": "Run Time",
 				"channel": "usedhours",
 				"channelType": "usedhours",
-				"type": "Number",
-				"refresh": true,
+"type": "Number:Time",
+                "unit": "hours",
+                				"refresh": true,
 				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
 				"actions": []
