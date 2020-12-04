@@ -24,6 +24,7 @@
 		<channels>
 			<channel id="commands" typeId="commands"/>
 			<channel id="rpc" typeId="rpc"/>
+			<channel id="cloudRequest" typeId="cloudRequest"/>
 		</channels>
 	</channel-group-type>
 

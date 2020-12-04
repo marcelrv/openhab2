@@ -38,6 +38,7 @@ import org.openhab.binding.miio.internal.MiIoSendCommand;
 import org.openhab.binding.miio.internal.Utils;
 import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
+import org.openhab.binding.miio.internal.cloud.MiCloudException;
 import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.common.NamedThreadFactory;
@@ -65,6 +66,22 @@ import com.google.gson.JsonParser;
  * sent to one of the channels.
  *
  * @author Marcel Verpaalen - Initial contribution
+ */
+/**
+ * @author Marcel Verpaalen
+ *
+ */
+/**
+ * @author Marcel Verpaalen
+ *
+ */
+/**
+ * @author Marcel Verpaalen
+ *
+ */
+/**
+ * @author Marcel Verpaalen
+ *
  */
 @NonNullByDefault
 public abstract class MiIoAbstractHandler extends BaseThingHandler implements MiIoMessageListener {
@@ -117,6 +134,12 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         }
         if (channelUID.getId().equals(CHANNEL_RPC)) {
             cmds.put(sendCommand(command.toString(), cloudServer), command.toString());
+            return true;
+        }
+        if (channelUID.getId().equals(CHANNEL_CLOUD_REQUEST)) {
+            scheduler.submit(() -> {
+                updateState(CHANNEL_CLOUD_REQUEST, new StringType(sendCloudRequest(command.toString(), cloudServer)));
+            });
             return true;
         }
         return false;
@@ -257,6 +280,33 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             disconnected(e.getMessage());
         }
         return 0;
+    }
+
+    /**
+     * Used to send arbitrary requests to the cloud to enable additional functionality not supported by regular RPC
+     * commands. The path is provided first than the parameters. Path and optional parameters are separated with a
+     * space.
+     *
+     * @param commandString
+     * @param cloudServer
+     * @return response from the cloud
+     */
+    protected String sendCloudRequest(String commandString, String cloudServer) {
+        try {
+            String command = commandString.trim();
+            if (command.isBlank()) {
+                String response = "Error sending request: Cloud request cannot be empty";
+                logger.info(response);
+                return response;
+            }
+            int splitter = command.indexOf(" ");
+            String path = splitter > 0 ? command.substring(0, splitter) : command;
+            String parameters = splitter > 0 ? command.substring(splitter + 1, command.length()) : "";
+            logger.trace("Send cloud request to server '{}' path: '{}' para: '{}'", cloudServer, path, parameters);
+            return cloudConnector.sendRequest(path, cloudServer, parameters.trim());
+        } catch (MiCloudException e) {
+            return ("Error sending request " + e.getMessage());
+        }
     }
 
     String getCloudServer() {

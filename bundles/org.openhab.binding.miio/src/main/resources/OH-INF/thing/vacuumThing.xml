@@ -33,6 +33,7 @@
 			<channel id="fan" typeId="fan"/>
 			<channel id="vacuum" typeId="vacuum"/>
 			<channel id="segment" typeId="segment"/>
+			<channel id="cloudRequest" typeId="cloudRequest"/>
 		</channels>
 	</channel-group-type>
 

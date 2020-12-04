@@ -103,6 +103,10 @@
 		<item-type>String</item-type>
 		<label>Execute RPC (cloud) Command</label>
 	</channel-type>
+	<channel-type id="cloudRequest" advanced="true">
+		<item-type>String</item-type>
+		<label>Execute Cloud Request</label>
+	</channel-type>
 	<channel-type id="power">
 		<item-type>Switch</item-type>
 		<label>Power On/Off</label>
