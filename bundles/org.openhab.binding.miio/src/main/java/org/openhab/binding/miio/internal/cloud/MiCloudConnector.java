@@ -133,7 +133,7 @@ public class MiCloudConnector {
 
     private String getApiUrl(String country) {
         return "https://" + (country.trim().equalsIgnoreCase("cn") ? "" : country.trim().toLowerCase() + ".")
-                + "api.io.mi.com/app";
+                + "api.io.mi.com/app/v2";
     }
 
     public String getClientId() {
