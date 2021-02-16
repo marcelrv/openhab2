@@ -32,7 +32,6 @@ import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +43,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-@Component(service = MDNSDiscoveryParticipant.class)
+// @Component(service = MDNSDiscoveryParticipant.class)
 public class MiIoDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final CloudConnector cloudConnector;

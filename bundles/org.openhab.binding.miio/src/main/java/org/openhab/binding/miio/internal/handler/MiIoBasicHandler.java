@@ -652,7 +652,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     break;
                 default:
                     if (refreshListCustomCommands.containsKey(response.getMethod())) {
-                        logger.debug("Processing custom refresh command response for !{}", response.getMethod());
+                        logger.debug("Processing custom refresh command response for '{}'", response.getMethod());
                         final MiIoBasicChannel ch = refreshListCustomCommands.get(response.getMethod());
                         if (ch != null) {
                             if (response.getResult().isJsonArray()) {

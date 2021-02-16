@@ -238,7 +238,7 @@ public class MiCloudConnector {
     public String getDeviceString(String country) {
         String resp;
         try {
-            resp = request("/home/device_list", country, "{\"getVirtualModel\":false,\"getHuamiDevices\":0}");
+            resp = request("/home/device_list_page", country, "{\"getVirtualModel\":false,\"getHuamiDevices\":1}");
             logger.trace("Get devices response: {}", resp);
             if (resp.length() > 2) {
                 CloudUtil.saveDeviceInfoFile(resp, country, logger);
