@@ -15,6 +15,7 @@ package org.openhab.binding.miio.internal.handler;
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -105,6 +106,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         super(thing);
         this.miIoDatabaseWatchService = miIoDatabaseWatchService;
         this.cloudConnector = cloudConnector;
+        deviceVariables.put("timestamp", Instant.now().getEpochSecond());
     }
 
     @Override

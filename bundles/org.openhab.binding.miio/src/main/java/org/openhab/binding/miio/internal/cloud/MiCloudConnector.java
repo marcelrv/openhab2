@@ -261,7 +261,7 @@ public class MiCloudConnector {
         String url = urlPart.trim();
         url = getApiUrl(country) + (url.startsWith("/app") ? url.substring(4) : url);
         String response = request(url, params);
-        logger.debug("Request to {} server {}. Response: {}", country, urlPart, response);
+        logger.debug("Request to '{}' server '{}'. Response: '{}'", country, urlPart, response);
         return response;
     }
 
@@ -271,7 +271,7 @@ public class MiCloudConnector {
         }
         loginFailedCounterCheck();
         startClient();
-        logger.debug("Send request: {} to {}", params.get("data"), url);
+        logger.debug("Send request to {} with data '{}'", url, params.get("data"));
         Request request = httpClient.newRequest(url).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         request.agent(USERAGENT);
         request.header("x-xiaomi-protocal-flag-cli", "PROTOCAL-HTTP2");

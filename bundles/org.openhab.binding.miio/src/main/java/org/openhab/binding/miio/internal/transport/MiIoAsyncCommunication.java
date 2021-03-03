@@ -179,11 +179,24 @@ public class MiIoAsyncCommunication {
             if (miIoSendCommand.getCloudServer().isBlank()) {
                 decryptedResponse = sendCommand(miIoSendCommand.getCommandString(), token, ip, deviceId);
             } else {
-                decryptedResponse = cloudConnector.sendRPCCommand(Utils.getHex(deviceId),
-                        miIoSendCommand.getCloudServer(), miIoSendCommand);
-                logger.debug("Command {} send via cloudserver {}", miIoSendCommand.getCommandString(),
-                        miIoSendCommand.getCloudServer());
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                if (miIoSendCommand.getMethod().startsWith("/")) {
+                    String data = miIoSendCommand.getParams().isJsonArray()
+                            && miIoSendCommand.getParams().getAsJsonArray().size() > 0
+                                    ? miIoSendCommand.getParams().getAsJsonArray().get(0).toString()
+                                    : "";
+                    logger.debug("Send custom cloud request to url '{}' with data '{}'", miIoSendCommand.getMethod(),
+                            data);
+                    decryptedResponse = cloudConnector.sendCloudCommand(miIoSendCommand.getMethod(),
+                            miIoSendCommand.getCloudServer(), data);
+                    miIoSendCommand.setResponse(parser.parse(decryptedResponse).getAsJsonObject());
+                    return miIoSendCommand;
+                } else {
+                    decryptedResponse = cloudConnector.sendRPCCommand(Utils.getHex(deviceId),
+                            miIoSendCommand.getCloudServer(), miIoSendCommand);
+                    logger.debug("Command {} send via cloudserver {}", miIoSendCommand.getCommandString(),
+                            miIoSendCommand.getCloudServer());
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                }
             }
             // hack due to avoid invalid json errors from some misbehaving device firmwares
             decryptedResponse = decryptedResponse.replace(",,", ",");

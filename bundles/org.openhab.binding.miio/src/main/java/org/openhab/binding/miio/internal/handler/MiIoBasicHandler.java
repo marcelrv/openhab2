@@ -16,7 +16,9 @@ import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URL;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -242,6 +244,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     } else {
                         cmd = cmd + parameters.toString();
                     }
+                    cmd = processSubstitutions(cmd, deviceVariables);
                     if (value != null) {
                         logger.debug("Sending command {}", cmd);
                         sendCommand(cmd);
@@ -269,6 +272,27 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         } else {
             logger.debug("Actions not loaded yet, or none available");
         }
+    }
+
+    private String processSubstitutions(String cmd, Map<String, Object> deviceVariables) {
+        String returnCmd = cmd;
+        String cmdParts[] = cmd.split("\\$");
+        for (String substitute : cmdParts) {
+            if (deviceVariables.containsKey(substitute)) {
+                String replacementString = "";
+                Object replacement = deviceVariables.get(substitute);
+                if (replacement instanceof Integer || replacement instanceof Long || replacement instanceof Double
+                        || replacement instanceof BigDecimal || replacement instanceof Boolean) {
+                    replacementString = replacement.toString();
+                } else if (replacement instanceof String) {
+                    replacementString = "\"" + (String) replacement + "\"";
+                } else {
+                    replacementString = String.valueOf(replacement);
+                }
+                returnCmd = cmd.replace("$" + substitute + "$", replacementString);
+            }
+        }
+        return returnCmd;
     }
 
     private @Nullable JsonElement miotTransform(MiIoBasicChannel miIoBasicChannel, @Nullable JsonElement value) {
@@ -309,6 +333,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 refreshProperties(midevice);
                 refreshCustomProperties(midevice);
                 refreshNetwork();
+                deviceVariables.put("timestamp", Instant.now().getEpochSecond());
             }
         } catch (Exception e) {
             logger.debug("Error while updating '{}': ", getThing().getUID().toString(), e);
@@ -317,7 +342,22 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
 
     private void refreshCustomProperties(MiIoBasicDevice midevice) {
         for (MiIoBasicChannel miChannel : refreshListCustomCommands.values()) {
-            sendCommand(miChannel.getChannelCustomRefreshCommand());
+            if (!isLinked(miChannel.getChannel())) {
+                logger.debug("Skip refresh of channel {} for {} as it is not linked", miChannel.getChannel(),
+                        getThing().getUID());
+                continue;
+            }
+            String cmd = processSubstitutions(miChannel.getChannelCustomRefreshCommand(), deviceVariables);
+            if (cmd.startsWith("/")) {
+                if (cloudServer.isBlank()) {
+                    logger.debug("Cloudserver empty. Skipping refresh for {} channel '{}'", getThing().getUID(),
+                            miChannel.getChannel());
+                } else {
+                    sendCommand(cmd, cloudServer);
+                }
+            } else {
+                sendCommand(cmd);
+            }
         }
     }
 
@@ -375,12 +415,15 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         }
         if (hasChannelStructure) {
             refreshList = new ArrayList<>();
+            refreshListCustomCommands = new HashMap<>();
             final MiIoBasicDevice miioDevice = this.miioDevice;
             if (miioDevice != null) {
                 for (MiIoBasicChannel miChannel : miioDevice.getDevice().getChannels()) {
                     if (miChannel.getRefresh()) {
                         if (miChannel.getChannelCustomRefreshCommand().isBlank()) {
-                            refreshList.add(miChannel);
+                            if (!miChannel.getProperty().isBlank()) {
+                                refreshList.add(miChannel);
+                            }
                         } else {
                             String i = miChannel.getChannelCustomRefreshCommand().split("\\[")[0];
                             refreshListCustomCommands.put(i.trim(), miChannel);
@@ -569,7 +612,11 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     updateState(basicChannel.getChannel(), new PercentType(val.getAsBigDecimal()));
                     break;
                 case "string":
-                    updateState(basicChannel.getChannel(), new StringType(val.getAsString()));
+                    if (val.isJsonPrimitive()) {
+                        updateState(basicChannel.getChannel(), new StringType(val.getAsString()));
+                    } else {
+                        updateState(basicChannel.getChannel(), new StringType(val.toString()));
+                    }
                     break;
                 case "switch":
                     if (val.getAsJsonPrimitive().isNumber()) {
