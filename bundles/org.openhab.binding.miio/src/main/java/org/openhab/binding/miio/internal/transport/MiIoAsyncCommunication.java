@@ -129,16 +129,17 @@ public class MiIoAsyncCommunication {
         }
     }
 
-    public int queueCommand(MiIoCommand command, String cloudServer) throws MiIoCryptoException, IOException {
-        return queueCommand(command, "[]", cloudServer);
-    }
-
-    public int queueCommand(MiIoCommand command, String params, String cloudServer)
+    public int queueCommand(MiIoCommand command, String cloudServer, String sender)
             throws MiIoCryptoException, IOException {
-        return queueCommand(command.getCommand(), params, cloudServer);
+        return queueCommand(command, "[]", cloudServer, sender);
     }
 
-    public int queueCommand(String command, String params, String cloudServer)
+    public int queueCommand(MiIoCommand command, String params, String cloudServer, String sender)
+            throws MiIoCryptoException, IOException {
+        return queueCommand(command.getCommand(), params, cloudServer, sender);
+    }
+
+    public int queueCommand(String command, String params, String cloudServer, String sender)
             throws MiIoCryptoException, IOException, JsonSyntaxException {
         try {
             JsonObject fullCommand = new JsonObject();
@@ -150,7 +151,7 @@ public class MiIoAsyncCommunication {
             fullCommand.addProperty("method", command);
             fullCommand.add("params", JsonParser.parseString(params));
             MiIoSendCommand sendCmd = new MiIoSendCommand(cmdId, MiIoCommand.getCommand(command), fullCommand,
-                    cloudServer);
+                    cloudServer, sender);
             concurrentLinkedQueue.add(sendCmd);
             if (logger.isDebugEnabled()) {
                 // Obfuscate part of the token to allow sharing of the logfiles

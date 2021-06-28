@@ -230,31 +230,31 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             return;
         }
         if (channelUID.getId().equals(CHANNEL_FAN_POWER)) {
-            sendCommand(MiIoCommand.SET_MODE, "[" + command.toString() + "]");
+            sendCommand(MiIoCommand.SET_MODE, "[" + command.toString() + "]", "");
             forceStatusUpdate();
             return;
         }
         if (channelUID.getId().equals(RobotCababilities.WATERBOX_MODE.getChannel())) {
-            sendCommand(MiIoCommand.SET_WATERBOX_MODE, "[" + command.toString() + "]");
+            sendCommand(MiIoCommand.SET_WATERBOX_MODE, "[" + command.toString() + "]", "");
             forceStatusUpdate();
             return;
         }
         if (channelUID.getId().equals(RobotCababilities.SEGMENT_CLEAN.getChannel()) && !command.toString().isEmpty()
                 && !command.toString().contentEquals("-")) {
-            sendCommand(MiIoCommand.START_SEGMENT, "[" + command.toString() + "]");
+            sendCommand(MiIoCommand.START_SEGMENT, "[" + command.toString() + "]", "");
             updateState(RobotCababilities.SEGMENT_CLEAN.getChannel(), new StringType("-"));
             forceStatusUpdate();
             return;
         }
         if (channelUID.getId().equals(CHANNEL_FAN_CONTROL)) {
             if (Integer.valueOf(command.toString()) > 0) {
-                sendCommand(MiIoCommand.SET_MODE, "[" + command.toString() + "]");
+                sendCommand(MiIoCommand.SET_MODE, "[" + command.toString() + "]", "");
             }
             forceStatusUpdate();
             return;
         }
         if (channelUID.getId().equals(CHANNEL_CONSUMABLE_RESET)) {
-            sendCommand(MiIoCommand.CONSUMABLES_RESET, "[" + command.toString() + "]");
+            sendCommand(MiIoCommand.CONSUMABLES_RESET, "[" + command.toString() + "]", "");
             updateState(CHANNEL_CONSUMABLE_RESET, new StringType("none"));
         }
     }
@@ -407,7 +407,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             String lastClean = historyData.get(3).getAsJsonArray().get(0).getAsString();
             if (!lastClean.equals(lastHistoryId)) {
                 lastHistoryId = lastClean;
-                sendCommand(MiIoCommand.CLEAN_RECORD_GET, "[" + lastClean + "]");
+                sendCommand(MiIoCommand.CLEAN_RECORD_GET, "[" + lastClean + "]", "");
             }
         }
         return true;
