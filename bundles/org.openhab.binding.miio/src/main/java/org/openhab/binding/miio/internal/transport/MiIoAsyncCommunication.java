@@ -137,19 +137,24 @@ public class MiIoAsyncCommunication {
             if (cmdId > MAX_ID) {
                 id.set(0);
             }
+            logger.debug("command {} --- para {}", command, params);
+
             if (command.startsWith("{") && command.endsWith("}")) {
                 fullCommand = JsonParser.parseString(command).getAsJsonObject();
                 fullCommand.addProperty("id", cmdId);
+                logger.debug("command {} -> {}", command, fullCommand);
                 if (!fullCommand.has("params") && !params.isBlank()) {
                     fullCommand.add("params", JsonParser.parseString(params));
                 }
+                logger.debug("command {} -> {}", command, fullCommand);
+
             } else {
                 fullCommand.addProperty("id", cmdId);
                 fullCommand.addProperty("method", command);
                 fullCommand.add("params", JsonParser.parseString(params));
             }
             MiIoSendCommand sendCmd = new MiIoSendCommand(cmdId, MiIoCommand.getCommand(command), fullCommand,
-                    cloudServer);
+                    cloudServer, sender);
             concurrentLinkedQueue.add(sendCmd);
             if (logger.isDebugEnabled()) {
                 // Obfuscate part of the token to allow sharing of the logfiles
