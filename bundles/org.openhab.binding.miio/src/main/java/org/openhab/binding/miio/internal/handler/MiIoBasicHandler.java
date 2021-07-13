@@ -613,6 +613,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
 
     protected void updateChannel(@Nullable MiIoBasicChannel basicChannel, String param, JsonElement value) {
         JsonElement val = value;
+        deviceVariables.put(param, val);
         if (basicChannel == null) {
             logger.debug("Channel not found for {}", param);
             return;
@@ -624,7 +625,6 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     transformed);
             val = transformed;
         }
-        deviceVariables.put(param, val);
         try {
             String[] chType = basicChannel.getType().toLowerCase().split(":");
             switch (chType[0]) {
@@ -647,7 +647,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     } else {
                         String strVal = val.getAsString().toLowerCase();
                         updateState(basicChannel.getChannel(),
-                                "on".equals(strVal) || "true".equals(strVal) ? OnOffType.ON : OnOffType.OFF);
+                                "on".equals(strVal) || "true".equals(strVal) || "1".equals(strVal) ? OnOffType.ON
+                                        : OnOffType.OFF);
                     }
                     break;
                 case "color":
