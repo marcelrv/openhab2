@@ -38,13 +38,6 @@ public class MiIoGatewayHandler extends MiIoBasicHandler implements BridgeHandle
 
     private final Logger logger = LoggerFactory.getLogger(MiIoGatewayHandler.class);
 
-    /*
-     * public MiIoGatewayHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
-     * CloudConnector cloudConnector, ChannelTypeRegistry channelTypeRegistry,
-     * BasicChannelTypeProvider basicChannelTypeProvider) {
-     * super(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry, basicChannelTypeProvider);
-     * }
-     */
     public MiIoGatewayHandler(Bridge thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
             CloudConnector cloudConnector, ChannelTypeRegistry channelTypeRegistry,
             BasicChannelTypeProvider basicChannelTypeProvider) {
@@ -72,13 +65,13 @@ public class MiIoGatewayHandler extends MiIoBasicHandler implements BridgeHandle
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         logger.info("Child initialized : {}  {}", childThing.getUID(), childThing.getLabel());
-        childDevices.add((MiIoAbstractHandler) childHandler);
+        childDevices.put(childThing, (MiIoAbstractHandler) childHandler);
     }
 
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
         logger.info("Childhandler Disposed : {}  {}", childThing.getUID(), childThing.getLabel());
-        childDevices.remove(childHandler);
+        childDevices.remove(childThing);
     }
 
     public @Nullable BridgeHandler getHandler() {

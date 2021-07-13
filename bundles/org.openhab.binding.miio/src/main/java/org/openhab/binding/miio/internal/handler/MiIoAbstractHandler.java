@@ -23,9 +23,8 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -68,6 +67,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -81,7 +81,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     protected static final int MAX_QUEUE = 5;
     protected static final Gson GSON = new GsonBuilder().create();
     protected static final String TIMESTAMP = "timestamp";
-    protected final Set<MiIoAbstractHandler> childDevices = new CopyOnWriteArraySet<>();
+    protected final Map<Thing, MiIoAbstractHandler> childDevices = new ConcurrentHashMap<>();
 
     protected ScheduledExecutorService miIoScheduler = scheduler;
     protected @Nullable ScheduledFuture<?> pollingJob;
@@ -507,8 +507,17 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     }
 
     protected String processSubstitutions(String cmd, Map<String, Object> deviceVariables) {
-        String returnCmd = cmd;
+        if (!cmd.contains("$")) {
+            return cmd;
+        }
+        String returnCmd = cmd.replace("\"$", "$").replace("$\"", "$");
         String cmdParts[] = cmd.split("\\$");
+        if (logger.isTraceEnabled()) {
+            logger.debug("processSubstitutions {} ", cmd);
+            for (Entry<String, Object> e : deviceVariables.entrySet()) {
+                logger.debug("key, value:  {}  -> {}", e.getKey(), e.getValue());
+            }
+        }
         for (String substitute : cmdParts) {
             if (deviceVariables.containsKey(substitute)) {
                 String replacementString = "";
@@ -520,6 +529,8 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                 if (replacement instanceof Integer || replacement instanceof Long || replacement instanceof Double
                         || replacement instanceof BigDecimal || replacement instanceof Boolean) {
                     replacementString = replacement.toString();
+                } else if (replacement instanceof JsonPrimitive) {
+                    replacementString = ((JsonPrimitive) replacement).getAsString();
                 } else if (replacement instanceof String) {
                     replacementString = "\"" + (String) replacement + "\"";
                 } else {
@@ -605,11 +616,16 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     @Override
     public void onMessageReceived(MiIoSendCommand response) {
         if (!response.getSender().isBlank() && !response.getSender().contentEquals(getThing().getUID().getAsString())) {
-            logger.debug("Submit response to {} childdevices. Submitter {}", childDevices.size(), response.getSender());
-            childDevices.forEach((MiIoAbstractHandler child) -> {
-                logger.trace("Submit response to to child {}", child.getThing().getUID());
-                child.onMessageReceived(response);
+            childDevices.forEach((childThing, childHandler) -> {
+                if (childThing.getUID().getAsString().contentEquals(response.getSender())) {
+                    // TODO: change to trace
+                    logger.debug("Submit response to to child {} -> {}", response.getSender(), childThing.getUID());
+                    childHandler.onMessageReceived(response);
+                    return;
+                }
             });
+            logger.debug("Could not find match in {} childdevice for submitter {}", childDevices.size(),
+                    response.getSender());
             return;
         }
 

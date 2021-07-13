@@ -83,7 +83,7 @@ public class MiIoLumiHandler extends MiIoBasicHandler {
             if (bridge != null) {
                 final MiIoGatewayHandler bridgeHandler = (MiIoGatewayHandler) bridge.getHandler();
                 if (bridgeHandler != null) {
-                    if (!bridgeHandler.childDevices.contains(this)) {
+                    if (!bridgeHandler.childDevices.containsKey(getThing())) {
                         logger.warn(("Adding child device {} to bridge {}. We should not see this"),
                                 getThing().getUID(), bridgeHandler.getThing().getUID());
                         // bridgeHandler.childHandlerInitialized(this, getThing());
