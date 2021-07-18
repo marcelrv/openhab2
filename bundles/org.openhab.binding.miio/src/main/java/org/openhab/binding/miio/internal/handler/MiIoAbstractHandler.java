@@ -14,8 +14,11 @@ package org.openhab.binding.miio.internal.handler;
 
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -39,6 +42,7 @@ import org.openhab.binding.miio.internal.MiIoInfoApDTO;
 import org.openhab.binding.miio.internal.MiIoInfoDTO;
 import org.openhab.binding.miio.internal.MiIoMessageListener;
 import org.openhab.binding.miio.internal.MiIoSendCommand;
+import org.openhab.binding.miio.internal.SavedDeviceInfoDTO;
 import org.openhab.binding.miio.internal.Utils;
 import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
@@ -63,6 +67,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -76,6 +81,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     protected static final int MAX_QUEUE = 5;
     protected static final Gson GSON = new GsonBuilder().create();
     protected static final String TIMESTAMP = "timestamp";
+    protected final Map<Thing, MiIoAbstractHandler> childDevices = new ConcurrentHashMap<>();
 
     protected ScheduledExecutorService miIoScheduler = scheduler;
     protected @Nullable ScheduledFuture<?> pollingJob;
@@ -141,19 +147,32 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
 
         final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
         this.configuration = configuration;
-        if (configuration.host.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "IP address required. Configure IP address");
-            return;
-        }
-        if (!tokenCheckPass(configuration.token)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Token required. Configure token");
-            return;
+        if (!getThing().getThingTypeUID().equals(THING_TYPE_LUMI)) {
+            if (configuration.host.isEmpty()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "IP address required. Configure IP address");
+                return;
+            }
+            if (!tokenCheckPass(configuration.token)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Token required. Configure token");
+                return;
+            }
         }
         this.cloudServer = configuration.cloudServer;
         isIdentified = false;
         deviceVariables.put(TIMESTAMP, Instant.now().getEpochSecond());
         deviceVariables.put(PROPERTY_DID, configuration.deviceId);
+
+        try {
+            URL url = new File(BINDING_USERDATA_PATH, "info_" + getThing().getUID().getId() + ".json").toURI().toURL();
+            SavedDeviceInfoDTO lastIdInfo = GSON.fromJson(Utils.convertFileToJSON(url), SavedDeviceInfoDTO.class);
+            lastId = lastIdInfo.getLastId();
+            logger.debug("last ID set to {}", lastId);
+        } catch (JsonParseException | IOException | URISyntaxException e) {
+            logger.debug("Could not read last connection id for {} : {}", getThing().getUID(), e.getMessage());
+        }
+
         miIoScheduler.schedule(this::initializeData, 1, TimeUnit.SECONDS);
         int pollingPeriod = configuration.refreshInterval;
         if (pollingPeriod > 0) {
@@ -217,6 +236,10 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             this.miioCom = null;
         }
         miIoScheduler.shutdownNow();
+        logger.debug("LASTID SAVED {} -> {} ", lastId, GSON.toJson(new SavedDeviceInfoDTO(lastId,
+                (String) deviceVariables.getOrDefault(PROPERTY_DID, getThing().getUID().getId()))));
+        Utils.saveToFile("info_" + getThing().getUID().getId() + ".json", GSON.toJson(new SavedDeviceInfoDTO(lastId,
+                (String) deviceVariables.getOrDefault(PROPERTY_DID, getThing().getUID().getId()))), logger);
     }
 
     protected int sendCommand(MiIoCommand command) {
@@ -270,6 +293,9 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
      */
     protected int sendCommand(String command, String params, String cloudServer, String sender) {
         try {
+            if (!sender.isBlank()) {
+                logger.debug("received {} command from {} : {} - {}", getThing().getUID(), sender, command, params);
+            }
             final MiIoAsyncCommunication connection = getConnection();
             return (connection != null) ? connection.queueCommand(command, params, cloudServer, sender) : 0;
         } catch (MiIoCryptoException | IOException e) {
@@ -589,8 +615,26 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
 
     @Override
     public void onMessageReceived(MiIoSendCommand response) {
+        if (!response.getSender().isBlank() && !response.getSender().contentEquals(getThing().getUID().getAsString())) {
+            childDevices.forEach((childThing, childHandler) -> {
+                if (childThing.getUID().getAsString().contentEquals(response.getSender())) {
+                    // TODO: change to trace
+                    logger.debug("Submit response to to child {} -> {}", response.getSender(), childThing.getUID());
+                    childHandler.onMessageReceived(response);
+                    return;
+                }
+            });
+            logger.debug("Could not find match in {} childdevice for submitter {}", childDevices.size(),
+                    response.getSender());
+            return;
+        }
+
         logger.debug("Received response for device {} type: {}, result: {}, fullresponse: {}",
-                getThing().getUID().getId(), response.getCommand(), response.getResult(), response.getResponse());
+                getThing().getUID().getId(),
+                MiIoCommand.UNKNOWN.equals(response.getCommand())
+                        ? response.getCommand().toString() + "(" + response.getCommandString() + ")"
+                        : response.getCommand(),
+                response.getResult(), response.getResponse());
         if (response.isError()) {
             logger.debug("Error received for command '{}': {}.", response.getCommandString(),
                     response.getResponse().get("error"));

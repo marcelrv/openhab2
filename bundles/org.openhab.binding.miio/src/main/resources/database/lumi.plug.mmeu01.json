@@ -1,0 +1,95 @@
+{
+	"deviceMapping": {
+		"id": [
+			"lumi.plug.mmeu01"
+		],
+		"propertyMethod": "get_device_prop_exp",
+		"maxProperties": 5,
+		"channels": [
+			{
+				"customRefreshCommand": "{\"sid\":$deviceId$,\"method\":\"get_prop_plug\"} [\"channel_0\"]",
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "{\"sid\":$deviceId$,\"method\":\"toggle_plug\"}",
+						"parameterType": "ONOFF",
+						"parameters": [
+							"channel_0",
+							"$value$"
+						]
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"customRefreshCommand": "{\"sid\":$deviceId$,\"method\":\"get_prop_plug\"} [\"load_power\"]",
+				"property": "load_power",
+				"friendlyName": "Load Power",
+				"channel": "load_power",
+				"type": "Number",
+				"refresh": true,
+				"actions": [],
+				"category": "switch",
+				"tags": [
+					"Measurement"
+				]
+			},
+			{
+				"property": "en_night_tip_light",
+				"friendlyName": "en_night_tip_light",
+				"channel": "en_night_tip_light",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [],
+				"category": "light",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "poweroff_memory",
+				"friendlyName": "poweroff_memory",
+				"channel": "poweroff_memory",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_device_prop",
+						"parameterType": "ONOFFNR",
+						"parameters": [
+							{
+								"sid": "$deviceId$",
+								"poweroff_memory": "$value$"
+							}
+						]
+					}
+				],
+				"category": "setting",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "max_power",
+				"friendlyName": "max_power",
+				"channel": "max_power",
+				"type": "Number",
+				"refresh": true,
+				"actions": [],
+				"category": "power",
+				"tags": [
+					"Setpoint"
+				]
+			}
+		],
+		"readmeComment": "Needs to have the Xiaomi gateway configured in the binding as bridge.",
+		"experimental": false
+	}
+}
