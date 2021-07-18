@@ -133,20 +133,21 @@ public class MiIoLumiHandler extends MiIoBasicHandler {
                 // return;
             }
             checkChannelStructure();
-            Bridge bridge = getBridge();
-            if (bridge == null || !bridge.getStatus().equals(ThingStatus.ONLINE)) {
-                logger.debug("Bridge offline, skipping refresh");
-                return;
-            }
-
             final MiIoBindingConfiguration config = this.configuration;
             final MiIoBasicDevice midevice = miioDevice;
             if (midevice != null && configuration != null && config != null) {
+
+                Bridge bridge = getBridge();
+                if (bridge == null || !bridge.getStatus().equals(ThingStatus.ONLINE)) {
+                    logger.debug("Bridge offline, skipping regular refresh");
+                    refreshCustomProperties(midevice, true);
+                    return;
+                }
                 logger.debug("Refresh properties for lumi");
                 refreshProperties(midevice, config.deviceId);
                 logger.debug("Refresh Custom for lumi");
 
-                refreshCustomProperties(midevice);
+                refreshCustomProperties(midevice, false);
             } else {
                 logger.debug("Null occuren", midevice, config);
             }

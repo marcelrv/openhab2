@@ -109,6 +109,8 @@ public enum MiIoDevices {
     LUMI_LOCK_ACN02("lumi.lock.acn02", "Aqara Door Lock S2", THING_TYPE_LUMI),
     LUMI_LOCK_ACN03("lumi.lock.acn03", "Aqara Door lock S2 Pro", THING_TYPE_LUMI),
     LUMI_PLUG_MMEU01("lumi.plug.mmeu01", "Mi Smart Plug (Zigbee)", THING_TYPE_LUMI),
+    LUMI_SENSOR_MAGNET_V2("lumi.sensor_magnet.v2", "Mi Door Sensor (Zigbee)", THING_TYPE_LUMI),
+    LUMI_SENSOR_MOTION_V2("lumi.sensor_motion.v2", "Mi Door Sensor (Zigbee)", THING_TYPE_LUMI),
     LUMI_SENSOR_HT_V1("lumi.sensor_ht.v1", "Mi Temperature and Humidity Sensor", THING_TYPE_LUMI),
     LUMI_WEATHER_V1("lumi.weather.v1", "Aqara Temperature and Humidity Sensor", THING_TYPE_LUMI),
     MIDEA_AIRCONDITION_V1("midea.aircondition.v1", "Midea AC-i Youth", THING_TYPE_UNSUPPORTED),

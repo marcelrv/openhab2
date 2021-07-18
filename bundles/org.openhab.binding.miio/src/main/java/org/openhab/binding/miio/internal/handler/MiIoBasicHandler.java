@@ -317,7 +317,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             if (midevice != null) {
                 deviceVariables.put(TIMESTAMP, Instant.now().getEpochSecond());
                 refreshProperties(midevice, "");
-                refreshCustomProperties(midevice);
+                refreshCustomProperties(midevice, false);
                 refreshNetwork();
             }
         } catch (Exception e) {
@@ -325,7 +325,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         }
     }
 
-    protected void refreshCustomProperties(MiIoBasicDevice midevice) {
+    protected void refreshCustomProperties(MiIoBasicDevice midevice, boolean cloudOnly) {
         logger.debug("Custom Refresh for device '{}': {} channels ", getThing().getUID(),
                 refreshListCustomCommands.size());
 
@@ -336,7 +336,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 continue;
             }
             String cmd = miChannel.getChannelCustomRefreshCommand();
-            if (!cmd.startsWith("/")) {
+            if (!cmd.startsWith("/") && !cloudOnly) {
                 cmds.put(sendCommand(miChannel.getChannelCustomRefreshCommand()), miChannel.getChannel());
             } else {
                 if (cloudServer.isBlank()) {

@@ -185,12 +185,12 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
             List<CloudDeviceDTO> dv = cloudConnector.getDevicesList();
             for (CloudDeviceDTO device : dv) {
                 String id = device.getDid();
-                if (cloudDiscoveryMode.contentEquals(SUPPORTED)) {
+                if (SUPPORTED.contentEquals(cloudDiscoveryMode)) {
                     if (MiIoDevices.getType(device.getModel()).getThingType().equals(THING_TYPE_UNSUPPORTED)) {
                         logger.info("Discovered from cloud, but ignored because not supported: {} {}", id, device);
                     }
                 }
-                if (device.getIsOnline()) {
+                if (device.getIsOnline() || ALL.contentEquals(cloudDiscoveryMode)) {
                     logger.debug("Discovered from cloud: {} {}", id, device);
                     cloudDevices.put(id, device.getLocalip());
                     String token = device.getToken();
